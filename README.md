@@ -1,1 +1,1 @@
-A description of the project will be placed here.
+All documents unrelated to the actual code is located here.
