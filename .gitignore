@@ -9,3 +9,6 @@
 .DS_Store
 /build
 /captures
+
+# Temporary ignore (unsure if any files in .idea are required)
+.idea
