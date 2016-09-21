@@ -1,3 +1,4 @@
 <resources>
-  <string name="app_name">RefugeeMap</string>
+    <string name="app_name">RefugeeMap</string>
+    <string name="title_activity_dummy">DummyActivity</string>
 </resources>

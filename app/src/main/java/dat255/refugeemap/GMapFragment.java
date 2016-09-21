@@ -4,9 +4,6 @@ import android.Manifest;
 import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.location.Location;
-
-import com.google.android.gms.location.LocationListener;
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -18,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -110,7 +108,7 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
         mGoogleApiClient);
 
       Log.v(TAG, "Last Latitude: " + mLastLocation);
-
+      
       if (mLastLocation != null) {
         lat = String.valueOf(mLastLocation.getLatitude());
         lon = String.valueOf(mLastLocation.getLongitude());
