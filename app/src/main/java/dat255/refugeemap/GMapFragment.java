@@ -51,6 +51,14 @@ public class GMapFragment extends Fragment
         void onInfoWindowClicked(Marker marker);
     }
 
+  public GMapFragment(){
+
+  }
+
+  public static GMapFragment newInstance(){
+    return new GMapFragment();
+  }
+
   @Override
   public void onAttach(Activity activity) {
     super.onAttach(activity);

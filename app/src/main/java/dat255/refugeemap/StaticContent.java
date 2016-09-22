@@ -11,7 +11,7 @@ public class StaticContent {
   /**
    * An list of sample (dummy) items.
    */
-  public static final List<StaticItem> EVENTS = new ArrayList<StaticItem>();
+  private static final List<StaticItem> EVENTS = new ArrayList<StaticItem>();
 
   private static final int COUNT = 25;
 
@@ -56,5 +56,10 @@ public class StaticContent {
     public String toString() {
             return title;
         }
+  }
+
+  public static List<StaticItem> getEvents(){
+
+    return EVENTS;
   }
 }

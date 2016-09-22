@@ -2,6 +2,7 @@ package dat255.refugeemap;
 
 import android.app.FragmentManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.res.ResourcesCompat;
@@ -11,10 +12,11 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.Marker;
 
+import dat255.refugeemap.detailView.DetailFragment;
 
 
 public class MainActivity extends FragmentActivity
-        implements EventListFragment.OnListFragmentInteractionListener, GMapFragment.ReplaceWithDetailView {
+        implements EventListFragment.OnListFragmentInteractionListener, DetailFragment.OnFragmentInteractionListener, GMapFragment.ReplaceWithDetailView {
 
   FragmentManager fm = getFragmentManager();
   private ImageButton mButton;
@@ -31,12 +33,8 @@ public class MainActivity extends FragmentActivity
   @Override
   public void onInfoWindowClicked(Marker marker) {
 
-    //TODO: replace fragment_container with detailed view instead
-    fm.beginTransaction().replace(R.id.fragment_container, new GMapFragment()).commit();
+    fm.beginTransaction().replace(R.id.fragment_container, DetailFragment.newInstance(new String[]{"title", "org", "description", "phone", "date"})).commit();
 
-    //makes sure that we get the correct marker
-    Toast toast = Toast.makeText(this, marker.getTitle(), Toast.LENGTH_SHORT);
-    toast.show();
   }
 
   public void showEventList(){
@@ -62,7 +60,9 @@ public class MainActivity extends FragmentActivity
 
   @Override
   public void onListFragmentInteraction(StaticContent.StaticItem item){
-    Toast.makeText(this, "You selected: " + item.title, Toast.LENGTH_SHORT).show();
+
+    fm.beginTransaction().replace(R.id.fragment_container, DetailFragment.newInstance(new String[]{"title", "org", "description", "phone", "date"})).commit();
+
   }
 
   public void initializeViews(View view) {
@@ -84,5 +84,10 @@ public class MainActivity extends FragmentActivity
         }
       }
     });
+  }
+
+  @Override
+  public void onFragmentInteraction(Uri uri) {
+
   }
 }
