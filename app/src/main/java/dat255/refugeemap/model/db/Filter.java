@@ -1,5 +1,7 @@
 package dat255.refugeemap.model.db;
 
+import java.util.Collection;
+
 /**
  * An interface which contains a selection of categories and
  * tags, used to filter events from a {@link Database}.
@@ -16,9 +18,9 @@ public interface Filter
    */
   public boolean doesEventFit(Event e);
 
-  /** Returns an array of all categories in the filter's requirements. */
-  public int[] getCategories();
+  /** Returns a collection of all categories in the filter's requirements. */
+  public Collection<Integer> getCategories();
 
-  /** Returns an array of all tags in the filter's requirements. */
-  public int[] getTags();
+  /** Returns a collection of all tags in the filter's requirements. */
+  public Collection<Integer> getTags();
 }

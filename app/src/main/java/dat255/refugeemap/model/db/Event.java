@@ -9,11 +9,14 @@ package dat255.refugeemap.model.db;
  */
 public interface Event
 {
-  public int[] getCategories();
-  public int[] getTags();
+  public Integer getID();
+  public Integer getOwnerID();
 
-  public double getLatitudeInDegrees();
-  public double getLongitudeInDegrees();
+  public Integer[] getCategories();
+  public Integer[] getTags();
+
+  public Double getLatitude();
+  public Double getLongitude();
 
   public String getTitle();
   public String getAddress();

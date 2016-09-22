@@ -11,9 +11,12 @@ import lombok.Getter;
 // Temporary constructor: will be replaced with the JSON integration
 public class EventImpl implements Event
 {
-  @Getter private final int[] categories, tags;
-
-  @Getter private final double latitudeInDegrees, longitudeInDegrees;
-
+  private final Integer id;
+  @Getter private final Integer ownerID;
+  @Getter private final Integer[] categories, tags;
+  @Getter private final Double latitude, longitude;
   @Getter private final String title, address, contactInformation, description;
+
+  @Override public Integer getID()
+  { return id; }
 }

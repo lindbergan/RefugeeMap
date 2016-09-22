@@ -1,6 +1,6 @@
 package dat255.refugeemap.model.db.impl;
 
-import java.util.List;
+import java.util.Collection;
 
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.Filter;
@@ -11,9 +11,9 @@ import lombok.Getter;
  */
 public class FilterImpl implements Filter
 {
-  @Getter private final List<Integer> categories, tags;
+  @Getter private final Collection<Integer> categories, tags;
 
-  public FilterImpl(List<Integer> categories, List<Integer> tags)
+  public FilterImpl(Collection<Integer> categories, Collection<Integer> tags)
   {
     this.categories = categories;
     this.tags = tags;
