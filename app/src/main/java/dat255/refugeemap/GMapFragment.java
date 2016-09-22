@@ -1,6 +1,8 @@
 package dat255.refugeemap;
 
+
 import android.Manifest;
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -12,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -22,41 +25,98 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 
-public class GMapFragment extends Fragment implements OnMapReadyCallback,
-  GoogleApiClient.ConnectionCallbacks,
-  GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class GMapFragment extends Fragment
+  implements GoogleApiClient.ConnectionCallbacks,
+  GoogleApiClient.OnConnectionFailedListener, LocationListener,
+  GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback,
+  GoogleMap.InfoWindowAdapter {
 
+  private GoogleMap mGoogleMap;
+  ReplaceWithDetailView mCallback;
   private static final String TAG = "GMapFragment";
   Location mLastLocation;
   private GoogleApiClient mGoogleApiClient;
   private LocationRequest mLocationRequest;
-  private GoogleMap mGoogleMap;
   String lat, lon;
   private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 20;
 
+    public interface ReplaceWithDetailView{
+        void onInfoWindowClicked(Marker marker);
+    }
+
   @Override
-  public void onMapReady(GoogleMap googleMap) {
+  public void onAttach(Activity activity) {
+    super.onAttach(activity);
 
-    Log.v(TAG, "mapready");
+    try {
+      mCallback = (ReplaceWithDetailView) activity;
+    } catch (ClassCastException e) {
+      throw new ClassCastException(activity.toString()
+        + " must implement ReplaceWithDetailView");
+    }
+  }
 
-    this.mGoogleMap = googleMap;
 
-    // Default map location is gothenburg
+
+  @Override
+    public void onMapReady(GoogleMap googleMap){
+
+      mGoogleMap = googleMap;
+      mGoogleMap.setOnInfoWindowClickListener(this);
+      mGoogleMap.setInfoWindowAdapter(this);
+      Log.v(TAG, "mapready");
+
+
+      setCurrentPosition(mGoogleMap);
+      placeMarkers(mGoogleMap);
+    }
+
+  //should take events[] as arguments as well
+  public void placeMarkers(GoogleMap googleMap){
+
+    //dummy Markers
     LatLng gbgMarker = new LatLng(57.70887000, 11.97456000);//def of GBG
-
-    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(gbgMarker, 15)); //zoom in on marker
-
     googleMap.addMarker(new MarkerOptions() //place the marker
       .position(gbgMarker)
       .title("Hello world"));
 
-
+    LatLng gbgMarker2 = new LatLng(57.708871000, 11.97456000);//def of GBG
+    googleMap.addMarker(new MarkerOptions()
+            .position(gbgMarker2).title("ttt")
+            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
   }
+
+
+  public void setCurrentPosition(GoogleMap googleMap){
+    //TODO: set this to "currentLocation" and zoom in on that one
+    LatLng gbgMarker = new LatLng(57.70887000, 11.97456000);//def of GBG
+    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(gbgMarker,15)); //zoom in on marker
+  }
+
+  /* When the infoWindow is clicked, we send a notification about which marker
+  its about to the main activity. The main activity can then show the correct
+  view, with the values associated to the marker object.
+   */
+
+    @Override
+        public void onInfoWindowClick(Marker marker) {
+            mCallback.onInfoWindowClicked(marker);
+        }
+
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+      super.onViewCreated(view, savedInstanceState);
+      MapFragment fragment = (MapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+      fragment.getMapAsync(this);
+    }
 
   synchronized void buildGoogleApiClient() {
     mGoogleApiClient = new GoogleApiClient.Builder(this.getActivity())
@@ -144,21 +204,10 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
   }
 
   @Override
-  public void onViewCreated(View view, Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-
-    MapFragment fragment = (MapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-    fragment.getMapAsync(this);
-  }
-
-
-  @Override
   public void onLocationChanged(Location location) {
     lat = String.valueOf(location.getLatitude());
     lon = String.valueOf(location.getLongitude());
     updateUI();
-
-
   }
 
 
@@ -193,4 +242,32 @@ public class GMapFragment extends Fragment implements OnMapReadyCallback,
     return inflater.inflate(R.layout.fragment_gmap, container, false);
   }
 
+  @Override
+  public View getInfoWindow(Marker marker) {
+    return null;
+  }
+
+  /* Our custom implementation of the infoWindow*/
+
+  @Override
+  public View getInfoContents(Marker marker) {
+
+    //Fetching the custom infoView
+    View customView = getActivity().getLayoutInflater().inflate(R.layout.custom_info_window, null);
+
+    //extracting the text fields
+    TextView infoTitle = (TextView) customView.findViewById(R.id.info_title);
+    TextView infoTime = (TextView) customView.findViewById(R.id.info_time);
+    TextView infoCategory = (TextView) customView.findViewById(R.id.info_category);
+    TextView infoContactInfo = (TextView) customView.findViewById(R.id.info_contactInformation);
+
+    //setting the values (should be obtained from the marker we have as an input)
+    infoTitle.setText("Title");
+    infoTime.setText("17.00-18-00");
+    infoCategory.setText("Idrottsaktivitet");
+    infoContactInfo.setText("tel: 031-313131");
+
+    //returning the custom_view with the correct values for the text fields
+    return customView;
+  }
 }

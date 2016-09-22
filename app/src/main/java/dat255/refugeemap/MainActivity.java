@@ -9,10 +9,14 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-public class MainActivity extends FragmentActivity
-        implements EventListFragment.OnListFragmentInteractionListener
-{
+import com.google.android.gms.maps.model.Marker;
 
+
+
+public class MainActivity extends FragmentActivity
+        implements EventListFragment.OnListFragmentInteractionListener, GMapFragment.ReplaceWithDetailView {
+
+  FragmentManager fm = getFragmentManager();
   private ImageButton mButton;
   private String ACTIVE_FRAGMENT;
 
@@ -21,6 +25,18 @@ public class MainActivity extends FragmentActivity
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
     firstStart();
+
+  }
+
+  @Override
+  public void onInfoWindowClicked(Marker marker) {
+
+    //TODO: replace fragment_container with detailed view instead
+    fm.beginTransaction().replace(R.id.fragment_container, new GMapFragment()).commit();
+
+    //makes sure that we get the correct marker
+    Toast toast = Toast.makeText(this, marker.getTitle(), Toast.LENGTH_SHORT);
+    toast.show();
   }
 
   public void showEventList(){

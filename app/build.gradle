@@ -34,5 +34,5 @@ dependencies {
     compile 'org.projectlombok:lombok:1.16.10'
     compile 'com.google.android.gms:play-services-maps:9.4.0'
     compile 'com.google.android.gms:play-services-location:9.4.0'
-}
 
+}
