@@ -1,6 +1,7 @@
 package dat255.refugeemap.model.db;
 
 import java.io.FileNotFoundException;
+import java.io.Reader;
 import java.lang.reflect.Type;
 
 /**
@@ -20,6 +21,17 @@ public interface JSONTools
 	 */
 	public Object deserializeFile(String filePath, Type objectType)
 		throws FileNotFoundException;
+
+	/**
+	 * Deserializes the JSON code in the given reader according to
+	 * the serialization settings for {@code objectType}.
+	 * (The dynamic return type will match {@code objectType}.)
+	 *
+	 * Preconditions:
+	 * - All arguments are non-null
+	 * - {@code fileReader} is a reader containing a valid JSON file
+	 */
+	public Object deserializeFile(Reader fileReader, Type objectType);
 
 	/**
 	 * Deserializes the given JSON string according to the

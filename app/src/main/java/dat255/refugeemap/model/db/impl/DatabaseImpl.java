@@ -1,6 +1,7 @@
 package dat255.refugeemap.model.db.impl;
 
 import java.io.FileNotFoundException;
+import java.io.Reader;
 import java.util.LinkedList;
 
 import dat255.refugeemap.model.db.Database;
@@ -30,6 +31,17 @@ public class DatabaseImpl implements Database
 			(String[])(json.deserializeFile(ctgNamesFilePath, String[].class)),
 			new EventArray((EventImpl[])(
 				json.deserializeFile(eventsFilePath, EventImpl[].class))
+			)
+		);
+	}
+
+	public DatabaseImpl(Reader ctgNamesReader, Reader eventsReader,
+		JSONTools json) throws FileNotFoundException
+	{
+		this(
+			(String[])(json.deserializeFile(ctgNamesReader, String[].class)),
+			new EventArray((EventImpl[])(
+				json.deserializeFile(eventsReader, EventImpl[].class))
 			)
 		);
 	}
