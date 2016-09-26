@@ -5,6 +5,7 @@ import com.google.gson.stream.JsonReader;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.Reader;
 import java.lang.reflect.Type;
 
 import dat255.refugeemap.model.db.JSONTools;
@@ -21,6 +22,9 @@ public class JSONToolsImpl implements JSONTools
 		JsonReader reader = new JsonReader(new FileReader(filePath));
 		return new Gson().fromJson(reader, objectType);
 	}
+
+	@Override public Object deserializeFile(Reader fileReader, Type objectType)
+	{ return new Gson().fromJson(fileReader, objectType); }
 
 	@Override public Object deserializeString(String json, Type objectType)
 	{ return new Gson().fromJson(json, objectType); }
