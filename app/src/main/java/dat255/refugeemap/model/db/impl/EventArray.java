@@ -9,23 +9,23 @@ import dat255.refugeemap.model.db.EventCollection;
  */
 public class EventArray implements EventCollection
 {
-  /** A custom iterator for {@link Event} arrays. */
-  public class Iterator implements java.util.Iterator<Event>
-  {
-    private int index = 0;
+	/** A custom iterator for {@link Event} arrays. */
+	public class Iterator implements java.util.Iterator<Event>
+	{
+		private int index = 0;
 
-    public boolean hasNext()
-    { return (index < events.length); }
+		public boolean hasNext()
+		{ return (index < events.length); }
 
-    public Event next()
-    { return events[index++]; }
-  }
+		public Event next()
+		{ return events[index++]; }
+	}
 
-  private final Event[] events;
+	private final Event[] events;
 
-  public EventArray(Event[] events)
-  { this.events = events; }
+	public EventArray(Event[] events)
+	{ this.events = events; }
 
-  public Iterator iterator()
-  { return new Iterator(); }
+	public Iterator iterator()
+	{ return new Iterator(); }
 }

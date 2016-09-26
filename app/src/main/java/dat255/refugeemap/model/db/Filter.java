@@ -9,18 +9,18 @@ import java.util.Collection;
  */
 public interface Filter
 {
-  /**
-   * Returns true iff the given {@link Event}
-   * fulfills the filter's requirements.
-   *
-   * Preconditions:
-   * - {@code e} is non-null
-   */
-  public boolean doesEventFit(Event e);
+	/**
+	 * Returns true iff the given {@link Event}
+	 * fulfills the filter's requirements.
+	 *
+	 * Preconditions:
+	 * - {@code e} is non-null
+	 */
+	public boolean doesEventFit(Event e);
 
-  /** Returns a collection of all categories in the filter's requirements. */
-  public Collection<Integer> getCategories();
+	/** Returns a collection of all categories in the filter's requirements. */
+	public Collection<Integer> getCategories();
 
-  /** Returns a collection of all tags in the filter's requirements. */
-  public Collection<Integer> getTags();
+	/** Returns a collection of all tags in the filter's requirements. */
+	public Collection<Integer> getTags();
 }

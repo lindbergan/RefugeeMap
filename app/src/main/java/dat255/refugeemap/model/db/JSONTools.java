@@ -9,14 +9,14 @@ import java.lang.reflect.Type;
  */
 public interface JSONTools
 {
-  /**
-   * Deserializes the file at the given path according to
-   * the serialization settings for {@code objectType}.
-   * (The dynamic return type will match {@code objectType}.)
-   *
-   * Preconditions:
-   * - All arguments are non-null
-   */
-  public Object deserialize(String filePath, Type objectType)
-    throws FileNotFoundException;
+	/**
+	 * Deserializes the file at the given path according to
+	 * the serialization settings for {@code objectType}.
+	 * (The dynamic return type will match {@code objectType}.)
+	 *
+	 * Preconditions:
+	 * - All arguments are non-null
+	 */
+	public Object deserialize(String filePath, Type objectType)
+		throws FileNotFoundException;
 }

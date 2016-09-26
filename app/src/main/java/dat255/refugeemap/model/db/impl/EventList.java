@@ -12,11 +12,11 @@ import dat255.refugeemap.model.db.EventCollection;
  */
 public class EventList implements EventCollection
 {
-  private List<Event> events;
+	private List<Event> events;
 
-  public EventList(List<Event> events)
-  { this.events = events; }
+	public EventList(List<Event> events)
+	{ this.events = events; }
 
-  public Iterator iterator()
-  { return events.iterator(); }
+	public Iterator iterator()
+	{ return events.iterator(); }
 }

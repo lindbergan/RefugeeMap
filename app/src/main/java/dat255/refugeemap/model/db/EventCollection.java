@@ -9,6 +9,6 @@ import java.util.Iterator;
  */
 public interface EventCollection extends Iterable<Event>
 {
-  /** Returns an iterator to the beginning of the collection. */
-  public Iterator iterator();
+	/** Returns an iterator to the beginning of the collection. */
+	public Iterator iterator();
 }
