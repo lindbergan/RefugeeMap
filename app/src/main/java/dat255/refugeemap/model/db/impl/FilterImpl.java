@@ -11,9 +11,10 @@ import lombok.Getter;
  */
 public class FilterImpl implements Filter
 {
-	@Getter private final Collection<Integer> categories, tags;
+	@Getter private final Collection<Integer> categories;
+	@Getter private final Collection<String> tags;
 
-	public FilterImpl(Collection<Integer> categories, Collection<Integer> tags)
+	public FilterImpl(Collection<Integer> categories, Collection<String> tags)
 	{
 		this.categories = categories;
 		this.tags = tags;
@@ -26,9 +27,9 @@ public class FilterImpl implements Filter
 				if (c == ec)
 					return true;
 
-		for (int t : tags)
-			for (int et : e.getTags())
-				if (t == et)
+		for (String t : tags)
+			for (String et : e.getTags())
+				if (t.equals(et))
 					return true;
 
 		return false;

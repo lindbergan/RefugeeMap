@@ -22,5 +22,5 @@ public interface Filter
 	public Collection<Integer> getCategories();
 
 	/** Returns a collection of all tags in the filter's requirements. */
-	public Collection<Integer> getTags();
+	public Collection<String> getTags();
 }

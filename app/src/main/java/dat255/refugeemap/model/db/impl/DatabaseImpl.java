@@ -14,18 +14,24 @@ import dat255.refugeemap.model.db.JSONTools;
  */
 public class DatabaseImpl implements Database
 {
+	private final String[] categoryNames;
 	private final EventCollection events;
-	private final String[] categoryNames, tagNames;
 
-	public DatabaseImpl(String categoryNamesFilePath, String tagNamesFilePath,
-						String eventsFilePath, JSONTools json) throws FileNotFoundException
+	private DatabaseImpl(String[] categoryNames, EventCollection events)
 	{
-		this.categoryNames = (String[])(json.
-			deserialize(categoryNamesFilePath, String[].class));
-		this.tagNames = (String[])(json.
-			deserialize(tagNamesFilePath, String[].class));
-		this.events = new EventArray((EventImpl[])(json.
-			deserialize(eventsFilePath, EventImpl[].class)));
+		this.categoryNames = categoryNames;
+		this.events = events;
+	}
+
+	public DatabaseImpl(String ctgNamesFilePath, String tagNamesFilePath,
+		String eventsFilePath, JSONTools json) throws FileNotFoundException
+	{
+		this(
+			(String[])(json.deserializeFile(ctgNamesFilePath, String[].class)),
+			new EventArray((EventImpl[])(
+				json.deserializeFile(eventsFilePath, EventImpl[].class))
+			)
+		);
 	}
 
 	@Override public EventCollection getAllEvents()
@@ -43,6 +49,7 @@ public class DatabaseImpl implements Database
 	@Override public String getCategoryName(int id)
 	{ return categoryNames[id]; }
 
-	@Override public String getTagName(int id)
-	{ return tagNames[id]; }
+	// Only to be used for testing.
+	public static DatabaseImpl create(String[] ctgNames, EventCollection events)
+	{ return new DatabaseImpl(ctgNames, events); }
 }

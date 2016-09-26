@@ -15,10 +15,13 @@ import dat255.refugeemap.model.db.JSONTools;
  */
 public class JSONToolsImpl implements JSONTools
 {
-	@Override public Object deserialize(String filePath, Type objectType)
+	@Override public Object deserializeFile(String filePath, Type objectType)
 		throws FileNotFoundException
 	{
 		JsonReader reader = new JsonReader(new FileReader(filePath));
 		return new Gson().fromJson(reader, objectType);
 	}
+
+	@Override public Object deserializeString(String json, Type objectType)
+	{ return new Gson().fromJson(json, objectType); }
 }
