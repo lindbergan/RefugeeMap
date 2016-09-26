@@ -23,8 +23,8 @@ public class DatabaseImpl implements Database
 		this.events = events;
 	}
 
-	public DatabaseImpl(String ctgNamesFilePath, String tagNamesFilePath,
-		String eventsFilePath, JSONTools json) throws FileNotFoundException
+	public DatabaseImpl(String ctgNamesFilePath, String eventsFilePath,
+		JSONTools json) throws FileNotFoundException
 	{
 		this(
 			(String[])(json.deserializeFile(ctgNamesFilePath, String[].class)),
