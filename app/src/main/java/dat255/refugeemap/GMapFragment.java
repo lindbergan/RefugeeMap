@@ -215,7 +215,7 @@ public class GMapFragment extends Fragment
 	public void onLocationChanged(Location location) {
 		lat = String.valueOf(location.getLatitude());
 		lon = String.valueOf(location.getLongitude());
-		updateUI();
+		//updateUI();
 	}
 
 
