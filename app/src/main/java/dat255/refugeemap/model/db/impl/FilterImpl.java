@@ -12,12 +12,12 @@ import lombok.Getter;
 public class FilterImpl implements Filter
 {
 	@Getter private final Collection<Integer> categories;
-	@Getter private final Collection<String> tags;
+	@Getter private final Collection<String> searchTerms;
 
-	public FilterImpl(Collection<Integer> categories, Collection<String> tags)
+	public FilterImpl(Collection<Integer> ctgs, Collection<String> searchTerms)
 	{
-		this.categories = categories;
-		this.tags = tags;
+		this.categories = ctgs;
+		this.searchTerms = searchTerms;
 	}
 
 	public boolean doesEventFit(Event e)
@@ -27,10 +27,13 @@ public class FilterImpl implements Filter
 				if (c == ec)
 					return true;
 
-		for (String t : tags)
-			for (String et : e.getTags())
-				if (t.equals(et))
+		for (String term : searchTerms)
+		{
+			for (String tag : e.getTags())
+				if (term.equals(tag))
 					return true;
+			if (e.getTitle().contains(term)) return true;
+		}
 
 		return false;
 	}
