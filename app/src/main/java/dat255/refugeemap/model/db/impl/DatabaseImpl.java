@@ -35,7 +35,7 @@ public class DatabaseImpl implements Database
 		);
 	}
 
-	public DatabaseImpl(Reader ctgNamesReader, String eventsReader,
+	public DatabaseImpl(Reader ctgNamesReader, Reader eventsReader,
 		JSONTools json) throws FileNotFoundException
 	{
 		this(
