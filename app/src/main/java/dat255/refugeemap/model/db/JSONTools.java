@@ -16,7 +16,19 @@ public interface JSONTools
 	 *
 	 * Preconditions:
 	 * - All arguments are non-null
+	 * - {@code filePath} is a path to a valid JSON file
 	 */
-	public Object deserialize(String filePath, Type objectType)
+	public Object deserializeFile(String filePath, Type objectType)
 		throws FileNotFoundException;
+
+	/**
+	 * Deserializes the given JSON string according to the
+	 * serialization settings for {@code objectType}.
+	 * (The dynamic return type will match {@code objectType}.)
+	 *
+	 * Preconditions:
+	 * - All arguments are non-null
+	 * - {@code json} contains valid JSON code
+	 */
+	public Object deserializeString(String json, Type objectType);
 }

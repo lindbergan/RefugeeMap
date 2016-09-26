@@ -13,7 +13,7 @@ public interface Event
 	public Integer getOwnerID();
 
 	public Integer[] getCategories();
-	public Integer[] getTags();
+	public String[] getTags();
 
 	public Double getLatitude();
 	public Double getLongitude();

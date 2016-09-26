@@ -30,12 +30,4 @@ public interface Database
 	 * - {@code id} is a valid category ID
 	 */
 	public String getCategoryName(int id);
-
-	/**
-	 * Returns the name of the tag with the given ID.
-	 *
-	 * Preconditions:
-	 * - {@code id} is a valid tag ID
-	 */
-	public String getTagName(int id);
 }

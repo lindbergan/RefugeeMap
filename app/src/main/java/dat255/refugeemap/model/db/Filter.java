@@ -21,6 +21,9 @@ public interface Filter
 	/** Returns a collection of all categories in the filter's requirements. */
 	public Collection<Integer> getCategories();
 
-	/** Returns a collection of all tags in the filter's requirements. */
-	public Collection<Integer> getTags();
+	/**
+	 * Returns a collection of all search terms (title
+	 * words and tags) in the filter's requirements.
+	 */
+	public Collection<String> getSearchTerms();
 }
