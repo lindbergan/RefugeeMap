@@ -2,15 +2,38 @@ package dat255.refugeemap;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.gson.reflect.TypeToken;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
 import dat255.refugeemap.StaticContent.StaticItem;
+import dat255.refugeemap.helpers.AssetsHelper;
+import dat255.refugeemap.model.db.Database;
+import dat255.refugeemap.model.db.Event;
+import dat255.refugeemap.model.db.EventCollection;
+import dat255.refugeemap.model.db.JSONTools;
+import dat255.refugeemap.model.db.impl.DatabaseImpl;
+import dat255.refugeemap.model.db.impl.EventArray;
+import dat255.refugeemap.model.db.impl.EventList;
+import dat255.refugeemap.model.db.impl.JSONToolsImpl;
 
 /**
  * A fragment representing a list of Items.
@@ -20,6 +43,7 @@ import dat255.refugeemap.StaticContent.StaticItem;
  */
 public class EventListFragment extends Fragment {
 	private int mColumnCount = 1;
+	private static final String TAG = "EventListFragment";
 
 	private OnListFragmentInteractionListener mListener;
 
@@ -54,7 +78,24 @@ public class EventListFragment extends Fragment {
 			} else {
 				recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
 			}
-			recyclerView.setAdapter(new EventRecyclerViewAdapter(StaticContent.getEvents(), mListener));
+
+			// Get path to local json databases
+			String categoriesJsonFilePath = AssetsHelper.getAssetFilePath("categories.json", this.getActivity());
+			String eventsJsonFilePath = AssetsHelper.getAssetFilePath("events.json", this.getActivity());
+			JSONTools jsonTools = new JSONToolsImpl();
+
+			List<Event> events = new ArrayList<>();
+			EventCollection eventCollection = new EventList(events);
+
+			// Create new database instance and fetch categories and events
+			try {
+				Database db = new DatabaseImpl(categoriesJsonFilePath, eventsJsonFilePath, jsonTools);
+				eventCollection = db.getAllEvents();
+			} catch (FileNotFoundException e) {
+				Log.v(TAG, "Database file not found: " + e.getMessage());
+			}
+
+			recyclerView.setAdapter(new EventRecyclerViewAdapter(eventCollection, mListener));
 		}
 		return view;
 	}
@@ -84,6 +125,6 @@ public class EventListFragment extends Fragment {
 	 * activity.
 	 */
 	public interface OnListFragmentInteractionListener {
-		void onListFragmentInteraction(StaticItem item);
+		void onListFragmentInteraction(Event item);
 	}
 }

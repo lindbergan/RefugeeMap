@@ -10,21 +10,24 @@ import java.util.List;
 
 import dat255.refugeemap.EventListFragment.OnListFragmentInteractionListener;
 import dat255.refugeemap.StaticContent.StaticItem;
+import dat255.refugeemap.model.db.Event;
+import dat255.refugeemap.model.db.EventCollection;
+import dat255.refugeemap.model.db.impl.EventList;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link StaticItem} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link dat255.refugeemap.model.db.Event} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class EventRecyclerViewAdapter
 	extends RecyclerView.Adapter<EventRecyclerViewAdapter.ViewHolder> {
 
-	private final List<StaticItem> mValues;
+	private final EventCollection mEvents;
 	private final OnListFragmentInteractionListener mListener;
 
-	public EventRecyclerViewAdapter(List<StaticItem> items,
+	public EventRecyclerViewAdapter(EventCollection events,
 									OnListFragmentInteractionListener listener) {
-		mValues = items;
+		mEvents = events;
 		mListener = listener;
 	}
 
@@ -38,9 +41,9 @@ public class EventRecyclerViewAdapter
 
 	@Override
 	public void onBindViewHolder(final ViewHolder holder, int position) {
-		holder.mItem = mValues.get(position);
-		holder.mIdView.setText(mValues.get(position).title);
-		holder.mContentView.setText(mValues.get(position).description);
+		holder.mItem = mEvents.get(position);
+		holder.mIdView.setText(mEvents.get(position).getTitle());
+		//holder.mContentView.setText(mEvents.get(position).getDescription());
 		holder.mView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -55,14 +58,14 @@ public class EventRecyclerViewAdapter
 
 	@Override
 	public int getItemCount() {
-		return mValues.size();
+		return mEvents.getSize();
 	}
 
 	public class ViewHolder extends RecyclerView.ViewHolder {
 		public final View mView;
 		public final TextView mIdView;
 		public final TextView mContentView;
-		public StaticItem mItem;
+		public Event mItem;
 
 		public ViewHolder(View view) {
 			super(view);
