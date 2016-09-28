@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.Marker;
 
 import dat255.refugeemap.detailView.DetailFragment;
+import dat255.refugeemap.model.db.Event;
 
 
 public class MainActivity extends FragmentActivity
@@ -59,7 +60,7 @@ public class MainActivity extends FragmentActivity
 	}
 
 	@Override
-	public void onListFragmentInteraction(StaticContent.StaticItem item){
+	public void onListFragmentInteraction(Event item){
 
 		fm.beginTransaction().replace(R.id.fragment_container, DetailFragment.newInstance(new String[]{"title", "org", "description", "phone", "date"})).commit();
 
