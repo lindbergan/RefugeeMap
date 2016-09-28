@@ -26,6 +26,20 @@ public class EventArray implements EventCollection
 	public EventArray(Event[] events)
 	{ this.events = events; }
 
-	public Iterator iterator()
+	@Override public Iterator iterator()
 	{ return new Iterator(); }
+
+	@Override public Event get(int index)
+	{ return events[index]; }
+
+	@Override public int getSize()
+	{ return events.length; }
+
+	@Override public boolean contains(Event e)
+	{
+		for (int i = 0; i < events.length; i++)
+			if (events[i] == e) // yes, this is meant to compare references
+				return true;
+		return false;
+	}
 }

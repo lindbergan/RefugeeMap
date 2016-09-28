@@ -11,4 +11,24 @@ public interface EventCollection extends Iterable<Event>
 {
 	/** Returns an iterator to the beginning of the collection. */
 	public Iterator iterator();
+
+	/**
+	 * Returns the {@link Event} at the given index.
+	 * (Note that the complexity may vary greatly with implementations.)
+	 *
+	 * Preconditions:
+	 * - {@code index} is within the bounds of the collection.
+	 */
+	public Event get(int index);
+
+	/** Returns the amount of elements in the collection. */
+	public int getSize();
+
+	/**
+	 * Returns true if the given {@link Event} exists in the collection.
+	 *
+	 * Preconditions:
+	 * - {@code e} is non-null
+	 */
+	public boolean contains(Event e);
 }
