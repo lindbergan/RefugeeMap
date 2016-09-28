@@ -14,8 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -26,10 +24,16 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
+import dat255.refugeemap.model.db.Database;
+import dat255.refugeemap.model.db.Event;
+import dat255.refugeemap.model.db.impl.DatabaseImpl;
+import dat255.refugeemap.model.db.impl.EventArray;
+import dat255.refugeemap.model.db.impl.JSONToolsImpl;
 
 
 public class GMapFragment extends Fragment
@@ -37,6 +41,9 @@ public class GMapFragment extends Fragment
 	GoogleApiClient.OnConnectionFailedListener, LocationListener,
 	GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback,
 	GoogleMap.InfoWindowAdapter {
+
+	// TODO: 2016-09-26 Build adapter that only inherits
+	// methods that we really need instead of the of every method in these interfaces
 
 	private GoogleMap mGoogleMap;
 	ReplaceWithDetailView mCallback;
@@ -46,6 +53,8 @@ public class GMapFragment extends Fragment
 	private LocationRequest mLocationRequest;
 	String lat, lon;
 	private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 20;
+	private EventArray mEventsList;
+	private Database mDatabase;
 
 	public interface ReplaceWithDetailView{
 		void onInfoWindowClicked(Marker marker);
@@ -53,10 +62,6 @@ public class GMapFragment extends Fragment
 
 	public GMapFragment(){
 
-	}
-
-	public static GMapFragment newInstance(){
-		return new GMapFragment();
 	}
 
 	@Override
@@ -71,39 +76,50 @@ public class GMapFragment extends Fragment
 		}
 	}
 
-
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		try {
+			mDatabase = new DatabaseImpl(new InputStreamReader(getResources().openRawResource(R.raw.ctgs)),
+					new InputStreamReader(getResources().openRawResource(R.raw.db)),
+					new JSONToolsImpl());
+		}
+		catch (FileNotFoundException ex) {
+			ex.printStackTrace();
+		}
+	}
 
 	@Override
 	public void onMapReady(GoogleMap googleMap){
-
 		mGoogleMap = googleMap;
 		mGoogleMap.setOnInfoWindowClickListener(this);
 		mGoogleMap.setInfoWindowAdapter(this);
-		Log.v(TAG, "mapready");
-
-
 		setCurrentPosition(mGoogleMap);
-		placeMarkers(mGoogleMap);
+		getEvents();
 	}
 
-	//should take events[] as arguments as well
-	public void placeMarkers(GoogleMap googleMap){
+	public void placeMarkers(EventArray eventsList){
+		for (Event e : eventsList) {
+			newMarker(e);
+		}
+	}
 
-		//dummy Markers
-		LatLng gbgMarker = new LatLng(57.70887000, 11.97456000);//def of GBG
-		googleMap.addMarker(new MarkerOptions() //place the marker
-			.position(gbgMarker)
-			.title("Hello world"));
+	public void newMarker(Event event) {
+		LatLng markerPosition = new LatLng(event.getLatitude(), event.getLongitude());
+		MarkerOptions properties = new MarkerOptions();
 
-		LatLng gbgMarker2 = new LatLng(57.708871000, 11.97456000);//def of GBG
-		googleMap.addMarker(new MarkerOptions()
-			.position(gbgMarker2).title("ttt")
-			.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+		properties.position(markerPosition)
+				  .title(event.getTitle())
+				  .icon(BitmapDescriptorFactory.defaultMarker());
+		// TODO: 2016-09-26 .getIcon needs to be implemented /Adrian
+
+		mGoogleMap.addMarker(properties);
 	}
 
 
 	public void setCurrentPosition(GoogleMap googleMap){
 		//TODO: set this to "currentLocation" and zoom in on that one
+
 		LatLng gbgMarker = new LatLng(57.70887000, 11.97456000);//def of GBG
 		googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(gbgMarker,15)); //zoom in on marker
 	}
@@ -172,7 +188,6 @@ public class GMapFragment extends Fragment
 
 			LocationServices.FusedLocationApi.requestLocationUpdates(this.mGoogleApiClient, mLocationRequest, this);
 
-
 			mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
 				mGoogleApiClient);
 
@@ -183,6 +198,7 @@ public class GMapFragment extends Fragment
 				lon = String.valueOf(mLastLocation.getLongitude());
 				updateUI();
 			}
+
 		} catch (SecurityException e) {
 			Log.e(TAG, e.getMessage());
 		}
@@ -208,16 +224,11 @@ public class GMapFragment extends Fragment
 	}
 
 	@Override
-	public void onConnectionSuspended(int i) {
-	}
-
-	@Override
 	public void onLocationChanged(Location location) {
 		lat = String.valueOf(location.getLatitude());
 		lon = String.valueOf(location.getLongitude());
 		//updateUI();
 	}
-
 
 	public void updateUI() {
 		Log.v(TAG, "Lat: " + lat + " Long: " + lon);
@@ -225,11 +236,9 @@ public class GMapFragment extends Fragment
 		LatLng userLocation = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));//def of GBG
 
 		this.mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userLocation, 15)); //zoom in on marker
+
 	}
 
-	@Override
-	public void onConnectionFailed(ConnectionResult connectionResult) {
-	}
 
 	@Override
 	public void onStart() {
@@ -243,11 +252,16 @@ public class GMapFragment extends Fragment
 		super.onDestroy();
 		mGoogleApiClient.disconnect();
 	}
-
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_gmap, container, false);
+	}
+
+	public void getEvents() {
+		mEventsList = (EventArray) mDatabase.getAllEvents();
+		// TODO: 2016-09-26 Change to EventCollection /Adrian
+		placeMarkers(mEventsList);
 	}
 
 	@Override
@@ -255,27 +269,19 @@ public class GMapFragment extends Fragment
 		return null;
 	}
 
-  /* Our custom implementation of the infoWindow*/
-
 	@Override
 	public View getInfoContents(Marker marker) {
+		return null;
+	}
 
-		//Fetching the custom infoView
-		View customView = getActivity().getLayoutInflater().inflate(R.layout.custom_info_window, null);
+	@Override
+	public void onConnectionFailed(ConnectionResult connectionResult) {
+	}
 
-		//extracting the text fields
-		TextView infoTitle = (TextView) customView.findViewById(R.id.info_title);
-		TextView infoTime = (TextView) customView.findViewById(R.id.info_time);
-		TextView infoCategory = (TextView) customView.findViewById(R.id.info_category);
-		TextView infoContactInfo = (TextView) customView.findViewById(R.id.info_contactInformation);
-
-		//setting the values (should be obtained from the marker we have as an input)
-		infoTitle.setText("Title");
-		infoTime.setText("17.00-18-00");
-		infoCategory.setText("Idrottsaktivitet");
-		infoContactInfo.setText("tel: 031-313131");
-
-		//returning the custom_view with the correct values for the text fields
-		return customView;
+	@Override
+	public void onConnectionSuspended(int i) {
 	}
 }
+
+
+
