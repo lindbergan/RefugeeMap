@@ -32,6 +32,9 @@ public class EventArray implements EventCollection
 	@Override public Event get(int index)
 	{ return events[index]; }
 
+	@Override public int getSize()
+	{ return events.length; }
+
 	@Override public boolean contains(Event e)
 	{
 		for (int i = 0; i < events.length; i++)

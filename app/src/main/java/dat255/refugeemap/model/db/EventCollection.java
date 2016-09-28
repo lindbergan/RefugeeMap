@@ -21,6 +21,9 @@ public interface EventCollection extends Iterable<Event>
 	 */
 	public Event get(int index);
 
+	/** Returns the amount of elements in the collection. */
+	public int getSize();
+
 	/**
 	 * Returns true if the given {@link Event} exists in the collection.
 	 *

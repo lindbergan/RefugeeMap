@@ -23,6 +23,9 @@ public class EventList implements EventCollection
 	@Override public Event get(int index)
 	{ return events.get(index); }
 
+	@Override public int getSize()
+	{ return events.size(); }
+
 	@Override public boolean contains(Event e)
 	{
 		for (Event event : events)
