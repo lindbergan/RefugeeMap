@@ -17,6 +17,17 @@ public class EventList implements EventCollection
 	public EventList(List<Event> events)
 	{ this.events = events; }
 
-	public Iterator iterator()
+	@Override public Iterator iterator()
 	{ return events.iterator(); }
+
+	@Override public Event get(int index)
+	{ return events.get(index); }
+
+	@Override public boolean contains(Event e)
+	{
+		for (Event event : events)
+			if (event == e) // yes, this is meant to compare references
+				return true;
+		return false;
+	}
 }
