@@ -34,17 +34,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import dat255.refugeemap.model.db.Database;
-import dat255.refugeemap.model.db.Event;
-import dat255.refugeemap.model.db.impl.DatabaseImpl;
-import dat255.refugeemap.model.db.impl.EventArray;
-import dat255.refugeemap.model.db.impl.JSONToolsImpl;
 
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -53,11 +47,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import dat255.refugeemap.model.db.Database;
+import dat255.refugeemap.model.db.Event;
+import dat255.refugeemap.model.db.EventCollection;
+
 public class GMapFragment extends Fragment
     implements GoogleApiClient.ConnectionCallbacks,
     GoogleApiClient.OnConnectionFailedListener, LocationListener,
     GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback,
-    GoogleMap.InfoWindowAdapter, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
+    GoogleMap.InfoWindowAdapter, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener,
+    Database.Listener{
 
         // TODO: 2016-09-26 Build adapter that only inherits
         // methods that we really need instead of the of every method in these interfaces
@@ -75,10 +74,11 @@ public class GMapFragment extends Fragment
     private final String API_KEY = "AIzaSyDUBRjMFZm7l7cvzLE1mTup3QI1qh4IoxM";
     Polyline mCurrentDirection;
     Marker mCurrentMarker;
-    private EventArray mEventsList;
+    private EventCollection mEventsList;
     private Database mDatabase;
     private String duration;
     private String distance;
+
 
 
     public interface ReplaceWithDetailView {
@@ -135,7 +135,7 @@ public class GMapFragment extends Fragment
 
     /* a method that creates markers for the desired events. Should take
     events[] as argument*/
-    public void placeMarkers(EventArray eventsList) {
+    public void placeMarkers(EventCollection eventsList) {
 
         if(eventsList != null) {
 
@@ -248,9 +248,9 @@ public class GMapFragment extends Fragment
     detailed view, with the values associated to the marker object.
     */
 	@Override
-	public void onInfoWindowClick(Marker marker) {
-            mCallback.onInfoWindowClicked(marker);
-    }
+		public void onInfoWindowClick(Marker marker) {
+				mCallback.onInfoWindowClicked(marker);
+		}
 
     public void removePreviousDirection(){
         mCurrentDirection.remove();
@@ -323,10 +323,12 @@ public class GMapFragment extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            mDatabase = new DatabaseImpl(new InputStreamReader(getResources().openRawResource(R.raw.ctgs)),
-                new InputStreamReader(getResources().openRawResource(R.raw.db)),
-                new JSONToolsImpl());
+
+				try {
+            AppDatabase.init(new InputStreamReader(getResources().openRawResource(R.raw.ctgs)),
+                new InputStreamReader(getResources().openRawResource(R.raw.db)));
+            mDatabase=AppDatabase.getDatabaseInstance();
+            AppDatabase.addListener(this);
         }
         catch (FileNotFoundException ex) {
             ex.printStackTrace();
@@ -600,7 +602,7 @@ public class GMapFragment extends Fragment
 	}
 
 	public void getEvents() {
-		mEventsList = (EventArray) mDatabase.getAllEvents();
+		mEventsList = (EventCollection) mDatabase.getAllEvents();
 		// TODO: 2016-09-26 Change to EventCollection /Adrian
 
 		placeMarkers(mEventsList);
@@ -648,6 +650,13 @@ public class GMapFragment extends Fragment
 	@Override
 	public void onConnectionSuspended(int i) {
 	}
+
+  @Override
+  public void onDatabaseUpdated(EventCollection newEvents){
+    mGoogleMap.clear();
+    mEventsList=newEvents;
+    placeMarkers(mEventsList);
+  }
 }
 
 

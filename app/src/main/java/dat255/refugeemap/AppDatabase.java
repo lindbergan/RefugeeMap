@@ -2,9 +2,11 @@ package dat255.refugeemap;
 
 import java.io.FileNotFoundException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
 
 import dat255.refugeemap.model.db.Database;
+import dat255.refugeemap.model.db.EventCollection;
 import dat255.refugeemap.model.db.impl.DatabaseImpl;
 import dat255.refugeemap.model.db.impl.JSONToolsImpl;
 
@@ -19,7 +21,7 @@ public class AppDatabase
 		"'AppDatabase.init' must be called before 'getDatabaseInstance'";
 
 	private static Database db = null;
-	private static List<Database.Listener> listeners;
+	private static List<Database.Listener> listeners=new ArrayList<Database.Listener>();
 
 	/**
 	 * Must be called before {@code getDatabaseInstance}
@@ -71,4 +73,9 @@ public class AppDatabase
 
 	public static void addListener(Database.Listener l)
 	{ listeners.add(l); }
+
+	public static void updateListeners(EventCollection newEvents){
+		for (Database.Listener listener : listeners)
+			listener.onDatabaseUpdated(newEvents);
+	}
 }
