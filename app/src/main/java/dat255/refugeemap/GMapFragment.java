@@ -28,7 +28,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -48,7 +47,6 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -79,6 +77,8 @@ public class GMapFragment extends Fragment
     Marker mCurrentMarker;
     private EventArray mEventsList;
     private Database mDatabase;
+    private String duration;
+    private String distance;
 
 
     public interface ReplaceWithDetailView {
@@ -192,13 +192,20 @@ public class GMapFragment extends Fragment
     @Override
     public void onMapClick(LatLng latLng) {
 
-        //remove the "directions" button & the previous direction when user clicks on map
-        Button directionButton = (Button) getActivity().findViewById(R.id.directions_button);
-        directionButton.setVisibility(View.GONE);
+        //remove the "directions" button and corresponding textfield & the previous direction when user clicks on map
+        hideDirectionViews();
 
         if (mCurrentDirection != null){
             removePreviousDirection();
         }
+    }
+
+    public void hideDirectionViews(){
+        Button directionButton = (Button) getActivity().findViewById(R.id.directions_button);
+        directionButton.setVisibility(View.GONE);
+
+        TextView timeAndDistance = (TextView) getActivity().findViewById(R.id.info_time_and_distance);
+        timeAndDistance.setVisibility(View.GONE);
     }
 
     /* A method that shows the "directions" button as well as the custom infoWindow when user clicks on marker */
@@ -233,7 +240,7 @@ public class GMapFragment extends Fragment
         LatLng destinationLatLng = mCurrentMarker.getPosition();
         String transportation = "WillNotImplementRightNow";
 
-        showDestination(originLatLng , destinationLatLng, transportation);
+        showDestination(originLatLng, destinationLatLng, transportation);
     }
 
     /* When the infoWindow is clicked, we send a notification about which marker
@@ -407,7 +414,8 @@ public class GMapFragment extends Fragment
         }
 
         // Executes in UI thread, after the parsing process
-        /* Courtesy: http://www.androidtutorialpoint.com/intermediate/google-maps-draw-path-two-points-using-google-directions-google-map-android-api-v2/ */
+        /* Courtesy: http://www.androidtutorialpoint.com/intermediate/google-maps-draw-path-two-points-using-google-directions-google-map-android-api-v2/
+         * && http://androidmapv2.blogspot.se/2013/11/driving-distance-and-travel-time.html  */
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
 
@@ -426,6 +434,14 @@ public class GMapFragment extends Fragment
                 for (int j = 0; j < path.size(); j++) {
                     HashMap<String, String> point = path.get(j);
 
+                    if(j==0){    // Get distance from the list
+                        distance = (String)point.get("distance");
+                        continue;
+                    }else if(j==1){ // Get duration from the list
+                        duration = (String)point.get("duration");
+                        continue;
+                    }
+
                     double lat = Double.parseDouble(point.get("lat"));
                     double lng = Double.parseDouble(point.get("lng"));
                     LatLng position = new LatLng(lat, lng);
@@ -439,18 +455,24 @@ public class GMapFragment extends Fragment
                 lineOptions.color(Color.RED);
 
                 Log.d("onPostExecute","onPostExecute lineoptions decoded");
-
             }
 
             // Drawing polyline in the Google Map for the i-th route
             if(lineOptions != null) {
 
                 mCurrentDirection = mGoogleMap.addPolyline(lineOptions);
+                setDurationAndDistanceText();
             }
             else {
                 Log.d("onPostExecute","without Polylines drawn");
             }
         }
+    }
+
+    public void setDurationAndDistanceText(){
+        TextView timeAndDistance = (TextView) getActivity().findViewById(R.id.info_time_and_distance);
+        timeAndDistance.setText("Distance: " + distance + " Duration:" + duration);
+        timeAndDistance.setVisibility(View.VISIBLE);
     }
 
 
