@@ -33,6 +33,7 @@ public class AppDatabase
 	public static void init(String ctgNamesFilePath, String eventsFilePath)
 		throws FileNotFoundException
 	{
+		if (db == null) return;
 		db = new DatabaseImpl(ctgNamesFilePath, eventsFilePath,
 			new JSONToolsImpl());
 	}
@@ -49,13 +50,10 @@ public class AppDatabase
 	public static void init(Reader ctgNamesReader, Reader eventsReader)
 		throws FileNotFoundException
 	{
+		if (db != null) return;
 		db = new DatabaseImpl(ctgNamesReader, eventsReader,
 			new JSONToolsImpl());
 	}
-
-	/** Returns true iff {@code init} has been called. */
-	public static boolean hasBeenInitialized()
-	{ return (db == null); }
 
 	/**
 	 * Returns a reference to the created {@link Database} instance.
