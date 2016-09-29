@@ -8,6 +8,11 @@ package dat255.refugeemap.model.db;
  */
 public interface Database
 {
+	public static interface Listener
+	{
+		public void onDatabaseUpdated();
+	}
+
 	/**
 	 * Returns a collection of references to all the
 	 * {@link Event} instances in the database.

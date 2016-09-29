@@ -27,23 +27,19 @@ public class DatabaseImpl implements Database
 	public DatabaseImpl(String ctgNamesFilePath, String eventsFilePath,
 		JSONTools json) throws FileNotFoundException
 	{
-		this(
-			(String[])(json.deserializeFile(ctgNamesFilePath, String[].class)),
-			new EventArray((EventImpl[])(
-				json.deserializeFile(eventsFilePath, EventImpl[].class))
-			)
-		);
+		this.categoryNames = (String[])(json.
+			deserializeFile(ctgNamesFilePath, String[].class));
+		this.events = new EventArray((EventImpl[])(json.
+			deserializeFile(eventsFilePath, EventImpl[].class)));
 	}
 
 	public DatabaseImpl(Reader ctgNamesReader, Reader eventsReader,
 		JSONTools json) throws FileNotFoundException
 	{
-		this(
-			(String[])(json.deserializeFile(ctgNamesReader, String[].class)),
-			new EventArray((EventImpl[])(
-				json.deserializeFile(eventsReader, EventImpl[].class))
-			)
-		);
+		this.categoryNames = (String[])(json.
+			deserializeFile(ctgNamesReader, String[].class));
+		this.events = new EventArray((EventImpl[])(json.
+			deserializeFile(eventsReader, EventImpl[].class)));
 	}
 
 	@Override public EventCollection getAllEvents()
