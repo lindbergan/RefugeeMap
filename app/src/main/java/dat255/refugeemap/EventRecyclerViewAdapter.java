@@ -6,13 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.List;
-
 import dat255.refugeemap.EventListFragment.OnListFragmentInteractionListener;
-import dat255.refugeemap.StaticContent.StaticItem;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
-import dat255.refugeemap.model.db.impl.EventList;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link dat255.refugeemap.model.db.Event} and makes a call to the
@@ -22,7 +18,7 @@ import dat255.refugeemap.model.db.impl.EventList;
 public class EventRecyclerViewAdapter
 	extends RecyclerView.Adapter<EventRecyclerViewAdapter.ViewHolder> {
 
-	private final EventCollection mEvents;
+	private EventCollection mEvents;
 	private final OnListFragmentInteractionListener mListener;
 
 	public EventRecyclerViewAdapter(EventCollection events,
@@ -59,6 +55,10 @@ public class EventRecyclerViewAdapter
 	@Override
 	public int getItemCount() {
 		return mEvents.getSize();
+	}
+
+	public void setEvents(EventCollection newEvents){
+		mEvents=newEvents;
 	}
 
 	public class ViewHolder extends RecyclerView.ViewHolder {

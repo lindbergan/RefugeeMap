@@ -10,7 +10,7 @@ public interface Database
 {
 	public static interface Listener
 	{
-		public void onDatabaseUpdated();
+		public void onDatabaseUpdated(EventCollection newEvents);
 	}
 
 	/**

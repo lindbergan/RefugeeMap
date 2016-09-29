@@ -2,7 +2,6 @@ package dat255.refugeemap;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,28 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.gson.reflect.TypeToken;
-
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.InputStreamReader;
 
-import dat255.refugeemap.StaticContent.StaticItem;
-import dat255.refugeemap.helpers.AssetsHelper;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
-import dat255.refugeemap.model.db.JSONTools;
-import dat255.refugeemap.model.db.impl.DatabaseImpl;
-import dat255.refugeemap.model.db.impl.EventArray;
-import dat255.refugeemap.model.db.impl.EventList;
-import dat255.refugeemap.model.db.impl.JSONToolsImpl;
 
 /**
  * A fragment representing a list of Items.
@@ -41,12 +24,17 @@ import dat255.refugeemap.model.db.impl.JSONToolsImpl;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class EventListFragment extends Fragment {
+public class EventListFragment extends Fragment implements Database.Listener{
 	private int mColumnCount = 1;
 	private static final String TAG = "EventListFragment";
 
 	private OnListFragmentInteractionListener mListener;
 
+	private Database mDatabase;
+
+	private EventRecyclerViewAdapter eventRecycler;
+
+	private RecyclerView recyclerView;
 	/**
 	 * Mandatory empty constructor for the fragment manager to instantiate the
 	 * fragment.
@@ -72,30 +60,24 @@ public class EventListFragment extends Fragment {
 		// Set the adapter
 		if (view instanceof RecyclerView) {
 			Context context = view.getContext();
-			RecyclerView recyclerView = (RecyclerView) view;
+			recyclerView = (RecyclerView) view;
 			if (mColumnCount <= 1) {
 				recyclerView.setLayoutManager(new LinearLayoutManager(context));
 			} else {
 				recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
 			}
 
-			// Get path to local json databases
-			String categoriesJsonFilePath = AssetsHelper.getAssetFilePath("categories.json", this.getActivity());
-			String eventsJsonFilePath = AssetsHelper.getAssetFilePath("events.json", this.getActivity());
-			JSONTools jsonTools = new JSONToolsImpl();
-
-			List<Event> events = new ArrayList<>();
-			EventCollection eventCollection = new EventList(events);
-
 			// Create new database instance and fetch categories and events
 			try {
-				Database db = new DatabaseImpl(categoriesJsonFilePath, eventsJsonFilePath, jsonTools);
-				eventCollection = db.getAllEvents();
+				AppDatabase.init(new InputStreamReader(getResources().openRawResource(R.raw.ctgs)),
+								new InputStreamReader(getResources().openRawResource(R.raw.db)));
+				mDatabase=AppDatabase.getDatabaseInstance();
 			} catch (FileNotFoundException e) {
 				Log.v(TAG, "Database file not found: " + e.getMessage());
 			}
-
-			recyclerView.setAdapter(new EventRecyclerViewAdapter(eventCollection, mListener));
+			eventRecycler = new EventRecyclerViewAdapter(mDatabase.getAllEvents(), mListener);
+			recyclerView.setAdapter(eventRecycler);
+			AppDatabase.addListener(this);
 		}
 		return view;
 	}
@@ -126,5 +108,11 @@ public class EventListFragment extends Fragment {
 	 */
 	public interface OnListFragmentInteractionListener {
 		void onListFragmentInteraction(Event item);
+	}
+
+	@Override
+	public void onDatabaseUpdated(EventCollection newEvents){
+		eventRecycler.setEvents(newEvents);
+		recyclerView.invalidate();
 	}
 }
