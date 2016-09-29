@@ -33,7 +33,7 @@ public class AppDatabase
 	public static void init(String ctgNamesFilePath, String eventsFilePath)
 		throws FileNotFoundException
 	{
-		if (db == null) return;
+		if (db != null) return;
 		db = new DatabaseImpl(ctgNamesFilePath, eventsFilePath,
 			new JSONToolsImpl());
 	}
