@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity
 						Collection<String> searchTerms = Arrays.asList(input.split(" "));
 						FilterImpl filter = new FilterImpl(new ArrayList<Integer>(), searchTerms);
 						EventCollection newEvents = mDatabase.getEventsByFilter(filter);
-						AppDatabase.updateListeners(newEvents);
+						AppDatabase.updateVisibleEvents(newEvents);
 						toggleSearchFocus(v);
 				}
 				return true;
@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	@Override
-	public void onDatabaseUpdated(EventCollection newEvents) {
+	public void onVisibleEventsChanged(EventCollection newEvents) {
 
 	}
 

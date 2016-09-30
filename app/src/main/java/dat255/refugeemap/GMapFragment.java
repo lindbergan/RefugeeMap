@@ -653,7 +653,7 @@ public class GMapFragment extends Fragment
 	}
 
   @Override
-  public void onDatabaseUpdated(EventCollection newEvents){
+  public void onVisibleEventsChanged(EventCollection newEvents){
     mGoogleMap.clear();
     mEventsList=newEvents;
     placeMarkers(mEventsList);
