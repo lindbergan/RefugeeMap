@@ -2,12 +2,21 @@ package dat255.refugeemap.detailView;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
+
+import java.util.Objects;
 
 import dat255.refugeemap.R;
 
@@ -26,13 +35,16 @@ public class DetailFragment extends Fragment {
 	private static final String ARG_DESCRIPTION = "description";
 	private static final String ARG_PHONENBR = "phoneNumber";
 	private static final String ARG_DATE = "date";
+    private static final String ARG_ID = "id";
 
 	private String title;
 	private String organization;
 	private String description;
 	private String phoneNumber;
 	private String date;
+    private String id;
 
+	private ImageButton saveButton;
 	private OnFragmentInteractionListener mListener;
 
 
@@ -55,6 +67,7 @@ public class DetailFragment extends Fragment {
 		args.putString(ARG_DESCRIPTION, data[2]);
 		args.putString(ARG_PHONENBR, data[3]);
 		args.putString(ARG_DATE, data[4]);
+        args.putString(ARG_ID, data[5]);
 		fragment.setArguments(args);
 		return fragment;
 	}
@@ -68,6 +81,7 @@ public class DetailFragment extends Fragment {
 			description = getArguments().getString(ARG_DESCRIPTION);
 			phoneNumber = getArguments().getString(ARG_PHONENBR);
 			date = getArguments().getString(ARG_DATE);
+            id = getArguments().getString(ARG_ID);
 
 		}
 	}
@@ -86,13 +100,46 @@ public class DetailFragment extends Fragment {
 		((TextView) rootView.findViewById(R.id.descTextView)).setText(description);
 		((TextView) rootView.findViewById(R.id.phoneTextView)).setText(phoneNumber);
 		((TextView) rootView.findViewById(R.id.dateTextView)).setText(date);
+        saveButton = (ImageButton) rootView.findViewById(R.id.saveButton);
+
+		setUpSaveButton();
+
 		return rootView;
 	}
 
-	public void onButtonPressed(Uri uri) {
-		if (mListener != null) {
-			mListener.onFragmentInteraction(uri);
+
+	public void setUpSaveButton(){
+		if(mListener.isEventSaved(this.id)){
+			saveButton.setBackgroundResource(R.drawable.ic_remove_circle_black_48dp);
+		}else{
+			saveButton.setBackgroundResource(R.drawable.ic_add_circle_black_48dp);
 		}
+		saveButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				onButtonPressed(getString(R.string.save_event_button_clicked));
+			}
+		});
+	}
+
+	public void onButtonPressed(String action) {
+        if(mListener != null && action == getString(R.string.save_event_button_clicked)) {
+
+            boolean actionSuccessful = mListener.onSaveEventButtonPressed(this.id);
+
+				if(actionSuccessful){
+					if(mListener.isEventSaved(this.id)){
+
+                        saveButton.setBackgroundResource(R.drawable.ic_remove_circle_black_48dp);
+					    Toast.makeText(getActivity().getApplicationContext(), "Event saved", Toast.LENGTH_SHORT).show();
+                    }else{
+						saveButton.setBackgroundResource(R.drawable.ic_add_circle_black_48dp);
+						Toast.makeText(getActivity().getApplicationContext(), "Event removed", Toast.LENGTH_SHORT).show();
+					}
+				}else{
+                    Toast.makeText(getActivity().getApplicationContext(), "Action failed", Toast.LENGTH_SHORT).show();
+				}
+            }
 	}
 
 	@Override
@@ -123,7 +170,8 @@ public class DetailFragment extends Fragment {
 	 * >Communicating with Other Fragments</a> for more information.
 	 */
 	public interface OnFragmentInteractionListener {
-		void onFragmentInteraction(Uri uri);
+		boolean onSaveEventButtonPressed(String id);
+		boolean isEventSaved(String id);
 	}
 
 }

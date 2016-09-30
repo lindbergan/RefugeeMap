@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">RefugeeMap</string>
     <string name="title_activity_dummy">DummyActivity</string>
+
     <string name="path_ctgs.json">src/main/java/dat255/refugeemap/ctgs.json</string>
     <string name="path_db.json">src/main/java/dat255/refugeemap/db.json</string>
+
+    <string name="save_event_button_clicked">SAVE_BUTTON_CLICKED</string>
+    <string name="saved_events_key">SAVED_EVENTS</string>
+
 </resources>
