@@ -2,17 +2,36 @@ package dat255.refugeemap;
 
 import android.app.FragmentManager;
 import android.content.Context;
+
+
 import android.graphics.Rect;
+
+import android.content.SharedPreferences;
+
+
+import android.content.SharedPreferences;
+
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.content.res.ResourcesCompat;
+
+
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+
+import android.util.ArraySet;
+
+
+
+
+import android.util.ArraySet;
+
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -24,11 +43,19 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.Marker;
 
+
+
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+
+
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+
 
 import dat255.refugeemap.detailView.DetailFragment;
 import dat255.refugeemap.model.db.Database;
@@ -86,7 +113,8 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public void onInfoWindowClicked(Marker marker) {
 
-		fm.beginTransaction().replace(R.id.fragment_container, DetailFragment.newInstance(new String[]{"title", "org", "description", "phone", "date"})).commit();
+		fm.beginTransaction().replace(R.id.fragment_container, DetailFragment.
+				newInstance(new String[]{"title", "org", "description", "phone", "date", Integer.toString(2) })).commit();
 
 	}
 
@@ -114,7 +142,8 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public void onListFragmentInteraction(Event item){
 
-		fm.beginTransaction().replace(R.id.fragment_container, DetailFragment.newInstance(new String[]{"title", "org", "description", "phone", "date"})).commit();
+		fm.beginTransaction().replace(R.id.fragment_container, DetailFragment.
+				newInstance(new String[]{"title", "org", "description", "phone", "date", Integer.toString(3)})).commit();
 
 	}
 
@@ -139,10 +168,6 @@ public class MainActivity extends AppCompatActivity
 		});
 	}
 
-	@Override
-	public void onFragmentInteraction(Uri uri) {
-		
-  }
 
 	/*
 	Activates and focuses search EditText
@@ -170,6 +195,7 @@ public class MainActivity extends AppCompatActivity
 	* Evaluates whether the user has clicked outside the search EditText
 	 */
 	@Override
+
 	public boolean dispatchTouchEvent(MotionEvent event) {
 		if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			View v = getCurrentFocus();
@@ -210,7 +236,52 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	@Override
-	public void onDatabaseUpdated(EventCollection newEvents){
+	public void onDatabaseUpdated(EventCollection newEvents) {
 
 	}
+
+	@Override
+	public boolean onSaveEventButtonPressed(String id) {
+
+        SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        
+        //creates new TreeSet if no Set already linked to key
+        Set<String> savedEvents = prefs.getStringSet(getString(R.string.saved_events_key), new TreeSet<String>());
+        Set<String> updatedEventList = new TreeSet<>(savedEvents);
+
+        if(!savedEvents.contains(id)){
+            updatedEventList.add(id);
+            editor.putStringSet(getString(R.string.saved_events_key), updatedEventList);
+        }else{
+            updatedEventList.remove(id);
+			editor.putStringSet(getString(R.string.saved_events_key), updatedEventList);
+
+        }
+
+        return editor.commit(); //returns true if values was successfully updated
+	}
+
+
+
+
+	@Override
+	public boolean isEventSaved(String id){
+
+		try {
+			SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+			return prefs.getStringSet(getString(R.string.saved_events_key), null).contains(id);
+		}catch(NullPointerException e){
+			return false;
+		}
+
+	}
+
+
+
 }
+
+
+
+
+
