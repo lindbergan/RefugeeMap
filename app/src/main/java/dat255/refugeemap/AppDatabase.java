@@ -21,7 +21,7 @@ public class AppDatabase
 		"'AppDatabase.init' must be called before 'getDatabaseInstance'";
 
 	private static Database db = null;
-	private static List<Database.Listener> listeners=new ArrayList<Database.Listener>();
+	private static List<Database.Listener> listeners = new ArrayList<>();
 
 	/**
 	 * Must be called before {@code getDatabaseInstance}
@@ -74,8 +74,9 @@ public class AppDatabase
 	public static void addListener(Database.Listener l)
 	{ listeners.add(l); }
 
-	public static void updateListeners(EventCollection newEvents){
-		for (Database.Listener listener : listeners)
-			listener.onDatabaseUpdated(newEvents);
+	public static void updateVisibleEvents(EventCollection newEvents)
+	{
+		for (Database.Listener l : listeners)
+			l.onVisibleEventsChanged(newEvents);
 	}
 }

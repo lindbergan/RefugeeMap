@@ -10,7 +10,12 @@ public interface Database
 {
 	public static interface Listener
 	{
-		public void onDatabaseUpdated(EventCollection newEvents);
+		/**
+		 * Called when the collection of 'visible events' changes
+		 * (i.e. when either {@code Event.getAllEvents} or
+		 * {@code Event.getEventsByFilter} is called).
+		 */
+		public void onVisibleEventsChanged(EventCollection newEvents);
 	}
 
 	/**
