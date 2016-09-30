@@ -1,5 +1,7 @@
 package dat255.refugeemap;
 
+import android.Manifest;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Context;
 
@@ -15,9 +17,8 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.res.ResourcesCompat;
-
-
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -43,8 +44,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.Marker;
 
-
-
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -65,6 +64,8 @@ import dat255.refugeemap.model.db.impl.DatabaseImpl;
 import dat255.refugeemap.model.db.impl.FilterImpl;
 import dat255.refugeemap.model.db.impl.JSONToolsImpl;
 
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
 
 public class MainActivity extends AppCompatActivity
 	implements EventListFragment.OnListFragmentInteractionListener,
@@ -75,6 +76,10 @@ public class MainActivity extends AppCompatActivity
 	private Toolbar toolbar;
 	private ImageButton mButton;
 	private String ACTIVE_FRAGMENT;
+	private final int MAP_FRAGMENT = 0;
+	private final int LIST_FRAGMENT = 1;
+	private final int DETAIL_FRAGMENT = 2;
+	private Fragment[] currentFragments = new Fragment[3];
 
 	private EditText searchEdit;
 	private InputMethodManager inputManager;
@@ -89,8 +94,11 @@ public class MainActivity extends AppCompatActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		toolbar = (Toolbar) findViewById(R.id.tool_bar);
+    ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+    while (PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)){
+      System.out.println(""+ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION));
+    }
+    toolbar = (Toolbar) findViewById(R.id.tool_bar);
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -113,37 +121,48 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public void onInfoWindowClicked(Marker marker) {
 
-		fm.beginTransaction().replace(R.id.fragment_container, DetailFragment.
-				newInstance(new String[]{"title", "org", "description", "phone", "date", Integer.toString(2) })).commit();
+    String tempValues[] = {"title", "org", "description", "phone", "date", Integer.toString(2)};
+    Fragment frag = DetailFragment.newInstance(tempValues);
+    fm.beginTransaction().add(R.id.fragment_container, frag).hide(currentFragments[MAP_FRAGMENT]).commit();
+    currentFragments[DETAIL_FRAGMENT] = frag;
 
 	}
 
 	public void showEventList(){
 		if (ACTIVE_FRAGMENT.equals(GMapFragment.class.getSimpleName())) {
 			FragmentManager fm = getFragmentManager();
-			fm.beginTransaction().replace(R.id.fragment_container, new EventListFragment()).commit();
+			Fragment frag = currentFragments[LIST_FRAGMENT];
+			fm.beginTransaction().show(frag).hide(currentFragments[MAP_FRAGMENT]).commit();
 			ACTIVE_FRAGMENT = EventListFragment.class.getSimpleName();
 		}
 
 		else if (ACTIVE_FRAGMENT.equals(EventListFragment.class.getSimpleName())) {
 			FragmentManager fm = getFragmentManager();
-			fm.beginTransaction().replace(R.id.fragment_container, new GMapFragment()).commit();
+			Fragment frag = currentFragments[MAP_FRAGMENT];
+			fm.beginTransaction().show(frag).hide(currentFragments[LIST_FRAGMENT]).commit();
 			ACTIVE_FRAGMENT = GMapFragment.class.getSimpleName();
 		}
 	}
 
 	public void firstStart() {
 		FragmentManager fm = getFragmentManager();
+		Fragment mapFrag = new GMapFragment();
+    Fragment listFrag = new EventListFragment();
 		initializeViews(findViewById(R.id.main_layout));
-		fm.beginTransaction().replace(R.id.fragment_container, new GMapFragment()).commit();
+		fm.beginTransaction().add(R.id.fragment_container, mapFrag)
+      .add(R.id.fragment_container, listFrag).hide(listFrag).show(mapFrag).commit();
+		currentFragments[MAP_FRAGMENT] = mapFrag;
+    currentFragments[LIST_FRAGMENT] = listFrag;
 		ACTIVE_FRAGMENT = GMapFragment.class.getSimpleName();
 	}
 
 	@Override
 	public void onListFragmentInteraction(Event item){
 
-		fm.beginTransaction().replace(R.id.fragment_container, DetailFragment.
-				newInstance(new String[]{"title", "org", "description", "phone", "date", Integer.toString(3)})).commit();
+
+		Fragment frag = DetailFragment.newInstance(new String[]{"title", "org", "description", "phone", "date", Integer.toString(3)});
+		fm.beginTransaction().add(R.id.fragment_container, frag).hide(currentFragments[LIST_FRAGMENT]).commit();
+		currentFragments[DETAIL_FRAGMENT] = frag;
 
 	}
 
@@ -235,6 +254,12 @@ public class MainActivity extends AppCompatActivity
 		Toast.makeText(this, "You clicked menu!", Toast.LENGTH_SHORT).show();
 	}
 
+  public void centerOnMap(View view){
+      fm.beginTransaction().remove(currentFragments[DETAIL_FRAGMENT]).
+        show(currentFragments[MAP_FRAGMENT]).commit();
+      ((GMapFragment)currentFragments[MAP_FRAGMENT]).setCurrentPosition();
+    }
+
 	@Override
 	public void onVisibleEventsChanged(EventCollection newEvents) {
 
@@ -245,7 +270,7 @@ public class MainActivity extends AppCompatActivity
 
         SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        
+
         //creates new TreeSet if no Set already linked to key
         Set<String> savedEvents = prefs.getStringSet(getString(R.string.saved_events_key), new TreeSet<String>());
         Set<String> updatedEventList = new TreeSet<>(savedEvents);

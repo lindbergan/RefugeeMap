@@ -21,6 +21,15 @@
 
 
             />
+        <ImageButton
+            android:layout_width="43dp"
+            android:layout_height="43dp"
+            app:srcCompat="@android:drawable/ic_menu_add"
+            android:id="@+id/backButton"
+            android:background="@color/colorPrimaryDark"
+            android:layout_gravity="center_horizontal"
+            android:onClick="centerOnMap"
+            />
 
         <TextView
             android:id="@+id/titleTextView"
@@ -62,6 +71,8 @@
             android:layout_height="104dp"
             android:text="tempDesc"
             android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
+
+
 
 
     </LinearLayout>

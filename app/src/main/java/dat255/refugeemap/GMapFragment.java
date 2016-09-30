@@ -438,10 +438,10 @@ public class GMapFragment extends Fragment
                     HashMap<String, String> point = path.get(j);
 
                     if(j==0){    // Get distance from the list
-                        distance = (String)point.get("distance");
+                        distance = point.get("distance");
                         continue;
                     }else if(j==1){ // Get duration from the list
-                        duration = (String)point.get("duration");
+                        duration = point.get("duration");
                         continue;
                     }
 
@@ -603,7 +603,7 @@ public class GMapFragment extends Fragment
 	}
 
 	public void getEvents() {
-		mEventsList = (EventCollection) mDatabase.getAllEvents();
+		mEventsList = mDatabase.getAllEvents();
 		// TODO: 2016-09-26 Change to EventCollection /Adrian
 
 		placeMarkers(mEventsList);
