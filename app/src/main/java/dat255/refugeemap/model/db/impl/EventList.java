@@ -1,7 +1,7 @@
 package dat255.refugeemap.model.db.impl;
 
 import java.text.Collator;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import dat255.refugeemap.model.db.Event;
@@ -13,13 +13,25 @@ import dat255.refugeemap.model.db.EventCollection;
  */
 public class EventList implements EventCollection
 {
+	/** A custom (immutable) iterator for {@link Event} lists. */
+	public class Iterator implements java.util.Iterator<Event>
+	{
+		private java.util.Iterator<Event> it = events.iterator();
+
+		public boolean hasNext()
+		{ return it.hasNext(); }
+
+		public Event next()
+		{ return it.next(); }
+	}
+
 	private List<Event> events;
 
 	public EventList(List<Event> events)
 	{ this.events = events; }
 
 	@Override public Iterator iterator()
-	{ return events.iterator(); }
+	{ return new Iterator(); }
 
 	@Override public Event get(int index)
 	{ return events.get(index); }

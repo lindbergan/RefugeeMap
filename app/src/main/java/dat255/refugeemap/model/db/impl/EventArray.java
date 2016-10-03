@@ -12,7 +12,7 @@ import dat255.refugeemap.model.db.EventCollection;
  */
 public class EventArray implements EventCollection
 {
-	/** A custom iterator for {@link Event} arrays. */
+	/** A custom (immutable) iterator for {@link Event} arrays. */
 	public class Iterator implements java.util.Iterator<Event>
 	{
 		private int index = 0;
