@@ -224,8 +224,9 @@ public class MainActivity extends AppCompatActivity
 	public void toggleSearchFocus(View v) {
 		long currentTime = SystemClock.elapsedRealtime();
 		if (this.searchBtn.isEnabled() &&
-				// Check if last click time was too recent in order to avoid accidental double-click
-				currentTime - lastSearchClickTime > clickThreshold) {
+						// Check if last click time was too recent in order to avoid accidental double-click
+						currentTime - lastSearchClickTime > clickThreshold){
+			AppDatabase.updateVisibleEvents(mDatabase.getAllEvents());
 			this.searchEdit.setVisibility(View.VISIBLE);
 			this.searchEdit.requestFocus();
 			this.logo.setVisibility(View.GONE);
