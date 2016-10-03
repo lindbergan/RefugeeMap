@@ -38,16 +38,16 @@ public interface EventCollection extends Iterable<Event>
 	 * Returns true if the given {@link Event} exists in the collection.
 	 *
 	 * Preconditions:
-	 * - {@code e} is non-null
+	 * - All arguments are non-null
 	 */
 	public boolean contains(Event e);
 
 	/**
-	 * Sorts the {@link Event} instances according to the given sort criteria.
-	 * If the sorting requires string comparison, {@code strCollator} is used.
+	 * Sorts the collection according to {@code sc}.
+	 * {@code strCol} is used if the sorting requires string comparison.
 	 *
 	 * Preconditions:
 	 * - All arguments are non-null
 	 */
-	public void sort(SortCriteria criteria, Collator strCollator);
+	public void sort(SortCriteria sc, Collator strCol);
 }
