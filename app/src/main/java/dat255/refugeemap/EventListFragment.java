@@ -113,6 +113,6 @@ public class EventListFragment extends Fragment implements AppDatabase.Listener{
 	@Override
 	public void onVisibleEventsChanged(EventCollection newEvents){
 		eventRecycler.setEvents(newEvents);
-		recyclerView.invalidate();
+		eventRecycler.notifyDataSetChanged();
 	}
 }
