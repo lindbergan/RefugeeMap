@@ -1,14 +1,23 @@
 package dat255.refugeemap;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicIntegerArray;
+
 import dat255.refugeemap.EventListFragment.OnListFragmentInteractionListener;
+import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
+
+import static android.graphics.Color.GREEN;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link dat255.refugeemap.model.db.Event} and makes a call to the
@@ -20,11 +29,44 @@ public class EventRecyclerViewAdapter
 
 	private EventCollection mEvents;
 	private final OnListFragmentInteractionListener mListener;
+	private HashMap<String, Integer> listItemColor = new HashMap<>();
 
 	public EventRecyclerViewAdapter(EventCollection events,
 									OnListFragmentInteractionListener listener) {
 		mEvents = events;
 		mListener = listener;
+		initListItemColors();
+	}
+
+	/**
+	 * Set the colors or drawables that we want to use here
+	 */
+
+	public void initListItemColors() {
+		Database database = AppDatabase.getDatabaseInstance();
+		listItemColor.put(database.getCategoryName(0), Color.RED);
+		listItemColor.put(database.getCategoryName(1), Color.GREEN);
+		listItemColor.put(database.getCategoryName(2), Color.BLUE);
+	}
+
+	/**
+	 * If mItem has > 1 categories the layout gets a gradient with corresponding colors
+	 */
+
+	private void setListItemColor(final ViewHolder holder) {
+		Database database = AppDatabase.getDatabaseInstance();
+		int[] tempArray = new int[holder.mItem.getCategories().length];
+
+		for (int i  = 0; i < holder.mItem.getCategories().length; i++) {
+			if (holder.mItem.getCategories().length > 1) {
+				tempArray[i] = listItemColor.get(database.getCategoryName(holder.mItem.getCategories()[i]));
+				holder.mLayout.setBackground(new GradientDrawable(GradientDrawable.Orientation.TR_BL, tempArray));
+			}
+			else {
+				holder.mLayout.setBackgroundColor(listItemColor.get(database.getCategoryName(holder.mItem.getCategories()[i])));
+			}
+		}
+
 	}
 
 
@@ -50,6 +92,7 @@ public class EventRecyclerViewAdapter
 				}
 			}
 		});
+		setListItemColor(holder);
 	}
 
 	@Override
@@ -63,6 +106,7 @@ public class EventRecyclerViewAdapter
 
 	public class ViewHolder extends RecyclerView.ViewHolder {
 		public final View mView;
+		public final LinearLayout mLayout;
 		public final TextView mIdView;
 		public final TextView mContentView;
 		public Event mItem;
@@ -70,6 +114,7 @@ public class EventRecyclerViewAdapter
 		public ViewHolder(View view) {
 			super(view);
 			mView = view;
+			mLayout = (LinearLayout) view.findViewById(R.id.list_item_layout);
 			mIdView = (TextView) view.findViewById(R.id.id);
 			mContentView = (TextView) view.findViewById(R.id.content);
 		}

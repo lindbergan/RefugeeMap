@@ -17,6 +17,8 @@ import java.io.InputStreamReader;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
+import dat255.refugeemap.model.db.Filter;
+import dat255.refugeemap.model.db.impl.FilterImpl;
 
 /**
  * A fragment representing a list of Items.
@@ -75,11 +77,23 @@ public class EventListFragment extends Fragment implements AppDatabase.Listener{
 			} catch (FileNotFoundException e) {
 				Log.v(TAG, "Database file not found: " + e.getMessage());
 			}
-			eventRecycler = new EventRecyclerViewAdapter(mDatabase.getAllEvents(), mListener);
+			eventRecycler = fillListFragment();
 			recyclerView.setAdapter(eventRecycler);
 			AppDatabase.addListener(this);
 		}
 		return view;
+	}
+
+	public EventRecyclerViewAdapter fillListFragment() {
+		return new EventRecyclerViewAdapter(mDatabase.getAllEvents(), mListener);
+	}
+
+	/**
+	 * Will fill the listview with events matching a color (category)
+	 */
+
+	public EventRecyclerViewAdapter fillListFragment(Filter filter) {
+		return new EventRecyclerViewAdapter(mDatabase.getEventsByFilter(filter), mListener);
 	}
 
 
