@@ -2,6 +2,7 @@ package dat255.refugeemap.model.db.impl;
 
 import java.util.Collection;
 
+import dat255.refugeemap.model.ArrayUtils;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.Filter;
 import lombok.Getter;
@@ -22,19 +23,14 @@ public class FilterImpl implements Filter
 
 	public boolean doesEventFit(Event e)
 	{
-		for (int c : categories)
-			for (int ec : e.getCategories())
-				if (c == ec)
-					return true;
+		if (!ArrayUtils.containsAll(e.getCategories(), categories))
+			return false;
 
 		for (String term : searchTerms)
-		{
-			for (String tag : e.getTags())
-				if (term.equals(tag))
-					return true;
-			if (e.getTitle().contains(term)) return true;
-		}
+			if (!ArrayUtils.contains(e.getTags(), term) &&
+				!e.getTitle().contains(term))
+					return false;
 
-		return false;
+		return true;
 	}
 }
