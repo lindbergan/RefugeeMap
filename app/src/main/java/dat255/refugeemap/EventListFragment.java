@@ -24,7 +24,7 @@ import dat255.refugeemap.model.db.EventCollection;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class EventListFragment extends Fragment implements Database.Listener{
+public class EventListFragment extends Fragment implements AppDatabase.Listener{
 	private int mColumnCount = 1;
 	private static final String TAG = "EventListFragment";
 

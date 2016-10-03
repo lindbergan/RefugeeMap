@@ -17,11 +17,17 @@ import dat255.refugeemap.model.db.impl.JSONToolsImpl;
  */
 public class AppDatabase
 {
+	public static interface Listener
+	{
+		/** Called whenever {@code updateVisibleEvents} is called. */
+		public void onVisibleEventsChanged(EventCollection newEvents);
+	}
+
 	private static final String NULL_ERROR_MESSAGE =
 		"'AppDatabase.init' must be called before 'getDatabaseInstance'";
 
 	private static Database db = null;
-	private static List<Database.Listener> listeners = new ArrayList<>();
+	private static List<Listener> listeners = new ArrayList<>();
 
 	/**
 	 * Must be called before {@code getDatabaseInstance}
@@ -71,12 +77,12 @@ public class AppDatabase
 		return db;
 	}
 
-	public static void addListener(Database.Listener l)
+	public static void addListener(Listener l)
 	{ listeners.add(l); }
 
 	public static void updateVisibleEvents(EventCollection newEvents)
 	{
-		for (Database.Listener l : listeners)
+		for (Listener l : listeners)
 			l.onVisibleEventsChanged(newEvents);
 	}
 }

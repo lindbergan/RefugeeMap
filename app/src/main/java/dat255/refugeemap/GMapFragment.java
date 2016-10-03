@@ -57,7 +57,7 @@ public class GMapFragment extends Fragment
     GoogleApiClient.OnConnectionFailedListener, LocationListener,
     GoogleMap.OnInfoWindowClickListener, OnMapReadyCallback,
     GoogleMap.InfoWindowAdapter, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener,
-    Database.Listener{
+	AppDatabase.Listener{
 
         // TODO: 2016-09-26 Build adapter that only inherits
         // methods that we really need instead of the of every method in these interfaces

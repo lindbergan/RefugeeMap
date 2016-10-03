@@ -70,7 +70,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 public class MainActivity extends AppCompatActivity
 	implements EventListFragment.OnListFragmentInteractionListener,
 				DetailFragment.OnFragmentInteractionListener, GMapFragment.ReplaceWithDetailView,
-	Database.Listener{
+	AppDatabase.Listener{
 
 	FragmentManager fm = getFragmentManager();
 	private Toolbar toolbar;
