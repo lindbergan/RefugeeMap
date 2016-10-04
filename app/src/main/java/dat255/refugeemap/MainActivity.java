@@ -49,6 +49,9 @@ import dat255.refugeemap.model.db.impl.FilterImpl;
 import dat255.refugeemap.model.db.impl.JSONToolsImpl;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static android.view.View.GONE;
+import static android.view.View.INVISIBLE;
+import static android.view.View.VISIBLE;
 
 
 public class MainActivity extends AppCompatActivity
@@ -152,6 +155,7 @@ public class MainActivity extends AppCompatActivity
 		String tempValues[] = {"title", "org", "description", "phone", "date", Integer.toString(2)};
 		Fragment frag = DetailFragment.newInstance(tempValues);
 		fm.beginTransaction().add(R.id.fragment_container, frag).hide(currentFragments[MAP_FRAGMENT]).commit();
+		showHideToggleButton(false);
 		currentFragments[DETAIL_FRAGMENT] = frag;
 
 	}
@@ -188,6 +192,7 @@ public class MainActivity extends AppCompatActivity
 
 		Fragment frag = DetailFragment.newInstance(new String[]{"title", "org", "description", "phone", "date", Integer.toString(3)});
 		fm.beginTransaction().add(R.id.fragment_container, frag).hide(currentFragments[LIST_FRAGMENT]).commit();
+		showHideToggleButton(false);
 		currentFragments[DETAIL_FRAGMENT] = frag;
 
 	}
@@ -260,16 +265,16 @@ public class MainActivity extends AppCompatActivity
 						// Check if last click time was too recent in order to avoid accidental double-click
 						currentTime - lastSearchClickTime > clickThreshold){
 			AppDatabase.updateVisibleEvents(mDatabase.getAllEvents());
-			this.searchEdit.setVisibility(View.VISIBLE);
+			this.searchEdit.setVisibility(VISIBLE);
 			this.searchEdit.requestFocus();
-			this.logo.setVisibility(View.GONE);
+			this.logo.setVisibility(GONE);
 			this.inputManager.showSoftInput(searchEdit, InputMethodManager.SHOW_IMPLICIT);
 			this.searchBtn.setEnabled(false);
 		} else {
 			v.clearFocus();
 			this.inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
-			this.searchEdit.setVisibility(View.GONE);
-			this.logo.setVisibility(View.VISIBLE);
+			this.searchEdit.setVisibility(GONE);
+			this.logo.setVisibility(VISIBLE);
 			this.searchBtn.setEnabled(true);
 		}
 		lastSearchClickTime = currentTime;
@@ -282,7 +287,9 @@ public class MainActivity extends AppCompatActivity
 	public void centerOnMap(View view) {
 		fm.beginTransaction().remove(currentFragments[DETAIL_FRAGMENT]).
 				show(currentFragments[MAP_FRAGMENT]).commit();
+		showHideToggleButton(true);
 		((GMapFragment) currentFragments[MAP_FRAGMENT]).setCurrentPosition();
+
 	}
 
 	@Override
@@ -323,6 +330,13 @@ public class MainActivity extends AppCompatActivity
 			return false;
 		}
 
+	}
+
+	private void showHideToggleButton(boolean showButton){
+		if(showButton)
+			mButton.setVisibility(VISIBLE);
+		else
+			mButton.setVisibility(INVISIBLE);
 	}
 
 
