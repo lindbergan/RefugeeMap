@@ -2,8 +2,11 @@ package dat255.refugeemap.model.db.impl;
 
 import java.io.FileNotFoundException;
 import java.io.Reader;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
+import dat255.refugeemap.model.ArrayUtils;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
@@ -16,6 +19,8 @@ import dat255.refugeemap.model.db.JSONTools;
 public class DatabaseImpl implements Database
 {
 	private final String[] categoryNames;
+
+	// TODO Maybe change to a HashMap<Integer, Event> for quick access by ID
 	private final EventCollection events;
 
 	private Event.SortInfo prevSortInfo = new Event.SortInfo() {
@@ -43,6 +48,27 @@ public class DatabaseImpl implements Database
 
 	@Override public String getCategoryName(int id)
 	{ return categoryNames[id]; }
+
+	@Override public Event getEvent(Integer id)
+	{
+		for (Event e : events)
+			if (e.getID() == id)
+				return e;
+		return null;
+	}
+
+	@Override public EventCollection getEvents(List<Integer> idList)
+	{
+		LinkedList<Event> eventList = new LinkedList<>();
+		for (Event e : events)
+			for (Iterator<Integer> it = idList.iterator(); it.hasNext();)
+				if (e.getID().equals(it.next()))
+				{
+					it.remove();
+					eventList.add(e);
+				}
+		return new EventList(eventList);
+	}
 
 	@Override
 	public EventCollection getEventsByFilter(Filter filter, Event.SortInfo info)

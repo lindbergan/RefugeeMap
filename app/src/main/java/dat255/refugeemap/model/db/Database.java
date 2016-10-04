@@ -1,5 +1,7 @@
 package dat255.refugeemap.model.db;
 
+import java.util.List;
+
 /**
  * An interface which provides access to all events stored in a database.
  * Events can be accessed from an {@link EventCollection}.
@@ -15,6 +17,24 @@ public interface Database
 	 * - {@code id} is a valid category ID
 	 */
 	public String getCategoryName(int id);
+
+	/**
+	 * If it exists, the {@link Event} with the given ID number is returned.
+	 * Otherwise, {@code null} is returned.
+	 *
+	 * Preconditions:
+	 * - All arguments are non-null
+	 */
+	public Event getEvent(Integer id);
+
+	/**
+	 * Returns a collection of every {@link Event} with
+	 * an ID number matching a number in {@code idArr}.
+	 *
+	 * Preconditions:
+	 * - All arguments are non-null
+	 */
+	public EventCollection getEvents(List<Integer> idList);
 
 	/**
 	 * Returns a collection of references to all {@link Event} instances
