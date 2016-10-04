@@ -1,7 +1,7 @@
 package dat255.refugeemap.model.db.impl;
 
-import java.text.Collator;
 import java.util.Arrays;
+import java.util.Comparator;
 
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
@@ -55,6 +55,6 @@ public class EventArray implements EventCollection
 		return equals((EventArray) obj);
 	}
 
-	@Override public void sort(SortCriteria sc, Collator strCol)
-	{ EventSortingUtils.sortArray(events, sc, strCol); }
+	public void sort(Event.SortInfo sortInfo)
+	{ EventSortingUtils.sortArray(events, sortInfo); }
 }

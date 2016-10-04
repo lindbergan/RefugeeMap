@@ -1,6 +1,5 @@
 package dat255.refugeemap.model.db;
 
-import java.text.Collator;
 import java.util.Iterator;
 
 /**
@@ -10,15 +9,6 @@ import java.util.Iterator;
  */
 public interface EventCollection extends Iterable<Event>
 {
-	public static enum SortCriteria
-	{
-		// As far as I know, you can't use bitwise operations on enumerated
-		// types, so a 'Reverse' version of each entry is used instead
-
-		TitleAlphabetical,
-		TitleAlphabeticalReverse
-	}
-
 	/** Returns an iterator to the beginning of the collection. */
 	public Iterator iterator();
 
@@ -43,11 +33,10 @@ public interface EventCollection extends Iterable<Event>
 	public boolean contains(Event e);
 
 	/**
-	 * Sorts the collection according to {@code sc}.
-	 * {@code strCol} is used if the sorting requires string comparison.
+	 * Sorts the collection according to {@code sortInfo}.
 	 *
 	 * Preconditions:
 	 * - All arguments are non-null
 	 */
-	public void sort(SortCriteria sc, Collator strCol);
+	public void sort(Event.SortInfo sortInfo);
 }

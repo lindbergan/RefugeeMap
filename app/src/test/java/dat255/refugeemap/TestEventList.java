@@ -34,14 +34,7 @@ public class TestEventList
 
 		EventList list = new EventList(Arrays.asList(e2, e1, e4, e3));
 		EventList sortedList = new EventList(Arrays.asList(e1, e2, e3, e4));
-		list.sort(EventCollection.SortCriteria.TitleAlphabetical,
-			Collator.getInstance(Locale.US));
-		assertEquals(list, sortedList);
-
-		list = new EventList(Arrays.asList(e2, e1, e4, e3));
-		sortedList = new EventList(Arrays.asList(e4, e3, e2, e1));
-		list.sort(EventCollection.SortCriteria.TitleAlphabeticalReverse,
-			Collator.getInstance(Locale.US));
+		list.sort(new EventImpl.TitleSortInfo(Collator.getInstance(Locale.US)));
 		assertEquals(list, sortedList);
 	}
 }

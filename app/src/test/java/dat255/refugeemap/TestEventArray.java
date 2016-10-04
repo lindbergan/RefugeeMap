@@ -35,14 +35,7 @@ public class TestEventArray
 
 		EventArray arr = new EventArray(new Event[]{e2, e1, e4, e3});
 		EventArray sortedArr = new EventArray(new Event[]{e1, e2, e3, e4});
-		arr.sort(EventCollection.SortCriteria.TitleAlphabetical,
-			Collator.getInstance(Locale.US));
-		assertEquals(arr, sortedArr);
-
-		arr = new EventArray(new Event[]{e2, e1, e4, e3});
-		sortedArr = new EventArray(new Event[]{e4, e3, e2, e1});
-		arr.sort(EventCollection.SortCriteria.TitleAlphabeticalReverse,
-			Collator.getInstance(Locale.US));
+		arr.sort(new EventImpl.TitleSortInfo(Collator.getInstance(Locale.US)));
 		assertEquals(arr, sortedArr);
 	}
 }

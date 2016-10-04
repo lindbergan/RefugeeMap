@@ -18,34 +18,72 @@ public class DatabaseImpl implements Database
 	private final String[] categoryNames;
 	private final EventCollection events;
 
+	private Event.SortInfo prevSortInfo = new Event.SortInfo() {
+		public int getInternalID() { return -1; }
+	};
+
+	public DatabaseImpl(String ctgNamesFilePath, String eventsFilePath,
+		JSONTools json) throws FileNotFoundException
+	{
+		categoryNames = (String[])(json.
+			deserializeFile(ctgNamesFilePath, String[].class));
+		events = new EventArray((EventImpl[])(json.
+			deserializeFile(eventsFilePath, EventImpl[].class)));
+	}
+
+	// may be removed
+	public DatabaseImpl(Reader ctgNamesReader, Reader eventsReader,
+		JSONTools json) throws FileNotFoundException
+	{
+		categoryNames = (String[])(json.
+			deserializeFile(ctgNamesReader, String[].class));
+		events = new EventArray((EventImpl[])(json.
+			deserializeFile(eventsReader, EventImpl[].class)));
+	}
+
+	@Override public String getCategoryName(int id)
+	{ return categoryNames[id]; }
+
+	@Override
+	public EventCollection getEventsByFilter(Filter filter, Event.SortInfo info)
+	{
+		if (filter.isEmpty())
+		{
+			if (prevSortInfo.getInternalID() != info.getInternalID())
+			{
+				events.sort(info);
+				prevSortInfo = info;
+			}
+
+			return events;
+		}
+
+		LinkedList<Event> list = new LinkedList<>();
+		for (Event e : events)
+			if (filter.doesEventFit(e))
+				list.add(e);
+		EventCollection ec = new EventList(list);
+		ec.sort(info);
+		return ec;
+	}
+
+	// Only exists for testing purposes ('create')
 	private DatabaseImpl(String[] categoryNames, EventCollection events)
 	{
 		this.categoryNames = categoryNames;
 		this.events = events;
 	}
 
-	public DatabaseImpl(String ctgNamesFilePath, String eventsFilePath,
-		JSONTools json) throws FileNotFoundException
-	{
-		this.categoryNames = (String[])(json.
-			deserializeFile(ctgNamesFilePath, String[].class));
-		this.events = new EventArray((EventImpl[])(json.
-			deserializeFile(eventsFilePath, EventImpl[].class)));
-	}
+	// Only to be used for testing.
+	public static DatabaseImpl create(String[] ctgNames, EventCollection events)
+	{ return new DatabaseImpl(ctgNames, events); }
 
-	public DatabaseImpl(Reader ctgNamesReader, Reader eventsReader,
-		JSONTools json) throws FileNotFoundException
-	{
-		this.categoryNames = (String[])(json.
-			deserializeFile(ctgNamesReader, String[].class));
-		this.events = new EventArray((EventImpl[])(json.
-			deserializeFile(eventsReader, EventImpl[].class)));
-	}
-
-	@Override public EventCollection getAllEvents()
+	// Will be removed
+	@Deprecated@Override public EventCollection getAllEvents()
 	{ return events; }
 
-	@Override public EventCollection getEventsByFilter(Filter filter)
+	// Will be removed
+	@Deprecated@Override public EventCollection getEventsByFilter(Filter filter)
 	{
 		LinkedList<Event> list = new LinkedList<>();
 		for (Event e : events)
@@ -53,11 +91,4 @@ public class DatabaseImpl implements Database
 				list.add(e);
 		return new EventList(list);
 	}
-
-	@Override public String getCategoryName(int id)
-	{ return categoryNames[id]; }
-
-	// Only to be used for testing.
-	public static DatabaseImpl create(String[] ctgNames, EventCollection events)
-	{ return new DatabaseImpl(ctgNames, events); }
 }

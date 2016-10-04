@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity
 						&& event.getAction() == KeyEvent.ACTION_DOWN) {
 					String input = searchEdit.getText().toString();
 					Collection<String> searchTerms = Arrays.asList(input.split(" "));
-					FilterImpl filter = new FilterImpl(new ArrayList<Integer>(), searchTerms);
+					FilterImpl filter = new FilterImpl(null, searchTerms, null);
 					EventCollection newEvents = mDatabase.getEventsByFilter(filter);
 					AppDatabase.updateVisibleEvents(newEvents);
 					toggleSearchFocus(v);
