@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
@@ -19,9 +20,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,6 +72,9 @@ public class MainActivity extends AppCompatActivity
 	private long lastSearchClickTime = 0;
 	private int clickThreshold = 500;
 	public static String sDefSystemLanguage;
+    private String[] drawerListItems;
+    private DrawerLayout mDrawerLayout;
+    private ListView mDrawerListView;
 
 	private Database mDatabase;
 
@@ -78,9 +85,8 @@ public class MainActivity extends AppCompatActivity
 		ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
 		while (PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
 			System.out.println("" + ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION));
+
 		}
-
-
 
 		toolbar = (Toolbar) findViewById(R.id.tool_bar);
 		setSupportActionBar(toolbar);
@@ -99,12 +105,39 @@ public class MainActivity extends AppCompatActivity
 		}
 
 		firstStart();
+		setUpNavigationDrawer();
 	}
 
-	/**
-	 * setLocaleToArabic is used for testing purposes. Changes reading from R -> L and changes all text to arabic
-	 */
+	public void setUpNavigationDrawer() {
 
+        drawerListItems = getResources().getStringArray(R.array.drawer_list_items);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerListView = (ListView) findViewById(R.id.drawer_listView);
+
+        //setting the custom content in the drawer
+        mDrawerListView.setAdapter(new ArrayAdapter<String>(this,
+            R.layout.drawer_list_item, R.id.drawer_list_item, drawerListItems));
+
+        mDrawerListView.setOnItemClickListener(new DrawerItemClickListener());
+    }
+
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            if (drawerListItems[position].equals("Favourites")){
+                // Sunken - do the magic...
+                Toast.makeText(getApplicationContext(), "you have clicked Favourites",
+                    Toast.LENGTH_SHORT).show();
+            }
+
+       }
+    }
+
+        /**
+         * setLocaleToArabic is used for testing purposes. Changes reading from R -> L and changes all text to arabic
+         */
 
 	public void setLocaleToArabic() {
 		Configuration newConfig = new Configuration();
