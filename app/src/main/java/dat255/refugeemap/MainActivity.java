@@ -37,7 +37,13 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Locale;
+
+
+
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -82,8 +88,11 @@ public class MainActivity extends AppCompatActivity
 
 	private Database mDatabase;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+
+
+	@Override protected void onCreate(Bundle savedInstanceState)
+	{
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
@@ -107,7 +116,9 @@ public class MainActivity extends AppCompatActivity
 		} catch (FileNotFoundException ex) {
 			ex.printStackTrace();
 		}
+
 		stateSwitch("app_start");
+
 		setUpNavigationDrawer();
 	}
 
@@ -130,9 +141,11 @@ public class MainActivity extends AppCompatActivity
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
             if (drawerListItems[position].equals("Favourites")){
-                // Sunken - do the magic...
+
                 Toast.makeText(getApplicationContext(), "you have clicked Favourites",
                     Toast.LENGTH_SHORT).show();
+                EventCollection events = getSavedEvents();
+
             }
 
        }
@@ -271,8 +284,8 @@ public class MainActivity extends AppCompatActivity
 			editor.putStringSet(getString(R.string.saved_events_key), updatedEventList);
 
 		}
+		return editor.commit(); //returns true if save/remove was successful
 
-		return editor.commit(); //returns true if values was successfully updated
 	}
 
 
@@ -287,7 +300,6 @@ public class MainActivity extends AppCompatActivity
 		}
 
 	}
-
 
 
 	@Override
@@ -382,6 +394,21 @@ public class MainActivity extends AppCompatActivity
 			mButton.setVisibility(INVISIBLE);
 	}
 
+    public EventCollection getSavedEvents(){
+
+        Set<String> savedEventsStr = getPreferences(Context.MODE_PRIVATE).getStringSet(getString(R.string.saved_events_key), null);
+
+        if(savedEventsStr != null){
+            List<Integer> savedEventsIds = new LinkedList<>();
+
+            for(String s : savedEventsStr){
+                savedEventsIds.add(Integer.valueOf(s));
+            }
+            return mDatabase.getEvents(savedEventsIds);
+        }else{
+            return null;
+        }
+    }
 
 	private void toggleImage(){
 		Drawable map = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_map_black_48dp, null);

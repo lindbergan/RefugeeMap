@@ -9,10 +9,4 @@
     <string name="saved_events_key">SAVED_EVENTS</string>
     <string name="directions">Directions</string>
 
-    <string-array name="drawer_list_items">
-        <item>Profile</item>
-        <item>Favourites</item>
-    </string-array>
-
-
 </resources>
