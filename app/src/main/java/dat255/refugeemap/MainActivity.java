@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ListFragment;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -106,8 +107,7 @@ public class MainActivity extends AppCompatActivity
 		} catch (FileNotFoundException ex) {
 			ex.printStackTrace();
 		}
-
-		firstStart();
+		stateSwitch("app_start");
 		setUpNavigationDrawer();
 	}
 
@@ -152,49 +152,16 @@ public class MainActivity extends AppCompatActivity
 	@Override
 	public void onInfoWindowClicked(Marker marker) {
 
-		String tempValues[] = {"title", "org", "description", "phone", "date", Integer.toString(2)};
-		Fragment frag = DetailFragment.newInstance(tempValues);
-		fm.beginTransaction().add(R.id.fragment_container, frag).hide(currentFragments[MAP_FRAGMENT]).commit();
-		showHideToggleButton(false);
-		currentFragments[DETAIL_FRAGMENT] = frag;
+		stateSwitch("marker_clicked");
+
 
 	}
 
-	public void showEventList() {
-		if (ACTIVE_FRAGMENT.equals(GMapFragment.class.getSimpleName())) {
-			FragmentManager fm = getFragmentManager();
-			Fragment frag = currentFragments[LIST_FRAGMENT];
-			fm.beginTransaction().show(frag).hide(currentFragments[MAP_FRAGMENT]).commit();
-			ACTIVE_FRAGMENT = EventListFragment.class.getSimpleName();
-		} else if (ACTIVE_FRAGMENT.equals(EventListFragment.class.getSimpleName())) {
-			FragmentManager fm = getFragmentManager();
-			Fragment frag = currentFragments[MAP_FRAGMENT];
-			fm.beginTransaction().show(frag).hide(currentFragments[LIST_FRAGMENT]).commit();
-			ACTIVE_FRAGMENT = GMapFragment.class.getSimpleName();
-		}
-	}
 
-	public void firstStart() {
-		FragmentManager fm = getFragmentManager();
-		Fragment mapFrag = new GMapFragment();
-		Fragment listFrag = new EventListFragment();
-		initializeViews(findViewById(R.id.main_layout));
-		fm.beginTransaction().add(R.id.fragment_container, mapFrag)
-				.add(R.id.fragment_container, listFrag).hide(listFrag).show(mapFrag).commit();
-		currentFragments[MAP_FRAGMENT] = mapFrag;
-		currentFragments[LIST_FRAGMENT] = listFrag;
-		ACTIVE_FRAGMENT = GMapFragment.class.getSimpleName();
-	}
 
 	@Override
 	public void onListFragmentInteraction(Event item) {
-
-
-		Fragment frag = DetailFragment.newInstance(new String[]{"title", "org", "description", "phone", "date", Integer.toString(3)});
-		fm.beginTransaction().add(R.id.fragment_container, frag).hide(currentFragments[LIST_FRAGMENT]).commit();
-		showHideToggleButton(false);
-		currentFragments[DETAIL_FRAGMENT] = frag;
-
+		stateSwitch("list_item_clicked");
 	}
 
 	public void initializeViews(View view) {
@@ -203,19 +170,11 @@ public class MainActivity extends AppCompatActivity
 		mButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				showEventList();
-				Drawable map = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_map_black_48dp, null);
-				Drawable list = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_list_black_48dp, null);
-				if (mButton != null && map != null && list != null) {
-					if (mButton.getDrawable().getConstantState().equals(map.getConstantState())) {
-						mButton.setImageDrawable(list);
-					} else {
-						mButton.setImageDrawable(map);
-					}
-				}
+				stateSwitch("map_list_toggle");
 			}
 		});
 	}
+
 
 
 	/*
@@ -285,10 +244,7 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	public void centerOnMap(View view) {
-		fm.beginTransaction().remove(currentFragments[DETAIL_FRAGMENT]).
-				show(currentFragments[MAP_FRAGMENT]).commit();
-		showHideToggleButton(true);
-		((GMapFragment) currentFragments[MAP_FRAGMENT]).setCurrentPosition();
+		stateSwitch("center_on_map");
 
 	}
 
@@ -332,11 +288,112 @@ public class MainActivity extends AppCompatActivity
 
 	}
 
+
+
+	@Override
+	public void onBackPressed(){
+		stateSwitch("back_button_pressed");
+	}
+
+	private void stateSwitch(String args){
+		FragmentManager fm = getFragmentManager();
+
+		//Starting state
+		if(args.equals("app_start")){
+			Fragment mapFrag = new GMapFragment();
+			Fragment listFrag = new EventListFragment();
+			initializeViews(findViewById(R.id.main_layout));
+			fm.beginTransaction().add(R.id.fragment_container, mapFrag)
+				.add(R.id.fragment_container, listFrag).hide(listFrag).show(mapFrag).commit();
+			currentFragments[MAP_FRAGMENT] = mapFrag;
+			currentFragments[LIST_FRAGMENT] = listFrag;
+			ACTIVE_FRAGMENT = GMapFragment.class.getSimpleName();
+		}
+		//end starting state
+
+		//**** Map and list toggle button ****
+		else if(args.equals("map_list_toggle")){
+			if (ACTIVE_FRAGMENT.equals(GMapFragment.class.getSimpleName())) {
+				Fragment frag = currentFragments[LIST_FRAGMENT];
+				fm.beginTransaction().show(frag).hide(currentFragments[MAP_FRAGMENT]).commit();
+				ACTIVE_FRAGMENT = EventListFragment.class.getSimpleName();
+			} else if (ACTIVE_FRAGMENT.equals(EventListFragment.class.getSimpleName())) {
+				Fragment frag = currentFragments[MAP_FRAGMENT];
+				fm.beginTransaction().show(frag).hide(currentFragments[LIST_FRAGMENT]).commit();
+				ACTIVE_FRAGMENT = GMapFragment.class.getSimpleName();
+			}
+			toggleImage();
+		}
+		//**** end map and list toggle button *****
+
+		//For back button pressed
+		else if(args.equals("back_button_pressed")){
+			if(currentFragments[DETAIL_FRAGMENT] != null){
+				fm.beginTransaction().remove(currentFragments[DETAIL_FRAGMENT])
+					.hide(currentFragments[LIST_FRAGMENT])
+					.show(currentFragments[MAP_FRAGMENT]).commit();
+				ACTIVE_FRAGMENT = GMapFragment.class.getSimpleName();
+				toggleImage();
+				showHideToggleButton(true);
+			}
+			else if(ACTIVE_FRAGMENT.equals(EventListFragment.class.getSimpleName())) {
+				Fragment frag = currentFragments[MAP_FRAGMENT];
+				fm.beginTransaction().show(frag).hide(currentFragments[LIST_FRAGMENT]).commit();
+				ACTIVE_FRAGMENT = GMapFragment.class.getSimpleName();
+			}
+		}
+		//end back button
+
+		//For: center on map button
+		else if(args.equals("center_on_map")){
+			fm.beginTransaction().remove(currentFragments[DETAIL_FRAGMENT]).
+				show(currentFragments[MAP_FRAGMENT]).commit();
+			currentFragments[DETAIL_FRAGMENT] = null;
+			showHideToggleButton(true);
+			((GMapFragment) currentFragments[MAP_FRAGMENT]).setCurrentPosition();
+		}
+		//end center on map button
+
+		//For: click on list item
+		else if(args.equals("list_item_clicked")){
+			Fragment frag = DetailFragment.newInstance(new String[]{"title", "org", "description", "phone", "date", Integer.toString(3)});
+			fm.beginTransaction().add(R.id.fragment_container, frag).hide(currentFragments[LIST_FRAGMENT]).commit();
+			showHideToggleButton(false);
+			currentFragments[DETAIL_FRAGMENT] = frag;
+		}
+		//end click on list item
+
+		//For: click on marker
+		else if(args.equals("")){
+			String tempValues[] = {"title", "org", "description", "phone", "date", Integer.toString(2)};
+			Fragment frag = DetailFragment.newInstance(tempValues);
+			fm.beginTransaction().add(R.id.fragment_container, frag).hide(currentFragments[MAP_FRAGMENT]).commit();
+			showHideToggleButton(false);
+			currentFragments[DETAIL_FRAGMENT] = frag;
+		}
+		//end click on marker
+
+	}
+
+
 	private void showHideToggleButton(boolean showButton){
 		if(showButton)
 			mButton.setVisibility(VISIBLE);
 		else
 			mButton.setVisibility(INVISIBLE);
+	}
+
+
+	private void toggleImage(){
+		Drawable map = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_map_black_48dp, null);
+		Drawable list = ResourcesCompat.getDrawable(getResources(), R.drawable.ic_list_black_48dp, null);
+		if (mButton != null && map != null && list != null) {
+			if (mButton.getDrawable().getConstantState().equals(map.getConstantState())) {
+				mButton.setImageDrawable(list);
+			} else {
+				mButton.setImageDrawable(map);
+			}
+		}
 	}
 
 
