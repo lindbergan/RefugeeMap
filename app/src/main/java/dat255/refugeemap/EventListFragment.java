@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 
@@ -18,7 +20,6 @@ import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
 import dat255.refugeemap.model.db.Filter;
-import dat255.refugeemap.model.db.impl.FilterImpl;
 
 /**
  * A fragment representing a list of Items.
@@ -52,6 +53,8 @@ public class EventListFragment extends Fragment implements AppDatabase.Listener{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+
+		//Log.v(TAG, "Lat: " + latLng.latitude + " Lng: " + latLng.longitude);
 	}
 
 	@Override

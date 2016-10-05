@@ -3,21 +3,24 @@ package dat255.refugeemap;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.Locale;
 
 import dat255.refugeemap.EventListFragment.OnListFragmentInteractionListener;
+import dat255.refugeemap.helpers.GoogleAPIHelper;
+import dat255.refugeemap.model.DistanceCalculator;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
-
-import static android.graphics.Color.GREEN;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link dat255.refugeemap.model.db.Event} and makes a call to the
@@ -25,17 +28,30 @@ import static android.graphics.Color.GREEN;
  * TODO: Replace the implementation with code for your data type.
  */
 public class EventRecyclerViewAdapter
-	extends RecyclerView.Adapter<EventRecyclerViewAdapter.ViewHolder> {
+	extends RecyclerView.Adapter<EventRecyclerViewAdapter.ViewHolder>
+	implements GoogleAPIObserver {
+
+	private final static String TAG = "EventRecyclerViewAdapt";
 
 	private EventCollection mEvents;
 	private final OnListFragmentInteractionListener mListener;
 	private HashMap<String, Integer> listItemColor = new HashMap<>();
+	private LatLng currentLocation;
 
 	public EventRecyclerViewAdapter(EventCollection events,
 									OnListFragmentInteractionListener listener) {
 		mEvents = events;
 		mListener = listener;
 		initListItemColors();
+
+		GoogleAPIHelper googleAPIHelper = App.getGoogleApiHelper();
+		googleAPIHelper.addApiListener(this);
+	}
+
+	@Override
+	public void onApiConnected(GoogleAPIHelper googleAPIHelper) {
+		Log.d(TAG, "onApiConnected: " + googleAPIHelper.getCurrentLocation());
+		currentLocation = googleAPIHelper.getCurrentLocation();
 	}
 
 	/**
@@ -79,8 +95,21 @@ public class EventRecyclerViewAdapter
 
 	@Override
 	public void onBindViewHolder(final ViewHolder holder, int position) {
-		holder.mItem = mEvents.get(position);
-		holder.mIdView.setText(mEvents.get(position).getTitle());
+
+		Event event = mEvents.get(position);
+
+		holder.mItem = event;
+		holder.mIdView.setText(event.getTitle());
+		double distanceToEvent = DistanceCalculator.getGreatCircleDistance(
+			currentLocation.latitude, currentLocation.longitude,
+			event.getLatitude(), event.getLongitude());
+
+		Locale currentLocale = App.getInstance().getApplicationContext()
+			.getResources().getConfiguration().locale;
+		
+		holder.mDistanceView
+			.setText(String.format(currentLocale, "%.2f km", distanceToEvent));
+
 		//holder.mContentView.setText(mEvents.get(position).getDescription());
 		holder.mView.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -109,7 +138,9 @@ public class EventRecyclerViewAdapter
 		public final LinearLayout mLayout;
 		public final TextView mIdView;
 		public final TextView mContentView;
+		public final TextView mDistanceView;
 		public Event mItem;
+
 
 		public ViewHolder(View view) {
 			super(view);
@@ -117,6 +148,7 @@ public class EventRecyclerViewAdapter
 			mLayout = (LinearLayout) view.findViewById(R.id.list_item_layout);
 			mIdView = (TextView) view.findViewById(R.id.id);
 			mContentView = (TextView) view.findViewById(R.id.content);
+			mDistanceView = (TextView) view.findViewById(R.id.distance);
 		}
 		@Override
 		public String toString() {

@@ -350,7 +350,6 @@ public class MainActivity extends AppCompatActivity
 				show(currentFragments[MAP_FRAGMENT]).commit();
 			currentFragments[DETAIL_FRAGMENT] = null;
 			showHideToggleButton(true);
-			((GMapFragment) currentFragments[MAP_FRAGMENT]).setCurrentPosition();
 		}
 		//end center on map button
 

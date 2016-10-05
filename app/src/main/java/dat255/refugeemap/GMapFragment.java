@@ -22,12 +22,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 
+import dat255.refugeemap.helpers.GoogleAPIHelper;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
 
 public class GMapFragment extends Fragment
-implements GoogleServicesAdapter, AppDatabase.Listener{
+implements GoogleServicesAdapter, AppDatabase.Listener, GoogleAPIObserver {
 
     private GoogleMap mGoogleMap;
     ReplaceWithDetailView mCallback;
@@ -35,7 +36,8 @@ implements GoogleServicesAdapter, AppDatabase.Listener{
     private EventCollection mEventsList;
     private Database mDatabase;
     private DirectionsHelper mDirectionHelper;
-    private PositionHelper mPositionHelper;
+
+    private static final String TAG = "GMapFragment";
 
     public interface ReplaceWithDetailView {
         void onInfoWindowClicked(Marker marker);
@@ -46,6 +48,8 @@ implements GoogleServicesAdapter, AppDatabase.Listener{
      * fragment.
      */
     public GMapFragment() {
+        GoogleAPIHelper googleAPIHelper = App.getGoogleApiHelper();
+        googleAPIHelper.addApiListener(this);
     }
 
     public static GMapFragment newInstance() {
@@ -71,15 +75,22 @@ implements GoogleServicesAdapter, AppDatabase.Listener{
         getEvents();
         initiateListeners();
         configGoogleWidgets();
-        setCurrentPosition();
         placeMarkers(mEventsList);
+    }
+
+    @Override
+    public void onApiConnected(GoogleAPIHelper googleAPIHelper) {
+        animateMapCamera(googleAPIHelper.getCurrentLocation());
+    }
+
+    public void animateMapCamera(LatLng latLng) {
+        mGoogleMap.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(latLng, 15));
     }
 
     public void setUpHelpers() {
         mDirectionHelper = new DirectionsHelper(mGoogleMap);
-        mPositionHelper = new PositionHelper(this,mGoogleMap);
-        mPositionHelper.buildGoogleApiClient();
-        mPositionHelper.getGoogleApiClient().connect();
+
     }
 
     public void getEvents() {
@@ -97,16 +108,6 @@ implements GoogleServicesAdapter, AppDatabase.Listener{
     public void configGoogleWidgets() {
         mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
         //TODO: add scale to the map
-    }
-
-    /* a method that places a marker at the position the user currently
-    occupies*/
-
-    public void setCurrentPosition() {
-        //TODO: set this to "currentLocation" and zoom in on that one
-        LatLng currentPosition = new LatLng(57.70887000, 11.97456000);
-        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-            currentPosition, 15)); //zoom in on marker
     }
 
     /* a method that creates markers from events and places them on the map*/
@@ -298,7 +299,6 @@ implements GoogleServicesAdapter, AppDatabase.Listener{
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mPositionHelper.getGoogleApiClient().disconnect();
 	}
 
 	@Nullable
