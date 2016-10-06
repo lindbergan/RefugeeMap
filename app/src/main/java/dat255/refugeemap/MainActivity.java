@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity
 		setUpNavigationDrawer();
 	}
 
+
 	public void setUpNavigationDrawer() {
 
         drawerListItems = getResources().getStringArray(R.array.drawer_list_items);
@@ -422,7 +423,12 @@ public class MainActivity extends AppCompatActivity
 		}
 	}
 
+	@Override
+	protected void onStart() {
+		super.onStart();
 
+		App.getGoogleApiHelper().connect();
+	}
 }
 
 

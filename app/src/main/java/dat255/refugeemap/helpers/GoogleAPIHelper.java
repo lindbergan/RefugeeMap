@@ -24,7 +24,7 @@ import dat255.refugeemap.GoogleAPIObserver;
 
 public class GoogleAPIHelper implements GoogleApiClient.ConnectionCallbacks,
 	GoogleApiClient.OnConnectionFailedListener, LocationListener {
-	private static final String TAG = GoogleAPIHelper.class.getSimpleName();
+	private static final String TAG = "GoogleAPIHelper";
 	private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 20;
 	private GoogleApiClient mGoogleApiClient;
 	private Context mContext;
@@ -45,7 +45,8 @@ public class GoogleAPIHelper implements GoogleApiClient.ConnectionCallbacks,
 		return this.mGoogleApiClient;
 	}
 
-	private void connect() {
+	public void connect() {
+		Log.d(TAG, "connect: connecting!");
 		if (mGoogleApiClient != null) {
 			mGoogleApiClient.connect();
 		}
@@ -88,9 +89,11 @@ public class GoogleAPIHelper implements GoogleApiClient.ConnectionCallbacks,
 			Location location = LocationServices.FusedLocationApi
 				.getLastLocation(mGoogleApiClient);
 
-			this.currentLocation = new LatLng(location.getLatitude(),
-				location.getLongitude());
-			this.notifyConnectionListeners();
+			if (location != null) {
+				this.currentLocation = new LatLng(location.getLatitude(),
+					location.getLongitude());
+				this.notifyConnectionListeners();
+			}
 		}
 	}
 
@@ -108,6 +111,7 @@ public class GoogleAPIHelper implements GoogleApiClient.ConnectionCallbacks,
 
 	@Override
 	public void onLocationChanged(Location location) {
+		Log.d(TAG, "onLocationChanged: " + location.toString());
 	}
 
 	public void addApiListener(GoogleAPIObserver googleAPIObserver) {
@@ -119,4 +123,5 @@ public class GoogleAPIHelper implements GoogleApiClient.ConnectionCallbacks,
 			mGoogleAPIObserverList.get(i).onApiConnected(this);
 		}
 	}
+
 }
