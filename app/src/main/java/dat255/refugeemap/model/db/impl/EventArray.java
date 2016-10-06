@@ -3,6 +3,7 @@ package dat255.refugeemap.model.db.impl;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import dat255.refugeemap.model.ArrayUtils;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
 
@@ -39,12 +40,7 @@ public class EventArray implements EventCollection
 	{ return events.length; }
 
 	@Override public boolean contains(Event e)
-	{
-		for (int i = 0; i < events.length; i++)
-			if (events[i] == e) // yes, this is meant to compare references
-				return true;
-		return false;
-	}
+	{ return ArrayUtils.contains(events, e); }
 
 	public boolean equals(EventArray arr)
 	{ return Arrays.equals(events, arr.events); }

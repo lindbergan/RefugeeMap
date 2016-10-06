@@ -16,10 +16,24 @@ public class ArrayUtils
 		public int compare(T[] arr, int iOne, int iTwo);
 	}
 
+	public interface EqualityChecker<T>
+	{
+		/* Returns {@code true} iff {@code one} and {@code two} are equal. */
+		public boolean areEqual(T one, T two);
+	}
+
 	public static <T> boolean contains(T[] arr, T elem)
 	{
 		for (T arrElem : arr)
 			if (elem.equals(arrElem))
+				return true;
+		return false;
+	}
+
+	public static <T> boolean contains(T[] arr, T elem, EqualityChecker ec)
+	{
+		for (T arrElem : arr)
+			if (ec.areEqual(elem, arrElem))
 				return true;
 		return false;
 	}
@@ -30,6 +44,14 @@ public class ArrayUtils
 			if (!contains(srcArr, elem))
 				return false;
 		return true;
+	}
+
+	public static <T> boolean containsAny(T[] srcArr, Collection<T> tgtCol)
+	{
+		for (T elem : tgtCol)
+			if (contains(srcArr, elem))
+				return true;
+		return false;
 	}
 
 	public static <T> void swap(T[] arr, int iOne, int iTwo)

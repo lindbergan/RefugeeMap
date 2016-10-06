@@ -9,6 +9,7 @@ import dat255.refugeemap.model.db.Filter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.val;
 
 /**
  * @author Shoulder
@@ -47,18 +48,22 @@ public class FilterImpl implements Filter
 
 	@Override public boolean doesEventFit(Event e)
 	{
-		if (categories.size()!=0) {
-			for (int cat : categories)
-				if (ArrayUtils.contains(e.getCategories(), cat))
-					return true;
-			return false;
-		}
+		if (categories != null && categories.size() != 0)
+			if (!ArrayUtils.containsAny(e.getCategories(), categories))
+				return false;
 
 		if (searchTerms != null)
+		{
+			val equalityChecker = new ArrayUtils.EqualityChecker<String>() {
+				@Override public boolean areEqual(String one, String two)
+				{ return one.toLowerCase().equals(two.toLowerCase()); }
+			};
+
 			for (String term : searchTerms)
-				if (!ArrayUtils.contains(e.getTags(), term) &&
-					!e.getTitle().contains(term))
+				if (!ArrayUtils.contains(e.getTags(), term, equalityChecker) &&
+					!e.getTitle().toLowerCase().contains(term.toLowerCase()))
 						return false;
+		}
 
 		if (distanceCriteria != null && distanceCriteria.doesEventFit(e))
 			return false;
@@ -67,5 +72,11 @@ public class FilterImpl implements Filter
 	}
 
 	@Override public boolean isEmpty()
-	{ return (categories.size() == 0 && searchTerms.size() == 0); }
+	{
+		return (
+			(categories == null || categories.size() == 0) &&
+			(searchTerms == null || searchTerms.size() == 0) &&
+			(distanceCriteria == null)
+		);
+	}
 }
