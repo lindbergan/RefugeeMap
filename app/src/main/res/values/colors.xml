@@ -3,5 +3,9 @@
 <resources>
   <color name="colorPrimary">#A8D8B9</color>
   <color name="colorPrimaryDark">#303F9F</color>
-  <color name="colorAccent">#FF4081</color>
+  <color name="colorAccent">#FFFFFF</color>
+  <color name="colorCategory1">#EE6969</color>
+  <color name="colorCategory2">#87CAEF</color>
+  <color name="colorCategory3">#A0CD56</color>
+  <color name="colorCategory4">#F3EC65</color>
 </resources>

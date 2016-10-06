@@ -1,12 +1,14 @@
 package dat255.refugeemap;
 
 import android.Manifest;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
@@ -23,6 +25,7 @@ import com.google.android.gms.maps.model.Marker;
 
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -59,6 +62,16 @@ public class MainActivity extends AppCompatActivity
     private ImageButton searchBtn;
     public static String sDefSystemLanguage;
     private Database mDatabase;
+
+	  FragmentManager fm = getFragmentManager();
+	  private ImageButton mButton;
+	  private String ACTIVE_FRAGMENT;
+	  private Fragment[] currentFragments = new Fragment[3];
+
+	  private ArrayList<Integer> activeCategories = new ArrayList<>();
+
+
+
 
 	@Override protected void onCreate(Bundle savedInstanceState)
 	{
@@ -116,32 +129,7 @@ public class MainActivity extends AppCompatActivity
 	public void onListFragmentInteraction(Event item) {
         mViewHelper.stateSwitch("list_item_clicked");
 	}
-
-    /* Activates and focuses search EditText */
-    public void onSearchClick(View view) {
-        toggleSearchFocus(view);
-        searchEdit.setOnEditorActionListener(
-            new TextView.OnEditorActionListener() {
-                @Override //Sends search query on ENTER
-                public boolean onEditorAction(TextView v, int actionId,
-                                              KeyEvent event) {
-                    if (actionId == EditorInfo.IME_NULL
-                        && event.getAction() == KeyEvent.ACTION_DOWN) {
-                        String input = searchEdit.getText().toString();
-                        Collection<String> searchTerms = Arrays.asList(
-                            input.split(" "));
-                        FilterImpl filter = new FilterImpl(null, searchTerms,
-                            null);
-                        EventCollection newEvents = mDatabase.getEventsByFilter(
-                            filter);
-                        AppDatabase.updateVisibleEvents(newEvents);
-                        toggleSearchFocus(v);
-                    }
-                    return true;
-                }
-            });
-    }
-
+  
     public void toggleSearchFocus(View v) {
         long currentTime = SystemClock.elapsedRealtime();
         if (this.searchBtn.isEnabled() &&
@@ -164,6 +152,57 @@ public class MainActivity extends AppCompatActivity
         }
         lastSearchClickTime = currentTime;
     }
+
+	public void onCategoryClick(View view){
+		int cat = Integer.parseInt(view.getTag().toString());
+		boolean buttonActivated=false;
+		if (activeCategories.contains(cat)){
+			int index = activeCategories.indexOf(cat);
+			activeCategories.remove(index);
+			buttonActivated=true;
+		}
+		else {
+			activeCategories.add(cat);
+		}
+		toggleCategoryButton(cat, buttonActivated);
+		FilterImpl filter = new FilterImpl(activeCategories, null, null);
+		EventCollection newEvents = mDatabase.getEventsByFilter(filter);
+
+		AppDatabase.updateVisibleEvents(newEvents);
+	}
+
+	public void toggleCategoryButton(int category, boolean activated){
+		int id = getResources().getIdentifier("category"+category, "id", getPackageName());
+		ImageButton button = (ImageButton)findViewById(id);
+		if (activated)
+			button.animate().translationY(0);
+		else
+			button.animate().translationY(-50);
+	}
+
+
+	/*
+	Activates and focuses search EditText
+	 */
+	public void onSearchClick(View view) {
+		toggleSearchFocus(view);
+		searchEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+			@Override //Sends search query on ENTER
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+				if (actionId == EditorInfo.IME_NULL
+						&& event.getAction() == KeyEvent.ACTION_DOWN) {
+					String input = searchEdit.getText().toString();
+					Collection<String> searchTerms = Arrays.asList(input.split(" "));
+					FilterImpl filter = new FilterImpl(null, searchTerms, null);
+					EventCollection newEvents = mDatabase.getEventsByFilter(filter);
+					AppDatabase.updateVisibleEvents(newEvents);
+					toggleSearchFocus(v);
+				}
+				return true;
+			}
+		});
+	}
+
 	/*
 	* Evaluates whether the user has clicked outside the search EditText
 	 */

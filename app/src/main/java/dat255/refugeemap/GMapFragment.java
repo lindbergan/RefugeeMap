@@ -122,22 +122,22 @@ implements GoogleServicesAdapter, AppDatabase.Listener, GoogleAPIObserver {
         }
 
         //dummy Markers - Do not delete yet! need theese to confirm its working
-        LatLng gbgMarker = new LatLng(57.70887000,11.97456000);//def of GBG
-        mGoogleMap.addMarker(new MarkerOptions()
-            .position(gbgMarker)
-            .title("Location1"));
-
-        LatLng gbgMarker2 = new LatLng(57.908871000,12.000);
-        mGoogleMap.addMarker(new MarkerOptions()
-            .position(gbgMarker2).title("Location2")
-            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory
-                .HUE_GREEN)));
-
-        LatLng gbgMarker3 = new LatLng(57.908871000,11.90456000);
-        mGoogleMap.addMarker(new MarkerOptions()
-            .position(gbgMarker3).title("Location3")
-            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory
-                .HUE_AZURE)));
+//        LatLng gbgMarker = new LatLng(57.70887000,11.97456000);//def of GBG
+//        mGoogleMap.addMarker(new MarkerOptions()
+//            .position(gbgMarker)
+//            .title("Location1"));
+//
+//        LatLng gbgMarker2 = new LatLng(57.908871000,12.000);
+//        mGoogleMap.addMarker(new MarkerOptions()
+//            .position(gbgMarker2).title("Location2")
+//            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory
+//                .HUE_GREEN)));
+//
+//        LatLng gbgMarker3 = new LatLng(57.908871000,11.90456000);
+//        mGoogleMap.addMarker(new MarkerOptions()
+//            .position(gbgMarker3).title("Location3")
+//            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory
+//                .HUE_AZURE)));
     }
 
     public void newMarker(Event event) {

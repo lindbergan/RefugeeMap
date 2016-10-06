@@ -4,7 +4,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:clipChildren="false">
 
     <RelativeLayout
         android:id="@+id/main_layout"
@@ -13,7 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        tools:context="dat255.refugeemap.MainActivity">
+        tools:context="dat255.refugeemap.MainActivity"
+        android:clipChildren="false">
 
 
         <include
@@ -25,7 +27,7 @@
                  android:layout_width="match_parent"
                  android:layout_height="match_parent"
                  android:layout_below="@+id/tool_bar"/>
-
+        
             <ImageButton
             android:id="@+id/change_views_button"
             android:background="@null"
@@ -34,6 +36,11 @@
             android:layout_width="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_below="@+id/tool_bar"/>
+
+        <include
+            android:id="@+id/bottom_tool_bar"
+            layout="@layout/bottom_tool_bar"
+            ></include>
 
     </RelativeLayout>
 

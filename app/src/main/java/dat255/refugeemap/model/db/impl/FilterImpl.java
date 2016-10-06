@@ -47,9 +47,12 @@ public class FilterImpl implements Filter
 
 	@Override public boolean doesEventFit(Event e)
 	{
-		if (categories != null &&
-			ArrayUtils.containsAll(e.getCategories(), categories))
-				return false;
+		if (categories.size()!=0) {
+			for (int cat : categories)
+				if (ArrayUtils.contains(e.getCategories(), cat))
+					return true;
+			return false;
+		}
 
 		if (searchTerms != null)
 			for (String term : searchTerms)
