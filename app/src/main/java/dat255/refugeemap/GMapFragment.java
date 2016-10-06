@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,6 +21,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 
+import dat255.refugeemap.helpers.DirectionsHelper;
+import dat255.refugeemap.helpers.ViewHelper;
 import dat255.refugeemap.helpers.GoogleAPIHelper;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
@@ -36,7 +37,7 @@ implements GoogleServicesAdapter, AppDatabase.Listener, GoogleAPIObserver {
     private EventCollection mEventsList;
     private Database mDatabase;
     private DirectionsHelper mDirectionHelper;
-
+    private ViewHelper mViewHelper;
     private static final String TAG = "GMapFragment";
 
     public interface ReplaceWithDetailView {
@@ -90,7 +91,7 @@ implements GoogleServicesAdapter, AppDatabase.Listener, GoogleAPIObserver {
 
     public void setUpHelpers() {
         mDirectionHelper = new DirectionsHelper(mGoogleMap);
-
+        mViewHelper = new ViewHelper(getActivity());
     }
 
     public void getEvents() {
@@ -187,16 +188,8 @@ implements GoogleServicesAdapter, AppDatabase.Listener, GoogleAPIObserver {
         //show the direction && set duration and distance text fields
         mDirectionHelper.showDirection(
             originLatLng, destinationLatLng, transportation);
-        setDurationAndDistanceText();
-    }
-
-    public void setDurationAndDistanceText() {
-        //TODO: fix synchronization issue (now main thread is quicker than Async task in backgroud - results in wrong values of Distans & Duration)
-        TextView timeAndDistance = (TextView) getActivity().findViewById(
-            R.id.info_time_and_distance);
-        timeAndDistance.setText("Distance: " + mDirectionHelper.getDistance() +
-            " Duration:" + mDirectionHelper.getDuration());
-        timeAndDistance.setVisibility(View.VISIBLE);
+        mViewHelper.setDurationAndDistanceText(mDirectionHelper.getDuration(),
+            mDirectionHelper.getDistance());
     }
 
     /* When the infoWindow is clicked, we send a notification about which marker
@@ -216,39 +209,14 @@ implements GoogleServicesAdapter, AppDatabase.Listener, GoogleAPIObserver {
     /* Our custom implementation of the infoWindow.*/
     @Override
     public View getInfoContents(Marker marker) {
-        //Fetching the custom infoView
-        View customView = getActivity().getLayoutInflater().inflate(
-            R.layout.custom_info_window, null);
-
-        if(marker.getTag() != null) {
-            Event activeEvent = (Event) marker.getTag();
-
-            //extracting the text fields
-            TextView infoTitle = (TextView) customView.findViewById(
-                R.id.info_title);
-            TextView infoTime = (TextView) customView.findViewById(
-                R.id.info_time);
-            TextView infoCategory = (TextView) customView.findViewById(
-                R.id.info_category);
-            TextView infoContactInfo = (TextView) customView.findViewById(
-                R.id.info_contactInformation);
-
-            //TODO: get ALL the associated values from the event
-            //setting the values corresponding to the event
-            infoTitle.setText(activeEvent.getTitle());
-            infoTime.setText("17.00-18-00");
-            infoCategory.setText("Idrottsaktivitet");
-            infoContactInfo.setText(activeEvent.getContactInformation());
-        }
-        //returning the custom_view with the correct values for the text fields
-        return customView;
+        return mViewHelper.getCustomInfoView(marker);
     }
 
     @Override
     public void onMapClick(LatLng latLng) {
         //remove the "directions" button and corresponding textfield when
         // marker isn't in focus
-        hideDirectionViews();
+        mViewHelper.hideDirectionViews();
 
         //check if there is any previous directions present, in that case
         // - remove it
@@ -257,15 +225,6 @@ implements GoogleServicesAdapter, AppDatabase.Listener, GoogleAPIObserver {
         }
     }
 
-    public void hideDirectionViews() {
-        Button directionButton = (Button) getActivity().findViewById(
-            R.id.directions_button);
-        directionButton.setVisibility(View.GONE);
-
-        TextView timeAndDistance = (TextView) getActivity().findViewById(
-            R.id.info_time_and_distance);
-        timeAndDistance.setVisibility(View.GONE);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

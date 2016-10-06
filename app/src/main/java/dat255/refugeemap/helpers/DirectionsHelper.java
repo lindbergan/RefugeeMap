@@ -1,4 +1,4 @@
-package dat255.refugeemap;
+package dat255.refugeemap.helpers;
 
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -21,6 +21,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import dat255.refugeemap.helpers.DataParser;
 
 public class DirectionsHelper {
 
