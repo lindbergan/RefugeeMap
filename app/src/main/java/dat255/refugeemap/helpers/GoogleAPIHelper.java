@@ -28,7 +28,7 @@ public class GoogleAPIHelper implements GoogleApiClient.ConnectionCallbacks,
 	private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 20;
 	private GoogleApiClient mGoogleApiClient;
 	private Context mContext;
-	private LatLng currentLocation;
+	private LatLng currentLocation = new LatLng(57.70, 11.97);
 	private List<GoogleAPIObserver> mGoogleAPIObserverList = new ArrayList<>();
 
 	public GoogleAPIHelper(Context context) {

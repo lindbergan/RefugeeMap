@@ -77,6 +77,9 @@ implements GoogleServicesAdapter, AppDatabase.Listener, GoogleAPIObserver {
         initiateListeners();
         configGoogleWidgets();
         placeMarkers(mEventsList);
+
+
+        animateMapCamera(App.getGoogleApiHelper().getCurrentLocation());
     }
 
     @Override
