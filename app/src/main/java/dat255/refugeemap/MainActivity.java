@@ -53,7 +53,6 @@ public class MainActivity extends AppCompatActivity
 
     private String[] mDrawerListItems;
     private ViewHelper mViewHelper;
-    private Toolbar toolbar;
     private long lastSearchClickTime = 0;
     private int clickThreshold = 500;
     private InputMethodManager inputManager;
@@ -62,13 +61,8 @@ public class MainActivity extends AppCompatActivity
     private ImageButton searchBtn;
     public static String sDefSystemLanguage;
     private Database mDatabase;
-
-	  FragmentManager fm = getFragmentManager();
-	  private ImageButton mButton;
-	  private String ACTIVE_FRAGMENT;
-	  private Fragment[] currentFragments = new Fragment[3];
-
-	  private ArrayList<Integer> activeCategories = new ArrayList<>();
+	private Toolbar toolbar;
+	private ArrayList<Integer> activeCategories = new ArrayList<>();
 
 
 
@@ -114,10 +108,12 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+
     public void setUpToolbar(){
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+
     }
 
     @Override
@@ -246,14 +242,17 @@ public class MainActivity extends AppCompatActivity
 		Set<String> updatedEventList = new TreeSet<>(savedEvents);
 
 		if (!savedEvents.contains(id)) {
+
 			updatedEventList.add(id);
 			editor.putStringSet(getString(R.string.saved_events_key),
                 updatedEventList);
 		} else {
+
 			updatedEventList.remove(id);
 			editor.putStringSet(getString(R.string.saved_events_key),
                 updatedEventList);
 		}
+
 		return editor.commit(); //returns true if save/remove was successful
 	}
 
@@ -268,9 +267,12 @@ public class MainActivity extends AppCompatActivity
 		}
 	}
 
+
+
 	@Override
 	public void onBackPressed() {
         mViewHelper.stateSwitch("back_button_pressed");
+
 	}
 
     public EventCollection getSavedEvents(){
@@ -291,6 +293,17 @@ public class MainActivity extends AppCompatActivity
     }
 
 	@Override
+
+	public void updateSavedEventsFrag(){
+
+		android.app.Fragment frag = getFragmentManager().findFragmentByTag("saved_events_list_frag");
+			if(frag instanceof EventListFragment){
+				//((EventListFragment) frag).fillListFragment(getSavedEvents());
+				((EventListFragment) frag).onVisibleEventsChanged(getSavedEvents());
+			}
+
+		}
+
 	protected void onStart() {
 		super.onStart();
 

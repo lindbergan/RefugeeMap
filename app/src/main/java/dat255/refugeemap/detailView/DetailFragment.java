@@ -128,6 +128,9 @@ public class DetailFragment extends Fragment {
             boolean actionSuccessful = mListener.onSaveEventButtonPressed(this.id);
 
 				if(actionSuccessful){
+
+					mListener.updateSavedEventsFrag();
+
 					if(mListener.isEventSaved(this.id)){
 
                         saveButton.setBackgroundResource(R.drawable.ic_remove_circle_black_48dp);
@@ -172,6 +175,7 @@ public class DetailFragment extends Fragment {
 	public interface OnFragmentInteractionListener {
 		boolean onSaveEventButtonPressed(String id);
 		boolean isEventSaved(String id);
+		void updateSavedEventsFrag();
 	}
 
 }

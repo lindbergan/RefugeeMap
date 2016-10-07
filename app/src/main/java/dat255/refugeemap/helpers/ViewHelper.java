@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.Marker;
 
@@ -37,8 +38,9 @@ public class ViewHelper {
     private final int MAP_FRAGMENT = 0;
     private final int LIST_FRAGMENT = 1;
     private final int DETAIL_FRAGMENT = 2;
+    private final int SAVED_LIST_FRAGMENT = 3;
     private String ACTIVE_FRAGMENT;
-    private Fragment[] currentFragments = new Fragment[3];
+    private Fragment[] currentFragments = new Fragment[4];
     FragmentManager fm;
     private Activity mActivity;
     private ImageButton mButton;
@@ -53,15 +55,18 @@ public class ViewHelper {
 
     public void stateSwitch(String args) {
         //Starting state
-        if(args.equals("app_start")) {
+        if(args.equals("app_start")){
             Fragment mapFrag = new GMapFragment();
             Fragment listFrag = new EventListFragment();
+            Fragment savedListFrag = new EventListFragment();
             initializeViews(mActivity.findViewById(R.id.main_layout));
             fm.beginTransaction().add(R.id.fragment_container, mapFrag)
-                .add(R.id.fragment_container, listFrag).hide(listFrag)
-                .show(mapFrag).commit();
+                    .add(R.id.fragment_container, listFrag).add(R.id.fragment_container, savedListFrag,
+                    "saved_events_list_frag").hide(listFrag).hide(savedListFrag).show(mapFrag)
+                    .commit();
             currentFragments[MAP_FRAGMENT] = mapFrag;
             currentFragments[LIST_FRAGMENT] = listFrag;
+            currentFragments[SAVED_LIST_FRAGMENT] = savedListFrag;
             ACTIVE_FRAGMENT = GMapFragment.class.getSimpleName();
         }
         //end starting state
@@ -84,8 +89,31 @@ public class ViewHelper {
         }
         //**** end map and list toggle button *****
 
+        //For "Favourites" button pressed
+
+        else if(args.equals("favourites_button_pressed")){
+            if(currentFragments[DETAIL_FRAGMENT] != null){
+                fm.beginTransaction().remove(currentFragments[DETAIL_FRAGMENT]).commit();
+            }
+            if(ACTIVE_FRAGMENT.equals(EventListFragment.class.getSimpleName())){
+                fm.beginTransaction().hide(currentFragments[LIST_FRAGMENT]).commit();
+            }
+            if(ACTIVE_FRAGMENT.equals(GMapFragment.class.getSimpleName())){
+                fm.beginTransaction().hide(currentFragments[MAP_FRAGMENT]).commit();
+            }
+            fm.beginTransaction().show(currentFragments[SAVED_LIST_FRAGMENT]).commit();
+
+            //Note that this line of code does not specify which of the two EventListFragments
+            //is the active one. Should be fixed in future release.
+            ACTIVE_FRAGMENT = EventListFragment.class.getSimpleName();
+            showHideToggleButton(false);
+        }
+        //end "favourites" button pressed
+
+
         //For back button pressed
         else if(args.equals("back_button_pressed")) {
+            fm.beginTransaction().hide(currentFragments[SAVED_LIST_FRAGMENT]).commit();
             if(currentFragments[DETAIL_FRAGMENT] != null) {
                 fm.beginTransaction().remove(currentFragments[DETAIL_FRAGMENT])
                     .hide(currentFragments[LIST_FRAGMENT])
@@ -94,11 +122,13 @@ public class ViewHelper {
                 toggleImage();
                 showHideToggleButton(true);
             }
+
             else if(ACTIVE_FRAGMENT.equals(
                 EventListFragment.class.getSimpleName())) {
                 Fragment frag = currentFragments[MAP_FRAGMENT];
                 fm.beginTransaction().show(frag).hide(
-                    currentFragments[LIST_FRAGMENT]).commit();
+                    currentFragments[LIST_FRAGMENT])
+                        .hide(currentFragments[SAVED_LIST_FRAGMENT]).commit();
                 ACTIVE_FRAGMENT = GMapFragment.class.getSimpleName();
             }
         }
@@ -119,7 +149,8 @@ public class ViewHelper {
                 "title", "org", "description", "phone", "date", 
                 Integer.toString(3)});
             fm.beginTransaction().add(R.id.fragment_container, frag)
-                .hide(currentFragments[LIST_FRAGMENT]).commit();
+                .hide(currentFragments[LIST_FRAGMENT]).
+                    hide(currentFragments[SAVED_LIST_FRAGMENT]).commit();
             showHideToggleButton(false);
             currentFragments[DETAIL_FRAGMENT] = frag;
         }
@@ -203,10 +234,20 @@ public class ViewHelper {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position,
                                 long id) {
-            if (mDrawerListItems[position].equals("Favourites")) {
-                //EventCollection events = mActivity.getSavedEvents();
-                if(mActivity instanceof MainActivity) {
-                    ((MainActivity) mActivity).getSavedEvents();
+            if (mDrawerListItems[position].equals("Favourites")){
+                if(mActivity instanceof MainActivity){
+                if(((MainActivity)mActivity).getSavedEvents() != null
+                        && ((MainActivity)mActivity).getSavedEvents().getSize() > 0) {
+
+                    Toast.makeText(mActivity.getApplicationContext(), "you have clicked Favourites",
+                            Toast.LENGTH_SHORT).show();
+                    //EventCollection events = getSavedEvents();
+                    ((MainActivity)mActivity).updateSavedEventsFrag();
+                    stateSwitch("favourites_button_pressed");
+                }
+                }else{
+                    Toast.makeText(mActivity.getApplicationContext(), "No saved events", Toast.LENGTH_SHORT).
+                            show();
                 }
             }
         }

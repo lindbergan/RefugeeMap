@@ -99,6 +99,10 @@ public class EventListFragment extends Fragment implements AppDatabase.Listener{
 		return new EventRecyclerViewAdapter(mDatabase.getEventsByFilter(filter), mListener);
 	}
 
+	public EventRecyclerViewAdapter fillListFragment(EventCollection events){
+		return new EventRecyclerViewAdapter(events, mListener);
+	}
+
 
 	@Override
 	public void onAttach(Context context) {
