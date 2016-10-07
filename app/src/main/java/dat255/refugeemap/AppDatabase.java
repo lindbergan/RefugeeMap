@@ -1,10 +1,19 @@
 package dat255.refugeemap;
 
+import android.content.Context;
+import android.util.Log;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
+import dat255.refugeemap.model.Wrapper;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.EventCollection;
 import dat255.refugeemap.model.db.impl.DatabaseImpl;
@@ -17,53 +26,50 @@ import dat255.refugeemap.model.db.impl.JSONToolsImpl;
  */
 public class AppDatabase
 {
+	public static interface Listener
+	{
+		/** Called whenever {@code updateVisibleEvents} is called. */
+		public void onVisibleEventsChanged(EventCollection newEvents);
+	}
+
 	private static final String NULL_ERROR_MESSAGE =
 		"'AppDatabase.init' must be called before 'getDatabaseInstance'";
 
 	private static Database db = null;
-	private static List<Database.Listener> listeners = new ArrayList<>();
+	private static List<Listener> listeners = new LinkedList<>();
 
-	/**
-	 * Must be called before {@code getDatabaseInstance}
-	 * to prevent a {@link NullPointerException}.
-	 * @throws FileNotFoundException if either of the given paths are invalid.
-	 *
-	 * Preconditions:
-	 * - All arguments are non-null.
-	 * - Both arguments are paths to valid JSON database files.
-	 */
-	public static void init(String ctgNamesFilePath, String eventsFilePath)
-		throws FileNotFoundException
+	public static void init(Context context) throws IOException
 	{
 		if (db != null) return;
-		db = new DatabaseImpl(ctgNamesFilePath, eventsFilePath,
-			new JSONToolsImpl());
-	}
 
-	/**
-	 * Must be called before {@code getDatabaseInstance}
-	 * to prevent a {@link NullPointerException}.
-	 * @throws FileNotFoundException if either of the given paths are invalid.
-	 *
-	 * Preconditions:
-	 * - All arguments are non-null.
-	 * - Both arguments contain valid JSON database code.
-	 */
-	public static void init(Reader ctgNamesReader, Reader eventsReader)
-		throws FileNotFoundException
-	{
-		if (db != null) return;
-		db = new DatabaseImpl(ctgNamesReader, eventsReader,
-			new JSONToolsImpl());
+		Wrapper<byte[]> ctgBytes = new Wrapper<>(null),
+			eventBytes = new Wrapper<>(null);
+
+		DatabaseOnlineLoader.load(ctgBytes, eventBytes);
+
+		File file1 = new File(context.getFilesDir(), "ctgs.json");
+		File file2 = new File(context.getFilesDir(), "db.json");
+
+		FileOutputStream os1 = new FileOutputStream(file1);
+		FileOutputStream os2 = new FileOutputStream(file2);
+
+		os1.write(ctgBytes.getValue());
+		os2.write(eventBytes.getValue());
+
+		FileInputStream is1 = new FileInputStream(file1);
+		FileInputStream is2 = new FileInputStream(file2);
+
+		db = new DatabaseImpl(
+			new InputStreamReader(is1),
+			new InputStreamReader(is2),
+			new JSONToolsImpl()
+		);
 	}
 
 	/**
 	 * Returns a reference to the created {@link Database} instance.
 	 *
 	 * @throws NullPointerException if {@code init} has not been called.
-	 *
-	 * Preconditions:
-	 * - Either version of {@code init} has been called.
 	 */
 	public static Database getDatabaseInstance() throws NullPointerException
 	{
@@ -71,12 +77,12 @@ public class AppDatabase
 		return db;
 	}
 
-	public static void addListener(Database.Listener l)
+	public static void addListener(Listener l)
 	{ listeners.add(l); }
 
 	public static void updateVisibleEvents(EventCollection newEvents)
 	{
-		for (Database.Listener l : listeners)
+		for (Listener l : listeners)
 			l.onVisibleEventsChanged(newEvents);
 	}
 }

@@ -32,4 +32,5 @@ dependencies {
   compile 'com.google.android.gms:play-services-maps:9.4.0'
   compile 'com.google.android.gms:play-services-location:9.4.0'
   compile 'com.google.code.gson:gson:2.7'
+  compile 'commons-io:commons-io:2.4'
 }

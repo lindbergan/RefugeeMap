@@ -18,12 +18,12 @@ public interface Filter
 	 */
 	public boolean doesEventFit(Event e);
 
-	/** Returns a collection of all categories in the filter's requirements. */
+	/** Returns {@code true} iff no search criteria have been specified. */
+	public boolean isEmpty();
+
+	// May be removed
 	public Collection<Integer> getCategories();
 
-	/**
-	 * Returns a collection of all search terms (title
-	 * words and tags) in the filter's requirements.
-	 */
+	// May be removed
 	public Collection<String> getSearchTerms();
 }

@@ -1,5 +1,7 @@
 package dat255.refugeemap.model.db;
 
+import java.util.List;
+
 /**
  * An interface which provides access to all events stored in a database.
  * Events can be accessed from an {@link EventCollection}.
@@ -8,31 +10,6 @@ package dat255.refugeemap.model.db;
  */
 public interface Database
 {
-	public static interface Listener
-	{
-		/**
-		 * Called when the collection of 'visible events' changes
-		 * (i.e. when either {@code Event.getAllEvents} or
-		 * {@code Event.getEventsByFilter} is called).
-		 */
-		public void onVisibleEventsChanged(EventCollection newEvents);
-	}
-
-	/**
-	 * Returns a collection of references to all the
-	 * {@link Event} instances in the database.
-	 */
-	public EventCollection getAllEvents();
-
-	/**
-	 * Returns a collection of references to all the {@link Event}
-	 * instances that satisfy the given filter in the database.
-	 *
-	 * Preconditions:
-	 * - {@code filter} is non-null
-	 */
-	public EventCollection getEventsByFilter(Filter filter);
-
 	/**
 	 * Returns the name of the category with the given ID.
 	 *
@@ -40,4 +17,38 @@ public interface Database
 	 * - {@code id} is a valid category ID
 	 */
 	public String getCategoryName(int id);
+
+	/**
+	 * If it exists, the {@link Event} with the given ID number is returned.
+	 * Otherwise, {@code null} is returned.
+	 *
+	 * Preconditions:
+	 * - All arguments are non-null
+	 */
+	public Event getEvent(Integer id);
+
+	/**
+	 * Returns a collection of every {@link Event} with
+	 * an ID number matching a number in {@code idArr}.
+	 *
+	 * Preconditions:
+	 * - All arguments are non-null
+	 */
+	public EventCollection getEvents(List<Integer> idList);
+
+	/**
+	 * Returns a collection of references to all {@link Event} instances
+	 * that satisfy {@code filter}, sorted according to {@code si}.
+	 *
+	 * Preconditions:
+	 * - All arguments are non-null
+	 */
+	public EventCollection getEventsByFilter(Filter filter, Event.SortInfo si);
+
+	// -----------------------------------
+	// --- DEPRECATED, WILL BE REMOVED ---
+	// -----------------------------------
+
+	@Deprecated public EventCollection getAllEvents();
+	@Deprecated public EventCollection getEventsByFilter(Filter filter);
 }

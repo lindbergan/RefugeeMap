@@ -11,12 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
+import dat255.refugeemap.model.db.Filter;
 
 /**
  * A fragment representing a list of Items.
@@ -24,7 +28,7 @@ import dat255.refugeemap.model.db.EventCollection;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class EventListFragment extends Fragment implements Database.Listener{
+public class EventListFragment extends Fragment implements AppDatabase.Listener{
 	private int mColumnCount = 1;
 	private static final String TAG = "EventListFragment";
 
@@ -50,6 +54,8 @@ public class EventListFragment extends Fragment implements Database.Listener{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+
+		//Log.v(TAG, "Lat: " + latLng.latitude + " Lng: " + latLng.longitude);
 	}
 
 	@Override
@@ -69,17 +75,32 @@ public class EventListFragment extends Fragment implements Database.Listener{
 
 			// Create new database instance and fetch categories and events
 			try {
-				AppDatabase.init(new InputStreamReader(getResources().openRawResource(R.raw.ctgs)),
-								new InputStreamReader(getResources().openRawResource(R.raw.db)));
+				AppDatabase.init(getActivity());
 				mDatabase=AppDatabase.getDatabaseInstance();
-			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
 				Log.v(TAG, "Database file not found: " + e.getMessage());
 			}
-			eventRecycler = new EventRecyclerViewAdapter(mDatabase.getAllEvents(), mListener);
+			eventRecycler = fillListFragment();
 			recyclerView.setAdapter(eventRecycler);
 			AppDatabase.addListener(this);
 		}
 		return view;
+	}
+
+	public EventRecyclerViewAdapter fillListFragment() {
+		return new EventRecyclerViewAdapter(mDatabase.getAllEvents(), mListener);
+	}
+
+	/**
+	 * Will fill the listview with events matching a color (category)
+	 */
+
+	public EventRecyclerViewAdapter fillListFragment(Filter filter) {
+		return new EventRecyclerViewAdapter(mDatabase.getEventsByFilter(filter), mListener);
+	}
+
+	public EventRecyclerViewAdapter fillListFragment(EventCollection events){
+		return new EventRecyclerViewAdapter(events, mListener);
 	}
 
 
@@ -113,6 +134,6 @@ public class EventListFragment extends Fragment implements Database.Listener{
 	@Override
 	public void onVisibleEventsChanged(EventCollection newEvents){
 		eventRecycler.setEvents(newEvents);
-		recyclerView.invalidate();
+		eventRecycler.notifyDataSetChanged();
 	}
 }

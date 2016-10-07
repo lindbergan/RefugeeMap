@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorPrimary"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:clipChildren="false">
+
+    <ImageButton
+        android:id="@+id/category0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="0dp"
+        android:background="@color/colorCategory1"
+        android:src="@drawable/ic_cat_1"
+        android:onClick="onCategoryClick"
+        android:tag="0"/>
+
+    <ImageButton
+        android:id="@+id/category1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="0dp"
+        android:background="@color/colorCategory2"
+        android:src="@drawable/ic_cat_2"
+        android:onClick="onCategoryClick"
+        android:tag="1"/>
+
+    <ImageButton
+        android:id="@+id/category2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="0dp"
+        android:background="@color/colorCategory3"
+        android:src="@drawable/ic_cat_3"
+        android:onClick="onCategoryClick"
+        android:tag="2"/>
+
+    <ImageButton
+        android:id="@+id/category3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_margin="0dp"
+        android:padding="0dp"
+        android:background="@color/colorCategory4"
+        android:tag="3"
+        android:onClick="onCategoryClick"
+        android:src="@drawable/ic_cat_4" />
+</LinearLayout>

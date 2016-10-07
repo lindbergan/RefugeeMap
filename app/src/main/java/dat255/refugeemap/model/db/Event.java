@@ -9,6 +9,16 @@ package dat255.refugeemap.model.db;
  */
 public interface Event
 {
+	/**
+	 * An interface with various implementations describing the sorting-related
+	 * information for a collection of {@link Event}s.
+	 * @author Shoulder
+	 */
+	public interface SortInfo
+	{
+		public int getInternalID();
+	}
+
 	public Integer getID();
 	public Integer getOwnerID();
 

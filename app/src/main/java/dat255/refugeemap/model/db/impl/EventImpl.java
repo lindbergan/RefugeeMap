@@ -1,5 +1,7 @@
 package dat255.refugeemap.model.db.impl;
 
+import java.util.Comparator;
+
 import dat255.refugeemap.model.db.Event;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -11,6 +13,20 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class EventImpl implements Event
 {
+	@AllArgsConstructor
+	public static class TitleSortInfo implements SortInfo
+	{
+		public final Comparator stringComparator;
+		public int getInternalID() { return 0; }
+	}
+
+	@AllArgsConstructor
+	public static class DistanceSortInfo implements SortInfo
+	{
+		public final double userLat, userLon, maxGreatCircleDistance;
+		public int getInternalID() { return 1; }
+	}
+
 	private final Integer id;
 	@Getter private final Integer ownerID;
 	@Getter private final Integer[] categories;

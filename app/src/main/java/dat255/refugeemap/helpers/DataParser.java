@@ -1,4 +1,4 @@
-package dat255.refugeemap;
+package dat255.refugeemap.helpers;
 
 
 import com.google.android.gms.maps.model.LatLng;

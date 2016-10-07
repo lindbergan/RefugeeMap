@@ -1,12 +1,8 @@
 package dat255.refugeemap.model.db.impl;
 
-import java.text.Collator;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
@@ -17,13 +13,25 @@ import dat255.refugeemap.model.db.EventCollection;
  */
 public class EventList implements EventCollection
 {
+	/** A custom (immutable) iterator for {@link Event} lists. */
+	public class Iterator implements java.util.Iterator<Event>
+	{
+		private java.util.Iterator<Event> it = events.iterator();
+
+		public boolean hasNext()
+		{ return it.hasNext(); }
+
+		public Event next()
+		{ return it.next(); }
+	}
+
 	private List<Event> events;
 
 	public EventList(List<Event> events)
 	{ this.events = events; }
 
 	@Override public Iterator iterator()
-	{ return events.iterator(); }
+	{ return new Iterator(); }
 
 	@Override public Event get(int index)
 	{ return events.get(index); }
@@ -48,39 +56,6 @@ public class EventList implements EventCollection
 		return equals((EventList)obj);
 	}
 
-	/* --------------------------- */
-	/* ----- SORTING-RELATED ----- */
-	/* --------------------------- */
-
-	// For internal use only
-	private static interface Sorter
-	{ public void sort(List<Event> events, final Collator strClt); }
-
-	private static final Map<SortCriteria, Sorter> sorters = new HashMap<>();
-
-	static
-	{
-		sorters.put(SortCriteria.TitleAlphabetical, new Sorter() {
-			@Override public void sort(List<Event> lst, final Collator strClt) {
-				Collections.sort(lst, new Comparator<Event>() {
-					@Override public int compare(Event e1, Event e2) {
-						return strClt.compare(e2.getTitle(), e1.getTitle());
-					}
-				});
-			}
-		});
-
-		sorters.put(SortCriteria.TitleAlphabeticalReverse, new Sorter() {
-			@Override public void sort(List<Event> lst, final Collator strClt) {
-				Collections.sort(lst, new Comparator<Event>() {
-					@Override public int compare(Event e1, Event e2) {
-						return -strClt.compare(e2.getTitle(), e1.getTitle());
-					}
-				});
-			}
-		});
-	}
-
-	@Override public void sort(SortCriteria criteria, Collator stringCollator)
-	{ sorters.get(criteria).sort(events, stringCollator); }
+	public void sort(Event.SortInfo sortInfo)
+	{ EventSortingUtils.sortList(events, sortInfo); }
 }
