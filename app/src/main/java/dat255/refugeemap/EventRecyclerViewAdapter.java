@@ -100,15 +100,17 @@ public class EventRecyclerViewAdapter
 
 		holder.mItem = event;
 		holder.mIdView.setText(event.getTitle());
-		double distanceToEvent = DistanceCalculator.getGreatCircleDistance(
-			currentLocation.latitude, currentLocation.longitude,
-			event.getLatitude(), event.getLongitude());
+		if (currentLocation != null) {
+			double distanceToEvent = DistanceCalculator.getGreatCircleDistance(
+				currentLocation.latitude, currentLocation.longitude,
+				event.getLatitude(), event.getLongitude());
 
-		Locale currentLocale = App.getInstance().getApplicationContext()
-			.getResources().getConfiguration().locale;
-		
-		holder.mDistanceView
-			.setText(String.format(currentLocale, "%.2f km", distanceToEvent));
+			Locale currentLocale = App.getInstance().getApplicationContext()
+				.getResources().getConfiguration().locale;
+
+			holder.mDistanceView
+				.setText(String.format(currentLocale, "%.2f km", distanceToEvent));
+		}
 
 		//holder.mContentView.setText(mEvents.get(position).getDescription());
 		holder.mView.setOnClickListener(new View.OnClickListener() {
