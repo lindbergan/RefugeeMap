@@ -52,5 +52,5 @@
         android:background="@color/colorCategory4"
         android:tag="3"
         android:onClick="onCategoryClick"
-        android:src="@drawable/ic_list_black_48dp" />
+        android:src="@drawable/ic_cat_4" />
 </LinearLayout>
