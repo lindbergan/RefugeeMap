@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 import dat255.refugeemap.helpers.DirectionsHelper;
@@ -234,13 +235,11 @@ implements GoogleServicesAdapter, AppDatabase.Listener, GoogleAPIObserver {
         super.onCreate(savedInstanceState);
 
 				try {
-            AppDatabase.init(new InputStreamReader(getResources().
-                openRawResource(R.raw.ctgs)), new InputStreamReader(
-                getResources().openRawResource(R.raw.db)));
+			AppDatabase.init(getActivity());
             mDatabase=AppDatabase.getDatabaseInstance();
             AppDatabase.addListener(this);
         }
-        catch (FileNotFoundException ex) {
+        catch (IOException ex) {
             ex.printStackTrace();
         }
     }

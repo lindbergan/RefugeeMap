@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 import dat255.refugeemap.model.db.Database;
@@ -74,10 +75,9 @@ public class EventListFragment extends Fragment implements AppDatabase.Listener{
 
 			// Create new database instance and fetch categories and events
 			try {
-				AppDatabase.init(new InputStreamReader(getResources().openRawResource(R.raw.ctgs)),
-								new InputStreamReader(getResources().openRawResource(R.raw.db)));
+				AppDatabase.init(getActivity());
 				mDatabase=AppDatabase.getDatabaseInstance();
-			} catch (FileNotFoundException e) {
+			} catch (IOException e) {
 				Log.v(TAG, "Database file not found: " + e.getMessage());
 			}
 			eventRecycler = fillListFragment();
