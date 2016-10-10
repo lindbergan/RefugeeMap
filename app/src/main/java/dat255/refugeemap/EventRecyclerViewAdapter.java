@@ -2,6 +2,7 @@ package dat255.refugeemap;
 
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,11 +39,21 @@ public class EventRecyclerViewAdapter
 	private HashMap<Integer, Integer> listItemColor = new HashMap<>();
 	private LatLng currentLocation;
 
+	/**
+	 * Set the colors or drawables that we want to use here
+	 */
+
+	private void initListItemColors(ViewHolder holder) {
+		listItemColor.put(0, ContextCompat.getColor(holder.mView.getContext(), R.color.colorCategory1));
+		listItemColor.put(1, ContextCompat.getColor(holder.mView.getContext(), R.color.colorCategory2));
+		listItemColor.put(2, ContextCompat.getColor(holder.mView.getContext(), R.color.colorCategory3));
+		listItemColor.put(3, ContextCompat.getColor(holder.mView.getContext(), R.color.colorCategory4));
+	}
+
 	public EventRecyclerViewAdapter(EventCollection events,
 									OnListFragmentInteractionListener listener) {
 		mEvents = events;
 		mListener = listener;
-		initListItemColors();
 
 		GoogleAPIHelper googleAPIHelper = App.getGoogleApiHelper();
 		googleAPIHelper.addApiListener(this);
@@ -55,36 +66,15 @@ public class EventRecyclerViewAdapter
 	}
 
 	/**
-	 * Set the colors or drawables that we want to use here
-	 */
-
-	public void initListItemColors() {
-		Database database = AppDatabase.getDatabaseInstance();
-		listItemColor.put(0, Color.RED);
-		listItemColor.put(1, Color.GREEN);
-		listItemColor.put(2, Color.BLUE);
-	}
-
-	/**
 	 * If mItem has > 1 categories the layout gets a gradient with corresponding colors
 	 */
 
 	private void setListItemColor(final ViewHolder holder) {
-		Database database = AppDatabase.getDatabaseInstance();
-		int[] tempArray = new int[holder.mItem.getCategories().length];
-
+		initListItemColors(holder);
 		for (int i  = 0; i < holder.mItem.getCategories().length; i++) {
-			if (holder.mItem.getCategories().length > 1) {
-				tempArray[i] = listItemColor.get(holder.mItem.getCategories()[i]);
-				holder.mLayout.setBackground(new GradientDrawable(GradientDrawable.Orientation.TR_BL, tempArray));
-			}
-			else {
-				holder.mLayout.setBackgroundColor(listItemColor.get(holder.mItem.getCategories()[i]));
-			}
+			holder.mLayout.setBackgroundColor(listItemColor.get(holder.mItem.getCategories()[0]));
 		}
-
 	}
-
 
 	@Override
 	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
