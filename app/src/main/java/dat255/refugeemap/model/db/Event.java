@@ -30,6 +30,7 @@ public interface Event
 	public Double getLatitude();
 	public Double getLongitude();
 
+	public String getDateInformation();
 	public String getTitle();
 	public String getAddress();
 	public String getContactInformation();

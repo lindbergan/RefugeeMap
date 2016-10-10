@@ -21,7 +21,7 @@ public class TestEventList
 	private EventImpl createEventWithTitleOnly(String title)
 	{
 		return new EventImpl(0, 0, null, null, 0.0, 0.0,
-			title, null, null, null);
+			null, title, null, null, null);
 	}
 
 	@Test public void testSortByTitle()

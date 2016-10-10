@@ -34,7 +34,8 @@ public class EventImpl implements Event
 	@Getter private final Integer[] categories;
 	@Getter private final String[] tags;
 	@Getter private final Double latitude, longitude;
-	@Getter private final String title, address, contactInformation;
+	@Getter private final String dateInformation, title,
+		address, contactInformation;
 	private final HashMap<String, String> descriptions;
 
 	public Integer getID()
