@@ -35,7 +35,7 @@ public class EventRecyclerViewAdapter
 
 	private EventCollection mEvents;
 	private final OnListFragmentInteractionListener mListener;
-	private HashMap<String, Integer> listItemColor = new HashMap<>();
+	private HashMap<Integer, Integer> listItemColor = new HashMap<>();
 	private LatLng currentLocation;
 
 	public EventRecyclerViewAdapter(EventCollection events,
@@ -60,9 +60,9 @@ public class EventRecyclerViewAdapter
 
 	public void initListItemColors() {
 		Database database = AppDatabase.getDatabaseInstance();
-		listItemColor.put(database.getCategoryName(0), Color.RED);
-		listItemColor.put(database.getCategoryName(1), Color.GREEN);
-		listItemColor.put(database.getCategoryName(2), Color.BLUE);
+		listItemColor.put(0, Color.RED);
+		listItemColor.put(1, Color.GREEN);
+		listItemColor.put(2, Color.BLUE);
 	}
 
 	/**
@@ -75,11 +75,11 @@ public class EventRecyclerViewAdapter
 
 		for (int i  = 0; i < holder.mItem.getCategories().length; i++) {
 			if (holder.mItem.getCategories().length > 1) {
-				tempArray[i] = listItemColor.get(database.getCategoryName(holder.mItem.getCategories()[i]));
+				tempArray[i] = listItemColor.get(holder.mItem.getCategories()[i]);
 				holder.mLayout.setBackground(new GradientDrawable(GradientDrawable.Orientation.TR_BL, tempArray));
 			}
 			else {
-				holder.mLayout.setBackgroundColor(listItemColor.get(database.getCategoryName(holder.mItem.getCategories()[i])));
+				holder.mLayout.setBackgroundColor(listItemColor.get(holder.mItem.getCategories()[i]));
 			}
 		}
 

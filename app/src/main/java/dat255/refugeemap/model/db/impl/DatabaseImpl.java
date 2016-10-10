@@ -2,11 +2,12 @@ package dat255.refugeemap.model.db.impl;
 
 import java.io.FileNotFoundException;
 import java.io.Reader;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
-import dat255.refugeemap.model.ArrayUtils;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
@@ -18,7 +19,7 @@ import dat255.refugeemap.model.db.JSONTools;
  */
 public class DatabaseImpl implements Database
 {
-	private final String[] categoryNames;
+	private final HashMap<Locale, String[]> categoryNames = new HashMap<>();
 
 	// TODO Maybe change to a HashMap<Integer, Event> for quick access by ID
 	private final EventCollection events;
@@ -27,27 +28,12 @@ public class DatabaseImpl implements Database
 		public int getInternalID() { return -1; }
 	};
 
-	public DatabaseImpl(String ctgNamesFilePath, String eventsFilePath,
-		JSONTools json) throws FileNotFoundException
+	public DatabaseImpl(Reader eventsReader, JSONTools json)
+		throws FileNotFoundException
 	{
-		categoryNames = (String[])(json.
-			deserializeFile(ctgNamesFilePath, String[].class));
-		events = new EventArray((EventImpl[])(json.
-			deserializeFile(eventsFilePath, EventImpl[].class)));
-	}
-
-	// may be removed
-	public DatabaseImpl(Reader ctgNamesReader, Reader eventsReader,
-		JSONTools json) throws FileNotFoundException
-	{
-		categoryNames = (String[])(json.
-			deserializeFile(ctgNamesReader, String[].class));
 		events = new EventArray((EventImpl[])(json.
 			deserializeFile(eventsReader, EventImpl[].class)));
 	}
-
-	@Override public String getCategoryName(int id)
-	{ return categoryNames[id]; }
 
 	@Override public Event getEvent(Integer id)
 	{
@@ -94,15 +80,11 @@ public class DatabaseImpl implements Database
 	}
 
 	// Only exists for testing purposes ('create')
-	private DatabaseImpl(String[] categoryNames, EventCollection events)
-	{
-		this.categoryNames = categoryNames;
-		this.events = events;
-	}
+	private DatabaseImpl(EventCollection events) { this.events = events; }
 
 	// Only to be used for testing.
-	public static DatabaseImpl create(String[] ctgNames, EventCollection events)
-	{ return new DatabaseImpl(ctgNames, events); }
+	public static DatabaseImpl create(EventCollection events)
+	{ return new DatabaseImpl(events); }
 
 	// Will be removed
 	@Deprecated@Override public EventCollection getAllEvents()

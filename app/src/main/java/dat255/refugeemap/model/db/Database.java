@@ -11,14 +11,6 @@ import java.util.List;
 public interface Database
 {
 	/**
-	 * Returns the name of the category with the given ID.
-	 *
-	 * Preconditions:
-	 * - {@code id} is a valid category ID
-	 */
-	public String getCategoryName(int id);
-
-	/**
 	 * If it exists, the {@link Event} with the given ID number is returned.
 	 * Otherwise, {@code null} is returned.
 	 *

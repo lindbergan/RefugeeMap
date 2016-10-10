@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,11 +88,9 @@ public class MainActivity extends AppCompatActivity
             Context.INPUT_METHOD_SERVICE);
 
         try {
-			this.mDatabase = new DatabaseImpl(new InputStreamReader(
-                getResources().openRawResource(R.raw.ctgs)),
-                new InputStreamReader(getResources().openRawResource(R.raw.db)),
-                new JSONToolsImpl());
-		} catch (FileNotFoundException ex) {
+        	AppDatabase.init(this);
+			this.mDatabase = AppDatabase.getDatabaseInstance();
+		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
 

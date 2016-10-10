@@ -15,27 +15,25 @@ import dat255.refugeemap.model.Wrapper;
  */
 public class DatabaseOnlineLoader
 {
-	private static String categoryNamesDropboxURL =
-		"https://dl.dropboxusercontent.com/s/rqop57wt052u532/ctgs.json?dl=0";
-	private static String eventsDropboxURL =
-		"https://dl.dropboxusercontent.com/s/ho8cmx5g8gwbuka/db.json?dl=0";
-
-	private static class LoadAndSaveTask extends AsyncTask<String, Void, Boolean>
+	private static class LoadEventTask extends AsyncTask<Void, Void, Boolean>
 	{
+		private static final String eventsDropboxURL =
+			"https://dl.dropboxusercontent.com/s/ho8cmx5g8gwbuka/db.json?dl=0";
+
 		private Wrapper<byte[]> bytes;
 
-		public LoadAndSaveTask(Wrapper<byte[]> bytes)
+		public LoadEventTask(Wrapper<byte[]> bytes)
 		{ this.bytes = bytes; }
 
-		protected Boolean doInBackground(String... urlStrings)
+		protected Boolean doInBackground(Void... nothing)
 		{
-			try {
-				DataInputStream is = new DataInputStream(new URL(urlStrings[0]).openStream());
+			try
+			{
+				DataInputStream is = new DataInputStream(new
+					URL(eventsDropboxURL).openStream());
 				bytes.setValue(IOUtils.toByteArray(is));
 				return true;
-			} catch (IOException e) {
-				return false;
-			}
+			} catch (IOException e) { return false; }
 		}
 
 		protected void onPostExecute(Boolean didLoadingSucceed)
@@ -45,13 +43,10 @@ public class DatabaseOnlineLoader
 		}
 	};
 
-	public static void load(Wrapper<byte[]> ctgBytes, Wrapper<byte[]> eventBytes) throws IOException
+	public static void load(Wrapper<byte[]> eventBytes) throws IOException
 	{
-		LoadAndSaveTask taskA = new LoadAndSaveTask(ctgBytes),
-			taskB = new LoadAndSaveTask(eventBytes);
-		taskA.execute(categoryNamesDropboxURL);
-		taskB.execute(eventsDropboxURL);
-
-		while (taskA.bytes.getValue() == null || taskB.bytes.getValue() == null) {}
+		LoadEventTask task = new LoadEventTask(eventBytes);
+		task.execute();
+		while (task.bytes.getValue() == null) {}
 	}
 }

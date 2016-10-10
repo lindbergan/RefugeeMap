@@ -42,26 +42,15 @@ public class AppDatabase
 	{
 		if (db != null) return;
 
-		Wrapper<byte[]> ctgBytes = new Wrapper<>(null),
-			eventBytes = new Wrapper<>(null);
+		Wrapper<byte[]> eventBytes = new Wrapper<>(null);
+		DatabaseOnlineLoader.load(eventBytes);
 
-		DatabaseOnlineLoader.load(ctgBytes, eventBytes);
-
-		File file1 = new File(context.getFilesDir(), "ctgs.json");
-		File file2 = new File(context.getFilesDir(), "db.json");
-
-		FileOutputStream os1 = new FileOutputStream(file1);
-		FileOutputStream os2 = new FileOutputStream(file2);
-
-		os1.write(ctgBytes.getValue());
-		os2.write(eventBytes.getValue());
-
-		FileInputStream is1 = new FileInputStream(file1);
-		FileInputStream is2 = new FileInputStream(file2);
+		File file = new File(context.getFilesDir(), "db.json");
+		FileOutputStream os = new FileOutputStream(file);
+		os.write(eventBytes.getValue());
 
 		db = new DatabaseImpl(
-			new InputStreamReader(is1),
-			new InputStreamReader(is2),
+			new InputStreamReader(new FileInputStream(file)),
 			new JSONToolsImpl()
 		);
 	}
