@@ -38,7 +38,7 @@ public class DatabaseImpl implements Database
 	@Override public Event getEvent(Integer id)
 	{
 		for (Event e : events)
-			if (e.getID() == id)
+			if (e.getID().equals(id))
 				return e;
 		return null;
 	}

@@ -27,7 +27,7 @@ public class EventImpl implements Event
 		public int getInternalID() { return 1; }
 	}
 
-	private final Integer id;
+	@Getter private final Integer ID;
 	@Getter private final Integer ownerID;
 	@Getter private final Integer[] categories;
 	@Getter private final String[] tags;
@@ -35,6 +35,9 @@ public class EventImpl implements Event
 	@Getter private final String title, address,
 		contactInformation, description;
 
-	@Override public Integer getID()
-	{ return id; }
+	@Override public boolean equals(Object o)
+	{ return (this == o); }
+
+	@Override public boolean equals(Event e)
+	{ return (this == e); }
 }

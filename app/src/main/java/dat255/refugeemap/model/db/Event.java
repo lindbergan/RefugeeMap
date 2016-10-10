@@ -32,4 +32,7 @@ public interface Event
 	public String getAddress();
 	public String getContactInformation();
 	public String getDescription();
+
+	@Override public boolean equals(Object o);
+	public boolean equals(Event e);
 }
