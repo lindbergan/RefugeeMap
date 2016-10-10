@@ -1,5 +1,7 @@
 package dat255.refugeemap.model.db;
 
+import java.util.Collection;
+
 /**
  * An interface with accessor methods for all information tied to an event.
  * This includes the latitude and longitude, for use when displaying on the
@@ -31,7 +33,16 @@ public interface Event
 	public String getTitle();
 	public String getAddress();
 	public String getContactInformation();
-	public String getDescription();
+
+	/**
+	 * Returns the event's description in the given language.
+	 *
+	 * Preconditions:
+	 * - {@code lang} is in {@code getAvailableDescriptionLanguages}
+	 */
+	public String getDescription(String lang);
+
+	public Collection<String> getAvailableDescriptionLanguages();
 
 	@Override public boolean equals(Object o);
 	public boolean equals(Event e);
