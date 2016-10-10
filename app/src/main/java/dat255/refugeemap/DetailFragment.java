@@ -1,24 +1,14 @@
-package dat255.refugeemap.detailView;
+package dat255.refugeemap;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
-import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
-
-import java.util.Objects;
-
-import dat255.refugeemap.R;
 
 /**
  * A simple {@link Fragment} subclass.

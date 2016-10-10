@@ -1,14 +1,12 @@
 package dat255.refugeemap;
 
 import android.Manifest;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
@@ -23,9 +21,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.maps.model.Marker;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,14 +30,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import dat255.refugeemap.detailView.DetailFragment;
 import dat255.refugeemap.helpers.ViewHelper;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
-import dat255.refugeemap.model.db.impl.DatabaseImpl;
 import dat255.refugeemap.model.db.impl.FilterImpl;
-import dat255.refugeemap.model.db.impl.JSONToolsImpl;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.view.View.GONE;

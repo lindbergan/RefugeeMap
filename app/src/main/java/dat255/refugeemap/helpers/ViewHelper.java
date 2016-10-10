@@ -24,7 +24,7 @@ import dat255.refugeemap.EventListFragment;
 import dat255.refugeemap.GMapFragment;
 import dat255.refugeemap.MainActivity;
 import dat255.refugeemap.R;
-import dat255.refugeemap.detailView.DetailFragment;
+import dat255.refugeemap.DetailFragment;
 import dat255.refugeemap.model.db.Event;
 
 import static android.view.View.INVISIBLE;
