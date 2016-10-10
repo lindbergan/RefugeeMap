@@ -3,6 +3,7 @@ package dat255.refugeemap;
 import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -27,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -53,13 +55,9 @@ public class MainActivity extends AppCompatActivity
     private ImageView logo;
     private EditText searchEdit;
     private ImageButton searchBtn;
-    public static String sDefSystemLanguage;
     private Database mDatabase;
 	private Toolbar toolbar;
 	private ArrayList<Integer> activeCategories = new ArrayList<>();
-
-
-
 
 	@Override protected void onCreate(Bundle savedInstanceState)
 	{
@@ -86,10 +84,9 @@ public class MainActivity extends AppCompatActivity
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-
+		setLocaleToArabic();
         mViewHelper.stateSwitch("app_start");
-        mDrawerListItems = getResources().getStringArray(
-            R.array.drawer_list_items);
+        mDrawerListItems = getResources().getStringArray(R.array.drawer_list_items);
 		mViewHelper.setUpNavigationDrawer(mDrawerListItems);
 	}
 
@@ -99,13 +96,12 @@ public class MainActivity extends AppCompatActivity
         this.searchBtn = (ImageButton) findViewById(R.id.action_search);
     }
 
-
-
     public void setUpToolbar(){
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
+		setSupportActionBar(toolbar);
+		if (getSupportActionBar() != null) {
+			getSupportActionBar().setDisplayShowTitleEnabled(false);
+		}
     }
 
     @Override
@@ -252,8 +248,7 @@ public class MainActivity extends AppCompatActivity
 	public boolean isEventSaved(String id) {
 		try {
 			SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
-			return prefs.getStringSet(getString(R.string.saved_events_key),null)
-                .contains(id);
+			return prefs.getStringSet(getString(R.string.saved_events_key), null).contains(id);
 		} catch (NullPointerException e) {
 			return false;
 		}
@@ -300,6 +295,24 @@ public class MainActivity extends AppCompatActivity
 		super.onStart();
 
 		App.getGoogleApiHelper().connect();
+	}
+
+	/**
+	 * setLocaleToArabic is used for testing purposes.
+	 * Changes reading from R -> L and changes all text to arabic
+	 */
+	public void setLocaleToArabic() {
+		Configuration newConfig = new Configuration();
+		newConfig.setLocale(new Locale("ar"));
+		getBaseContext().getResources().updateConfiguration(newConfig,
+				getBaseContext().getResources().getDisplayMetrics());
+	}
+
+	public void setLocaleToSwedish() {
+		Configuration newConfig = new Configuration();
+		newConfig.setLocale(new Locale("sv"));
+		getBaseContext().getResources().updateConfiguration(newConfig,
+				getBaseContext().getResources().getDisplayMetrics());
 	}
 }
 

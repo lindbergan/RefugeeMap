@@ -13,14 +13,13 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         tools:context="dat255.refugeemap.MainActivity"
         android:clipChildren="false">
 
 
         <include
             android:id="@+id/tool_bar"
-            layout="@layout/tool_bar"></include>
+            layout="@layout/tool_bar" />
 
         <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
                  android:id="@+id/fragment_container"
@@ -34,25 +33,25 @@
             android:src="@drawable/ic_list_black_48dp"
             android:layout_height="60dp"
             android:layout_width="wrap_content"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_below="@+id/tool_bar"/>
 
         <include
             android:id="@+id/bottom_tool_bar"
-            layout="@layout/bottom_tool_bar"
-            ></include>
+            layout="@layout/bottom_tool_bar" />
 
     </RelativeLayout>
 
-    <ListView android:id="@+id/drawer_listView"
-              android:layout_width="240dp"
-              android:layout_height="match_parent"
-              android:layout_gravity="start"
-              android:layout_marginLeft="16dp"
-              android:layout_marginRight="16dp"
-              android:choiceMode="singleChoice"
-              android:divider="@android:color/transparent"
-              android:dividerHeight="0dp"
-              android:background="#fff3f3f3"/>
+    <ListView
+        android:id="@+id/drawer_listView"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp"
+        android:background="#ffffff"/>
 
 </android.support.v4.widget.DrawerLayout>

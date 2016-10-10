@@ -203,17 +203,6 @@ public class ViewHelper {
             mButton.setVisibility(INVISIBLE);
     }
 
-    /**
-     * setLocaleToArabic is used for testing purposes.
-     * Changes reading from R -> L and changes all text to arabic
-     */
-    public void setLocaleToArabic() {
-        Configuration newConfig = new Configuration();
-        newConfig.setLocale(new Locale("ar"));
-        mActivity.getBaseContext().getResources().updateConfiguration(newConfig,
-            mActivity.getBaseContext().getResources().getDisplayMetrics());
-    }
-
     public void setUpNavigationDrawer(String[] drawerListItems) {
         mDrawerListItems = drawerListItems;
         mDrawer = (DrawerLayout) mActivity.findViewById(R.id.drawer_layout);
@@ -281,19 +270,13 @@ public class ViewHelper {
                 R.id.info_title);
             TextView infoTime = (TextView) customView.findViewById(
                 R.id.info_time);
-            TextView infoCategory = (TextView) customView.findViewById(
-                R.id.info_category);
             TextView infoContactInfo = (TextView) customView.findViewById(
                 R.id.info_contactInformation);
 
-            //TODO: get ALL the associated values from the event
-            //setting the values corresponding to the event
             infoTitle.setText(activeEvent.getTitle());
-            infoTime.setText("17.00-18-00");
-            infoCategory.setText("Idrottsaktivitet");
+            infoTime.setText(activeEvent.getDateInformation());
             infoContactInfo.setText(activeEvent.getContactInformation());
         }
-        //returning the custom_view with the correct values for the text fields
         return customView;
     }
 

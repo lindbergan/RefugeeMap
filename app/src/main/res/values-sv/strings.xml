@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MaraMap</string>
+    <string name="directions">Vägbeskrivning</string>
+    <string name="nav_men_profile">Profil</string>
+    <string name="nav_men_favorites">Favoriter</string>
+    <string name="nav_men_lang_options">Språkinställningar</string>
+    <string name="nav_men_lang_size_search">Sökradie</string>
+</resources>

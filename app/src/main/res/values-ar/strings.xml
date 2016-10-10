@@ -1,12 +1,8 @@
 <resources>
-    <string name="app_name">RefugeeMap IN ARABIC</string>
-    <string name="title_activity_dummy">DummyActivity IN ARABIC</string>
-
-    <string name="path_ctgs.json">src/main/java/dat255/refugeemap/ctgs.json</string>
-    <string name="path_db.json">src/main/java/dat255/refugeemap/db.json</string>
-
-    <string name="save_event_button_clicked">SAVE_BUTTON_CLICKED IN ARABIC</string>
-    <string name="saved_events_key">SAVED_EVENTS IN ARABIC</string>
-    <string name="directions">Directions IN ARABIC</string>
-
+    <string name="app_name">MaraMap</string>
+    <string name="directions">الاتجاهات</string>
+    <string name="nav_men_profile">الملف الشخصي</string>
+    <string name="nav_men_favorites">مفضلة</string>
+    <string name="nav_men_lang_options">إعدادات اللغة</string>
+    <string name="nav_men_lang_size_search">البحث الشعاع</string>
 </resources>

@@ -26,5 +26,4 @@ public class App extends Application  {
 	public static GoogleAPIHelper getGoogleApiHelper() {
 		return getInstance().getGoogleApiHelperInstance();
 	}
-
 }
