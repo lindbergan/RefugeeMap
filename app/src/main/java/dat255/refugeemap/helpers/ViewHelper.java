@@ -3,6 +3,7 @@ package dat255.refugeemap.helpers;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
@@ -40,6 +41,7 @@ public class ViewHelper {
     private final int DETAIL_FRAGMENT = 2;
     private final int SAVED_LIST_FRAGMENT = 3;
     private String ACTIVE_FRAGMENT;
+    private boolean drawerOpen = false;
     private Fragment[] currentFragments = new Fragment[4];
     FragmentManager fm;
     private Activity mActivity;
@@ -114,6 +116,28 @@ public class ViewHelper {
         //For back button pressed
         else if(args.equals("back_button_pressed")) {
             fm.beginTransaction().hide(currentFragments[SAVED_LIST_FRAGMENT]).commit();
+
+            /** @author: Sebastian
+             * if we're on the map view, minimize the app (default back btn
+             behaviour)
+             **/
+            if (ACTIVE_FRAGMENT.equals(GMapFragment.class.getSimpleName())) {
+
+                // if the drawer is open, back button minimizes it first
+                if (this.drawerOpen) {
+                    this.closeDrawer();
+                    return;
+                }
+
+                // minimize
+                Intent startMain = new Intent(Intent.ACTION_MAIN);
+                startMain.addCategory(Intent.CATEGORY_HOME);
+                startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                this.mActivity.startActivity(startMain);
+                return;
+            }
+            /** end edit by Sebastian **/
+
             if(currentFragments[DETAIL_FRAGMENT] != null) {
                 fm.beginTransaction().remove(currentFragments[DETAIL_FRAGMENT])
                     .hide(currentFragments[LIST_FRAGMENT])
@@ -123,14 +147,19 @@ public class ViewHelper {
                 showHideToggleButton(true);
             }
 
-            else if(ACTIVE_FRAGMENT.equals(
+            if(ACTIVE_FRAGMENT.equals(
                 EventListFragment.class.getSimpleName())) {
                 Fragment frag = currentFragments[MAP_FRAGMENT];
                 fm.beginTransaction().show(frag).hide(
                     currentFragments[LIST_FRAGMENT])
                         .hide(currentFragments[SAVED_LIST_FRAGMENT]).commit();
                 ACTIVE_FRAGMENT = GMapFragment.class.getSimpleName();
+                /** @author: Sebastian **/
+                toggleImage();
+                /** end edit by Sebastian **/
             }
+
+
         }
         //end back button
 
@@ -139,6 +168,12 @@ public class ViewHelper {
             fm.beginTransaction().remove(currentFragments[DETAIL_FRAGMENT]).
                 show(currentFragments[MAP_FRAGMENT]).commit();
             currentFragments[DETAIL_FRAGMENT] = null;
+
+            /** @author: Sebastian **/
+            ACTIVE_FRAGMENT = GMapFragment.class.getSimpleName();
+            toggleImage();
+            /** end edit by Sebastian **/
+
             showHideToggleButton(true);
         }
         //end center on map button
@@ -152,6 +187,9 @@ public class ViewHelper {
                 .hide(currentFragments[LIST_FRAGMENT]).
                     hide(currentFragments[SAVED_LIST_FRAGMENT]).commit();
             showHideToggleButton(false);
+            /** @author: Sebastian **/
+            ACTIVE_FRAGMENT = DetailFragment.class.getSimpleName();
+            /** end edit by Sebastian **/
             currentFragments[DETAIL_FRAGMENT] = frag;
         }
         //end click on list item
@@ -165,6 +203,9 @@ public class ViewHelper {
             fm.beginTransaction().add(R.id.fragment_container, frag)
                 .hide(currentFragments[MAP_FRAGMENT]).commit();
             showHideToggleButton(false);
+            /** @author: Sebastian **/
+            ACTIVE_FRAGMENT = DetailFragment.class.getSimpleName();
+            /** end edit by Sebastian **/
             currentFragments[DETAIL_FRAGMENT] = frag;
         }
         //end click on marker
@@ -244,6 +285,12 @@ public class ViewHelper {
 
     public void openDrawer(){
         mDrawer.openDrawer(mDrawerListView);
+        drawerOpen = true;
+    }
+
+    public void closeDrawer() {
+        mDrawer.closeDrawer(mDrawerListView);
+        drawerOpen = false;
     }
 
     public void hideDirectionViews() {
