@@ -5,6 +5,9 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -16,6 +19,7 @@ import android.widget.Button;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -25,11 +29,12 @@ import java.io.IOException;
 
 import dat255.refugeemap.helpers.DirectionsHelper;
 import dat255.refugeemap.helpers.GoogleAPIHelper;
-import dat255.refugeemap.helpers.UrlConnectionHelper;
 import dat255.refugeemap.helpers.ViewHelper;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
+
+import static android.graphics.Bitmap.createBitmap;
 
 public class GMapFragment extends Fragment
         implements GoogleServicesAdapter, AppDatabase.Listener, GoogleAPIObserver {
@@ -126,20 +131,7 @@ public class GMapFragment extends Fragment
 		}
 	}
 
-	public void newMarker(Event event) {
-		LatLng markerPosition = new LatLng(
-				event.getLatitude(), event.getLongitude());
-		MarkerOptions properties = new MarkerOptions();
-
-		properties.position(markerPosition)
-				.title(event.getTitle())
-				.icon(BitmapDescriptorFactory.defaultMarker());
-		// TODO: 2016-09-26 .getIcon needs to be implemented /Adrian
-
-		Marker activeMarker = mGoogleMap.addMarker(properties);
-		activeMarker.setTag(event);
-	}
-
+	
 	/* A method that shows the "directions" button as well as the custom
 	 infoWindow when user clicks on marker */
 	@Override
@@ -173,10 +165,74 @@ public class GMapFragment extends Fragment
 
 		//show the direction && set duration and distance text fields
 		mDirectionHelper.showDirection(
-				originLatLng, destinationLatLng, transportation);
+						originLatLng, destinationLatLng, transportation);
 		mViewHelper.setDurationAndDistanceText(mDirectionHelper.getDuration(),
-				mDirectionHelper.getDistance());
+						mDirectionHelper.getDistance());
 	}
+    public void newMarker(Event event) {
+        LatLng markerPosition = new LatLng(
+            event.getLatitude(), event.getLongitude());
+        MarkerOptions properties = new MarkerOptions();
+
+        BitmapDescriptor marker = createMarker(event.getCategories());
+
+        properties.position(markerPosition)
+            .title(event.getTitle())
+            .icon(marker);
+        // TODO: 2016-09-26 .getIcon needs to be implemented /Adrian
+
+        Marker activeMarker = mGoogleMap.addMarker(properties);
+        activeMarker.setTag(event);
+    }
+
+    public BitmapDescriptor createMarker(Integer[] eventCategories){
+        int category = eventCategories[0];
+        Bitmap markerBitmap = createMarkerBitmap(category);
+
+        if (eventCategories.length==2) {
+            Bitmap markerBitmap2 = createMarkerBitmap(eventCategories[1]);
+            markerBitmap = combineBitmaps(markerBitmap, markerBitmap2);
+        }
+        BitmapDescriptor marker = BitmapDescriptorFactory.fromBitmap(markerBitmap);
+        return marker;
+    }
+
+    public Bitmap createMarkerBitmap(int category){
+        //int id = getResources().getIdentifier("marker"+category, "drawable", this.getActivity().getPackageName());
+        //Bitmap markerBitmap = BitmapFactory.decodeResource(getResources(), id);
+        //return markerBitmap;
+        Bitmap markerBitmap=null;
+        switch(category){
+            case 0:
+                markerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.marker0);
+                break;
+            case 1:
+                markerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.marker1);
+                break;
+            case 2:
+                markerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.marker2);
+                break;
+            case 3:
+                markerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.marker3);
+                break;
+        }
+        return markerBitmap;
+    }
+
+    public Bitmap combineBitmaps(Bitmap b1, Bitmap b2){
+
+        Bitmap bitmap = createBitmap(b1.getWidth(), b1.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas combo = new Canvas(bitmap);
+
+        b1 = createBitmap(b1, 0, 0, b1.getWidth() / 2,b1.getHeight());
+        b2 = createBitmap(b2, b2.getWidth()/2, 0, b2.getWidth()/2, b2.getHeight());
+
+        combo.drawBitmap(b1, 0f, 0f, null);
+        combo.drawBitmap(b2, b1.getWidth(), 0f, null);
+
+        return bitmap;
+    }
+	
 
 	/* When the infoWindow is clicked, we send a notification about which marker
 	its about to the main activity. The main activity can then show the correct
