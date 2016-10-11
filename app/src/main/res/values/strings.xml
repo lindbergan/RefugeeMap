@@ -5,4 +5,7 @@
     <string name="nav_men_favorites">Favorites</string>
     <string name="nav_men_lang_options">Language options</string>
     <string name="nav_men_lang_size_search">Search size</string>
+
+    <string name="swedish_locale_id">sv</string>
+    <string name="arabic_locale_id">ar</string>
 </resources>

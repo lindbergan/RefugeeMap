@@ -1,10 +1,13 @@
 package dat255.refugeemap;
 
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,45 +32,52 @@ import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.EventCollection;
 
 public class GMapFragment extends Fragment
-		implements GoogleServicesAdapter, AppDatabase.Listener, GoogleAPIObserver {
+        implements GoogleServicesAdapter, AppDatabase.Listener, GoogleAPIObserver {
 
-	private static final String TAG = "GMapFragment";
-	ReplaceWithDetailView mCallback;
-	Marker mCurrentMarker;
-	private GoogleMap mGoogleMap;
-	private EventCollection mEventsList;
-	private Database mDatabase;
-	private DirectionsHelper mDirectionHelper;
-	private ViewHelper mViewHelper;
+    private static final String TAG = "GMapFragment";
+    ReplaceWithDetailView mCallback;
+    Marker mCurrentMarker;
+    private GoogleMap mGoogleMap;
+    private EventCollection mEventsList;
+    private Database mDatabase;
+    private DirectionsHelper mDirectionHelper;
+    private ViewHelper mViewHelper;
 
-	/**
-	 * Mandatory empty constructor for the fragment manager to instantiate the
-	 * fragment.
-	 */
-	public GMapFragment() {
-		GoogleAPIHelper googleAPIHelper = App.getGoogleApiHelper();
-		googleAPIHelper.addApiListener(this);
-	}
+    /**
+     * Mandatory empty constructor for the fragment manager to instantiate the
+     * fragment.
+     */
+    public GMapFragment() {
+        GoogleAPIHelper googleAPIHelper = App.getGoogleApiHelper();
+        googleAPIHelper.addApiListener(this);
+    }
 
-	@Override
-	public void onAttach(Activity activity) {
-		super.onAttach(activity);
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
 
-		try {
-			mCallback = (ReplaceWithDetailView) activity;
-		} catch (ClassCastException e) {
-			throw new ClassCastException(activity.toString()
-					+ " must implement ReplaceWithDetailView");
-		}
-	}
+        try {
+            mCallback = (ReplaceWithDetailView) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement ReplaceWithDetailView");
+        }
+    }
 
-	@Override
-	public void onMapReady(GoogleMap googleMap) {
-		mGoogleMap = googleMap;
-		setUpHelpers();
-		getEvents();
-		initiateListeners();
-		configGoogleWidgets();
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mGoogleMap = googleMap;
+        setUpHelpers();
+        getEvents();
+        initiateListeners();
+        if ((ActivityCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED)) {
+            mGoogleMap.setMyLocationEnabled(true);
+            mGoogleMap.getUiSettings().setMyLocationButtonEnabled(true);
+        }
+
+        configGoogleWidgets();
 		placeMarkers(mEventsList);
 		animateMapCamera(App.getGoogleApiHelper().getCurrentLocation());
 	}
@@ -102,6 +112,8 @@ public class GMapFragment extends Fragment
 
 	public void configGoogleWidgets() {
 		mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
+        mGoogleMap.setPadding(0, 135, 0, 135);
+
 		//TODO: add scale to the map
 	}
 

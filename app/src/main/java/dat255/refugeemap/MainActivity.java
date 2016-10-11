@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity
     private Database mDatabase;
 	private Toolbar toolbar;
 	private ArrayList<Integer> activeCategories = new ArrayList<>();
+	private String currentLocale;
 
 	@Override protected void onCreate(Bundle savedInstanceState)
 	{
@@ -306,6 +307,7 @@ public class MainActivity extends AppCompatActivity
 		newConfig.setLocale(new Locale("ar"));
 		getBaseContext().getResources().updateConfiguration(newConfig,
 				getBaseContext().getResources().getDisplayMetrics());
+		currentLocale = getString(R.string.arabic_locale_id);
 	}
 
 	public void setLocaleToSwedish() {
@@ -313,7 +315,13 @@ public class MainActivity extends AppCompatActivity
 		newConfig.setLocale(new Locale("sv"));
 		getBaseContext().getResources().updateConfiguration(newConfig,
 				getBaseContext().getResources().getDisplayMetrics());
+        currentLocale = getString(R.string.swedish_locale_id);
 	}
+
+    public String getCurrentLocale() {
+        return currentLocale;
+    }
+
 }
 
 
