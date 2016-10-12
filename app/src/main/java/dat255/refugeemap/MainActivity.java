@@ -1,6 +1,7 @@
 package dat255.refugeemap;
 
 import android.Manifest;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -20,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.IOException;
@@ -107,11 +109,29 @@ public class MainActivity extends AppCompatActivity
 
     @Override
 	public void onInfoWindowClicked(Marker marker) {
+
+		if(marker.getTag() instanceof Event) {
+			Event currentEvent = (Event) marker.getTag();
+			mViewHelper.setEventInformation(extractDetailedInformation(
+				currentEvent));
+		}
+
         mViewHelper.stateSwitch("marker_clicked");
+	}
+
+	public String[] extractDetailedInformation(Event event){
+
+		//TODO:Need to have "time" variable as well
+		return new String[]{event.getID().toString(), event.getTitle(),
+			event.getAddress(), event.getContactInformation(),
+			event.getDescription("sv"), //OBS!!
+			event.getLongitude().toString(), event.getLatitude().toString()};
 	}
 
 	@Override
 	public void onListFragmentInteraction(Event item) {
+
+		mViewHelper.setEventInformation(extractDetailedInformation(item));
         mViewHelper.stateSwitch("list_item_clicked");
 	}
   
@@ -255,8 +275,6 @@ public class MainActivity extends AppCompatActivity
 		}
 	}
 
-
-
 	@Override
 	public void onBackPressed() {
         mViewHelper.stateSwitch("back_button_pressed");
@@ -298,6 +316,17 @@ public class MainActivity extends AppCompatActivity
 		App.getGoogleApiHelper().connect();
 	}
 
+	@Override
+	public void DirectionButtonPressed(LatLng origin, LatLng destination, String transportationMode){
+		//Change to MapView
+		mViewHelper.stateSwitch("center_on_map");
+
+        //Call the corresponding method in GMap
+        Fragment f = getFragmentManager().findFragmentByTag("map");
+        if(f instanceof GMapFragment){
+            ((GMapFragment) f).showDirections(origin,destination,transportationMode);
+        }
+	}
 	/**
 	 * setLocaleToArabic is used for testing purposes.
 	 * Changes reading from R -> L and changes all text to arabic
@@ -321,7 +350,6 @@ public class MainActivity extends AppCompatActivity
     public String getCurrentLocale() {
         return currentLocale;
     }
-
 }
 
 

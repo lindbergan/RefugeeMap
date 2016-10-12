@@ -10,13 +10,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.Marker;
+
 
 import dat255.refugeemap.DetailFragment;
 import dat255.refugeemap.EventListFragment;
@@ -43,6 +43,7 @@ public class ViewHelper {
 	private DrawerLayout mDrawer;
 	private ListView mDrawerListView;
 	private String[] mDrawerListItems;
+	private String[] mEventInformation;
 
 	private Drawable mMapIcon;
 	private Drawable mListIcon;
@@ -61,8 +62,8 @@ public class ViewHelper {
 			Fragment savedListFrag = new EventListFragment();
 			initializeViews(mActivity.findViewById(R.id.main_layout));
 			fm.beginTransaction()
-					.add(R.id.fragment_container, mapFrag)
-					.add(R.id.fragment_container, listFrag)
+					.add(R.id.fragment_container, mapFrag, "map")
+					.add(R.id.fragment_container, listFrag, "list")
 					.add(R.id.fragment_container, savedListFrag, "saved_events_list_frag")
 					.hide(listFrag)
 					.hide(savedListFrag)
@@ -223,9 +224,7 @@ public class ViewHelper {
 
 		//For: click on mListIcon item
 		else if (args.equals("list_item_clicked")) {
-			Fragment frag = DetailFragment.newInstance(new String[]{
-					"title", "org", "description", "phone", "date",
-					Integer.toString(3)});
+			Fragment frag = DetailFragment.newInstance(mEventInformation);
 			fm.beginTransaction().add(R.id.fragment_container, frag)
 					.hide(currentFragments[LIST_FRAGMENT]).
 					hide(currentFragments[SAVED_LIST_FRAGMENT]).commit();
@@ -240,10 +239,7 @@ public class ViewHelper {
 
 		//For: click on marker
 		else if (args.equals("marker_clicked")) {
-			String tempValues[] = {
-					"title", "org", "description", "phone", "date",
-					Integer.toString(2)};
-			Fragment frag = DetailFragment.newInstance(tempValues);
+			Fragment frag = DetailFragment.newInstance(mEventInformation);
 			fm.beginTransaction().add(R.id.fragment_container, frag)
 					.hide(currentFragments[MAP_FRAGMENT]).commit();
 			setToggleButtonVisible(false);
@@ -310,16 +306,6 @@ public class ViewHelper {
 		drawerOpen = false;
 	}
 
-	public void hideDirectionViews() {
-		Button directionButton = (Button) mActivity.findViewById(
-				R.id.directions_button);
-		directionButton.setVisibility(View.GONE);
-
-		TextView timeAndDistance = (TextView) mActivity.findViewById(
-				R.id.info_time_and_distance);
-		timeAndDistance.setVisibility(View.GONE);
-	}
-
 	public View getCustomInfoView(Marker marker) {
 
 		//Fetching the custom infoView
@@ -344,15 +330,6 @@ public class ViewHelper {
 		return customView;
 	}
 
-	public void setDurationAndDistanceText(String duration, String distance) {
-		//TODO: fix synchronization issue (now main thread is quicker than Async task in backgroud - results in wrong values of Distans & Duration)
-		TextView timeAndDistance = (TextView) mActivity.findViewById(
-				R.id.info_time_and_distance);
-		timeAndDistance.setText("Duration: " + duration + " Distance:" +
-				distance);
-		timeAndDistance.setVisibility(View.VISIBLE);
-	}
-
 	private class DrawerItemClickListener
 			implements ListView.OnItemClickListener {
 		@Override
@@ -375,5 +352,12 @@ public class ViewHelper {
                 }
             }
         }
+	}
+
+	public String[] getEventInformation() {
+		return mEventInformation;
+	}
+	public void setEventInformation(String[] eventInformation) {
+		mEventInformation = eventInformation;
 	}
 }

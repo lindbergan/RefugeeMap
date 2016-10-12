@@ -14,7 +14,6 @@ import android.support.v4.app.ActivityCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -131,44 +130,6 @@ public class GMapFragment extends Fragment
 		}
 	}
 
-	
-	/* A method that shows the "directions" button as well as the custom
-	 infoWindow when user clicks on marker */
-	@Override
-	public boolean onMarkerClick(Marker marker) {
-		Button directionButton = (Button) getActivity().
-				findViewById(R.id.directions_button);
-		directionButton.setVisibility(View.VISIBLE);
-
-		directionButton.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				onDirectionButtonClicked();
-			}
-		});
-
-		mCurrentMarker = marker;
-		return false;
-	}
-
-	public void onDirectionButtonClicked() {
-		//NOTE: should be our current pos that is origin
-		LatLng originLatLng = new LatLng(57.70887000, 11.97456000);
-		LatLng destinationLatLng = mCurrentMarker.getPosition();
-		String transportation = "WillNotImplementRightNow";
-
-		//check to see if any previous direction already is displayed
-		// - in that case, remove it
-		if (mDirectionHelper.isPreviousDirectionPresent()) {
-			mDirectionHelper.removePreviousDirection();
-		}
-
-		//show the direction && set duration and distance text fields
-		mDirectionHelper.showDirection(
-						originLatLng, destinationLatLng, transportation);
-		mViewHelper.setDurationAndDistanceText(mDirectionHelper.getDuration(),
-						mDirectionHelper.getDistance());
-	}
     public void newMarker(Event event) {
         LatLng markerPosition = new LatLng(
             event.getLatitude(), event.getLongitude());
@@ -185,6 +146,19 @@ public class GMapFragment extends Fragment
         activeMarker.setTag(event);
     }
 
+	@Override
+	public boolean onMarkerClick(Marker marker) {
+
+		//check to see if any previous direction already is displayed
+		// - in that case, remove it
+		if (mDirectionHelper.isPreviousDirectionPresent()) {
+			mDirectionHelper.removePreviousDirection();
+		}
+
+		mCurrentMarker = marker;
+		return false;
+	}
+
     public BitmapDescriptor createMarker(Integer[] eventCategories){
         int category = eventCategories[0];
         Bitmap markerBitmap = createMarkerBitmap(category);
@@ -196,6 +170,11 @@ public class GMapFragment extends Fragment
         BitmapDescriptor marker = BitmapDescriptorFactory.fromBitmap(markerBitmap);
         return marker;
     }
+
+    public void showDirections(LatLng origin, LatLng destination, String transportation) {
+		mDirectionHelper.showDirection(
+			origin, destination, transportation);
+	}
 
     public Bitmap createMarkerBitmap(int category){
         //int id = getResources().getIdentifier("marker"+category, "drawable", this.getActivity().getPackageName());
@@ -227,12 +206,21 @@ public class GMapFragment extends Fragment
         b1 = createBitmap(b1, 0, 0, b1.getWidth() / 2,b1.getHeight());
         b2 = createBitmap(b2, b2.getWidth()/2, 0, b2.getWidth()/2, b2.getHeight());
 
-        combo.drawBitmap(b1, 0f, 0f, null);
-        combo.drawBitmap(b2, b1.getWidth(), 0f, null);
+		combo.drawBitmap(b1, 0f, 0f, null);
+		combo.drawBitmap(b2, b1.getWidth(), 0f, null);
 
-        return bitmap;
-    }
-	
+		return bitmap;
+	}
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+
+		//check if there is any directions present, in that case
+		// - remove it
+		if (mDirectionHelper.isPreviousDirectionPresent()) {
+			mDirectionHelper.removePreviousDirection();
+		}
+	}
 
 	/* When the infoWindow is clicked, we send a notification about which marker
 	its about to the main activity. The main activity can then show the correct
@@ -252,19 +240,6 @@ public class GMapFragment extends Fragment
 	@Override
 	public View getInfoContents(Marker marker) {
 		return mViewHelper.getCustomInfoView(marker);
-	}
-
-	@Override
-	public void onMapClick(LatLng latLng) {
-		//remove the "directions" button and corresponding textfield when
-		// marker isn't in focus
-		mViewHelper.hideDirectionViews();
-
-		//check if there is any previous directions present, in that case
-		// - remove it
-		if (mDirectionHelper.isPreviousDirectionPresent()) {
-			mDirectionHelper.removePreviousDirection();
-		}
 	}
 
 	@Override
