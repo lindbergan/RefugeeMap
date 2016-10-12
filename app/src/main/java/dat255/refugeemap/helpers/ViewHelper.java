@@ -358,22 +358,22 @@ public class ViewHelper {
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 								long id) {
-			if (mDrawerListItems[position].equals("Favourites")) {
-				if (mActivity instanceof MainActivity) {
-					if (((MainActivity) mActivity).getSavedEvents() != null
-							&& ((MainActivity) mActivity).getSavedEvents().getSize() > 0) {
 
-						Toast.makeText(mActivity.getApplicationContext(), "you have clicked Favourites",
-								Toast.LENGTH_SHORT).show();
-						//EventCollection events = getSavedEvents();
-						((MainActivity) mActivity).updateSavedEventsFrag();
-						stateSwitch("favourites_button_pressed");
-					}
-				} else {
-					Toast.makeText(mActivity.getApplicationContext(), "No saved events", Toast.LENGTH_SHORT).
-							show();
-				}
-			}
-		}
+            if (mActivity instanceof MainActivity) {
+
+                if (mDrawerListItems[position]
+                        .equals((mActivity.getString(R.string.nav_men_favorites)))) {
+
+                    if (((MainActivity) mActivity).getSavedEvents() != null
+                        && ((MainActivity) mActivity).getSavedEvents().getSize() > 0) {
+
+                        stateSwitch("favourites_button_pressed");
+                } else {
+                        Toast.makeText(mActivity.getApplicationContext(), "No saved events",
+                            Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        }
 	}
 }
