@@ -121,7 +121,7 @@ public class ViewHelper {
 			fm.beginTransaction()
 					.show(currentFragments[SAVED_LIST_FRAGMENT])
 					.commit();
-
+			closeDrawer();
 			mFragmentHistory[1] = mFragmentHistory[0];
 			mFragmentHistory[0] = EventListFragment.class;
 			setToggleButtonVisible(false);
