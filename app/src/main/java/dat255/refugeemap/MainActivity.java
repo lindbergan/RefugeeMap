@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-		setLocaleToArabic();
+		// setLocaleToArabic();
         mViewHelper.stateSwitch("app_start");
         mDrawerListItems = getResources().getStringArray(R.array.drawer_list_items);
 		mViewHelper.setUpNavigationDrawer(mDrawerListItems);
