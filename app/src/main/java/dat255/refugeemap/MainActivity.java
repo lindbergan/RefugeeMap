@@ -25,7 +25,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -38,6 +37,7 @@ import dat255.refugeemap.helpers.GoogleAPIHelper;
 import dat255.refugeemap.helpers.ViewHelper;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
+import dat255.refugeemap.model.db.Filter;
 import dat255.refugeemap.model.db.impl.FilterImpl;
 import dat255.refugeemap.model.db.sort.EventsSorter;
 
@@ -60,7 +60,8 @@ public class MainActivity extends AppCompatActivity
     private ImageButton searchBtn;
     private Database mDatabase;
 	private Toolbar toolbar;
-	private ArrayList<Integer> activeCategories = new ArrayList<>();
+	private int activeCategory = FilterImpl.NULL_CATEGORY;
+	Collection<String> activeSearchTerms = null;
 	private String currentLocale;
 	private GoogleAPIHelper mGoogleAPIHelper;
 
@@ -132,8 +133,8 @@ public class MainActivity extends AppCompatActivity
             // Check if last click time was too recent in order to avoid
             // accidental double-click
             currentTime - lastSearchClickTime > clickThreshold) {
-            AppDatabase.updateVisibleEvents(mDatabase.
-            	getEventsByFilter(FilterImpl.EMPTY_FILTER,
+			Filter f = new FilterImpl(activeCategory, activeSearchTerms, null);
+            AppDatabase.updateVisibleEvents(mDatabase.getEventsByFilter(f,
             	EventsSorter.NULL_SORTER));
             this.searchEdit.setVisibility(VISIBLE);
             this.searchEdit.requestFocus();
@@ -151,19 +152,21 @@ public class MainActivity extends AppCompatActivity
         lastSearchClickTime = currentTime;
     }
 
-	public void onCategoryClick(View view){
-		int cat = Integer.parseInt(view.getTag().toString());
-		boolean buttonActivated=false;
-		if (activeCategories.contains(cat)){
-			int index = activeCategories.indexOf(cat);
-			activeCategories.remove(index);
-			buttonActivated=true;
+	public void onCategoryClick(View view) {
+		int ctgPressed = Integer.parseInt(view.getTag().toString());
+
+		if (ctgPressed == activeCategory) {
+			activeCategory = FilterImpl.NULL_CATEGORY;
+			toggleCategoryButton(ctgPressed, true);
+		} else {
+			if (activeCategory != FilterImpl.NULL_CATEGORY)
+				toggleCategoryButton(activeCategory, true);
+			toggleCategoryButton(ctgPressed, false);
+			activeCategory = ctgPressed;
 		}
-		else {
-			activeCategories.add(cat);
-		}
-		toggleCategoryButton(cat, buttonActivated);
-		FilterImpl filter = new FilterImpl(activeCategories, null, null);
+
+		FilterImpl filter = new FilterImpl(activeCategory,
+			activeSearchTerms, null);
 		List<Event> newEvents = mDatabase.getEventsByFilter(filter,
 			EventsSorter.NULL_SORTER);
 
@@ -191,8 +194,9 @@ public class MainActivity extends AppCompatActivity
 				if (actionId == EditorInfo.IME_NULL
 						&& event.getAction() == KeyEvent.ACTION_DOWN) {
 					String input = searchEdit.getText().toString();
-					Collection<String> searchTerms = Arrays.asList(input.split(" "));
-					FilterImpl filter = new FilterImpl(null, searchTerms, null);
+					activeSearchTerms = Arrays.asList(input.split(" "));
+					FilterImpl filter = new FilterImpl(activeCategory,
+						activeSearchTerms, null);
 					List<Event> newEvents = mDatabase.getEventsByFilter(filter,
 						EventsSorter.NULL_SORTER);
 					AppDatabase.updateVisibleEvents(newEvents);

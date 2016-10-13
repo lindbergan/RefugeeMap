@@ -28,28 +28,32 @@ public class FilterImpl implements Filter
 		}
 	}
 
-	public static final Filter EMPTY_FILTER = new FilterImpl(null, null, null);
+	public static final int NULL_CATEGORY = -1;
 
-	private final Collection<Integer> categories;
+	public static final Filter EMPTY_FILTER =
+		new FilterImpl(NULL_CATEGORY, null, null);
+
+	private final int category;
 	private final Collection<String> searchTerms;
 	private final DistanceCriteria distanceCriteria;
 
 	/**
-	 * Creates a `Filter` instance with the given criteria. If any
-	 * argument is `null`, it will be ignored in `doesEventFit`.
+	 * Creates a `Filter` instance with the given criteria.
+	 * To ignore `category`, set to `EMPTY_FILTER`.
+	 * To ignore `searchTerms` and/or `distanceCriteria`, set to `null`.
 	 */
-	public FilterImpl(Collection<Integer> ctgs, Collection<String> searchTerms,
+	public FilterImpl(int category, Collection<String> searchTerms,
 		DistanceCriteria distanceCriteria)
 	{
-		this.categories = ctgs;
+		this.category = category;
 		this.searchTerms = searchTerms;
 		this.distanceCriteria = distanceCriteria;
 	}
 
 	@Override public boolean doesEventFit(Event e)
 	{
-		if (categories != null && categories.size() != 0)
-			if (!ArrayUtils.containsAny(e.getCategories(), categories))
+		if (category != NULL_CATEGORY)
+			if (!ArrayUtils.contains(e.getCategories(), category))
 				return false;
 
 		if (searchTerms != null)
@@ -73,10 +77,7 @@ public class FilterImpl implements Filter
 
 	@Override public boolean isEmpty()
 	{
-		return (
-			(categories == null || categories.size() == 0) &&
-			(searchTerms == null || searchTerms.size() == 0) &&
-			(distanceCriteria == null)
-		);
+		return ((category == NULL_CATEGORY) && (searchTerms == null ||
+			searchTerms.size() == 0) && (distanceCriteria == null));
 	}
 }
