@@ -1,15 +1,13 @@
 package dat255.refugeemap;
 
+import android.accounts.NetworkErrorException;
 import android.content.Context;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,9 +41,13 @@ public class AppDatabase
 		if (db != null) return;
 
 		Wrapper<byte[]> eventBytes = new Wrapper<>(null);
-		DatabaseOnlineLoader.load(eventBytes);
+		try {
+			DatabaseOnlineLoader.load(eventBytes);
+		} catch(NetworkErrorException e) {
+			System.exit(-1); // temp
+		}
 
-		File file = new File(context.getFilesDir(), "db.json");
+		File file = new File(context.getFilesDir(), "events.json");
 		FileOutputStream os = new FileOutputStream(file);
 		os.write(eventBytes.getValue());
 
