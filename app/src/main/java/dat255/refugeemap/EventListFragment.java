@@ -16,10 +16,10 @@ import com.google.android.gms.maps.model.LatLng;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
-import dat255.refugeemap.model.db.EventCollection;
 import dat255.refugeemap.model.db.Filter;
 
 /**
@@ -99,7 +99,7 @@ public class EventListFragment extends Fragment implements AppDatabase.Listener{
 		return new EventRecyclerViewAdapter(mDatabase.getEventsByFilter(filter), mListener);
 	}
 
-	public EventRecyclerViewAdapter fillListFragment(EventCollection events){
+	public EventRecyclerViewAdapter fillListFragment(List<Event> events){
 		return new EventRecyclerViewAdapter(events, mListener);
 	}
 
@@ -132,7 +132,7 @@ public class EventListFragment extends Fragment implements AppDatabase.Listener{
 	}
 
 	@Override
-	public void onVisibleEventsChanged(EventCollection newEvents){
+	public void onVisibleEventsChanged(List<Event> newEvents){
 		eventRecycler.setEvents(newEvents);
 		eventRecycler.notifyDataSetChanged();
 	}

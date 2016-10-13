@@ -37,7 +37,6 @@ import java.util.TreeSet;
 import dat255.refugeemap.helpers.ViewHelper;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
-import dat255.refugeemap.model.db.EventCollection;
 import dat255.refugeemap.model.db.impl.FilterImpl;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
@@ -171,7 +170,7 @@ public class MainActivity extends AppCompatActivity
 		}
 		toggleCategoryButton(cat, buttonActivated);
 		FilterImpl filter = new FilterImpl(activeCategories, null, null);
-		EventCollection newEvents = mDatabase.getEventsByFilter(filter);
+		List<Event> newEvents = mDatabase.getEventsByFilter(filter);
 
 		AppDatabase.updateVisibleEvents(newEvents);
 	}
@@ -199,7 +198,7 @@ public class MainActivity extends AppCompatActivity
 					String input = searchEdit.getText().toString();
 					Collection<String> searchTerms = Arrays.asList(input.split(" "));
 					FilterImpl filter = new FilterImpl(null, searchTerms, null);
-					EventCollection newEvents = mDatabase.getEventsByFilter(filter);
+					List<Event> newEvents = mDatabase.getEventsByFilter(filter);
 					AppDatabase.updateVisibleEvents(newEvents);
 					toggleSearchFocus(v);
 				}
@@ -236,7 +235,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 	@Override
-	public void onVisibleEventsChanged(EventCollection newEvents) {
+	public void onVisibleEventsChanged(List<Event> newEvents) {
 	}
 
 	@Override
@@ -281,7 +280,7 @@ public class MainActivity extends AppCompatActivity
 
 	}
 
-    public EventCollection getSavedEvents(){
+    public List<Event> getSavedEvents(){
 
         Set<String> savedEventsStr = getPreferences(Context.MODE_PRIVATE)
             .getStringSet(getString(R.string.saved_events_key), null);

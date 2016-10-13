@@ -25,13 +25,13 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.util.List;
 
 import dat255.refugeemap.helpers.DirectionsHelper;
 import dat255.refugeemap.helpers.GoogleAPIHelper;
 import dat255.refugeemap.helpers.ViewHelper;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
-import dat255.refugeemap.model.db.EventCollection;
 
 import static android.graphics.Bitmap.createBitmap;
 
@@ -42,7 +42,7 @@ public class GMapFragment extends Fragment
     ReplaceWithDetailView mCallback;
     Marker mCurrentMarker;
     private GoogleMap mGoogleMap;
-    private EventCollection mEventsList;
+    private List<Event> mEventsList;
     private Database mDatabase;
     private DirectionsHelper mDirectionHelper;
     private ViewHelper mViewHelper;
@@ -103,7 +103,6 @@ public class GMapFragment extends Fragment
 
 	public void getEvents() {
 		mEventsList = mDatabase.getAllEvents();
-		// TODO: 2016-09-26 Change to EventCollection /Adrian
 		placeMarkers(mEventsList);
 	}
 
@@ -122,7 +121,7 @@ public class GMapFragment extends Fragment
 	}
 
 	/* a method that creates markers from events and places them on the map*/
-	public void placeMarkers(EventCollection eventsList) {
+	public void placeMarkers(List<Event> eventsList) {
 		if (eventsList != null) {
 			for (Event e : eventsList) {
 				newMarker(e);
@@ -281,7 +280,7 @@ public class GMapFragment extends Fragment
 	}
 
 	@Override
-	public void onVisibleEventsChanged(EventCollection newEvents) {
+	public void onVisibleEventsChanged(List<Event> newEvents) {
 		mGoogleMap.clear();
 		mEventsList = newEvents;
 		placeMarkers(mEventsList);

@@ -15,7 +15,7 @@ import java.util.List;
 
 import dat255.refugeemap.model.Wrapper;
 import dat255.refugeemap.model.db.Database;
-import dat255.refugeemap.model.db.EventCollection;
+import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.impl.DatabaseImpl;
 import dat255.refugeemap.model.db.impl.JSONToolsImpl;
 
@@ -29,7 +29,7 @@ public class AppDatabase
 	public static interface Listener
 	{
 		/** Called whenever {@code updateVisibleEvents} is called. */
-		public void onVisibleEventsChanged(EventCollection newEvents);
+		public void onVisibleEventsChanged(List<Event> newEvents);
 	}
 
 	private static final String NULL_ERROR_MESSAGE =
@@ -69,7 +69,7 @@ public class AppDatabase
 	public static void addListener(Listener l)
 	{ listeners.add(l); }
 
-	public static void updateVisibleEvents(EventCollection newEvents)
+	public static void updateVisibleEvents(List<Event> newEvents)
 	{
 		for (Listener l : listeners)
 			l.onVisibleEventsChanged(newEvents);

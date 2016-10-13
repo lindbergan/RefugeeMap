@@ -14,14 +14,13 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import dat255.refugeemap.EventListFragment.OnListFragmentInteractionListener;
 import dat255.refugeemap.helpers.GoogleAPIHelper;
 import dat255.refugeemap.model.DistanceCalculator;
-import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
-import dat255.refugeemap.model.db.EventCollection;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link dat255.refugeemap.model.db.Event} and makes a call to the
@@ -34,7 +33,7 @@ public class EventRecyclerViewAdapter
 
 	private final static String TAG = "EventRecyclerViewAdapt";
 
-	private EventCollection mEvents;
+	private List<Event> mEvents;
 	private final OnListFragmentInteractionListener mListener;
 	private HashMap<Integer, Integer> listItemColor = new HashMap<>();
 	private LatLng currentLocation;
@@ -50,8 +49,9 @@ public class EventRecyclerViewAdapter
 		listItemColor.put(3, ContextCompat.getColor(holder.mView.getContext(), R.color.colorCategory4));
 	}
 
-	public EventRecyclerViewAdapter(EventCollection events,
-									OnListFragmentInteractionListener listener) {
+	public EventRecyclerViewAdapter(List<Event> events,
+		OnListFragmentInteractionListener listener)
+	{
 		mEvents = events;
 		mListener = listener;
 
@@ -118,10 +118,10 @@ public class EventRecyclerViewAdapter
 
 	@Override
 	public int getItemCount() {
-		return mEvents.getSize();
+		return mEvents.size();
 	}
 
-	public void setEvents(EventCollection newEvents){
+	public void setEvents(List<Event> newEvents){
 		mEvents=newEvents;
 	}
 

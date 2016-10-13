@@ -342,7 +342,7 @@ public class ViewHelper {
                         .equals((mActivity.getString(R.string.nav_men_favorites)))) {
 
                     if (((MainActivity) mActivity).getSavedEvents() != null
-                        && ((MainActivity) mActivity).getSavedEvents().getSize() > 0) {
+                        && ((MainActivity) mActivity).getSavedEvents().size() > 0) {
 
                         stateSwitch("favourites_button_pressed");
                 } else {

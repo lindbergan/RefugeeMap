@@ -2,9 +2,11 @@ package dat255.refugeemap.model.db;
 
 import java.util.List;
 
+import dat255.refugeemap.model.db.sort.EventsSorter;
+
 /**
  * An interface which provides access to all events stored in a database.
- * Events can be accessed from an {@link EventCollection}.
+ * Events can be accessed from a {@code List<Event>}.
  * Using a {@code Filter}, a reduced collection can be accessed.
  * @author Shoulder
  */
@@ -20,27 +22,27 @@ public interface Database
 	public Event getEvent(Integer id);
 
 	/**
-	 * Returns a collection of every {@link Event} with
+	 * Returns a list of every {@link Event} with
 	 * an ID number matching a number in {@code idArr}.
 	 *
 	 * Preconditions:
 	 * - All arguments are non-null
 	 */
-	public EventCollection getEvents(List<Integer> idList);
+	public List<Event> getEvents(List<Integer> idList);
 
 	/**
 	 * Returns a collection of references to all {@link Event} instances
-	 * that satisfy {@code filter}, sorted according to {@code si}.
+	 * that satisfy {@code filter}, sorted using {@code sorter}.
 	 *
 	 * Preconditions:
 	 * - All arguments are non-null
 	 */
-	public EventCollection getEventsByFilter(Filter filter, Event.SortInfo si);
+	public List<Event> getEventsByFilter(Filter filter, EventsSorter sorter);
 
 	// -----------------------------------
 	// --- DEPRECATED, WILL BE REMOVED ---
 	// -----------------------------------
 
-	@Deprecated public EventCollection getAllEvents();
-	@Deprecated public EventCollection getEventsByFilter(Filter filter);
+	@Deprecated public List<Event> getAllEvents();
+	@Deprecated public List<Event> getEventsByFilter(Filter filter);
 }
