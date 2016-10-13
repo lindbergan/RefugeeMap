@@ -2,7 +2,6 @@ package dat255.refugeemap.model.db.impl;
 
 import java.io.FileNotFoundException;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,7 +16,7 @@ import dat255.refugeemap.model.db.JSONTools;
 import dat255.refugeemap.model.db.sort.EventsSorter;
 
 /**
- * @author Shoulder
+ * @author Axel
  */
 public class DatabaseImpl implements Database
 {

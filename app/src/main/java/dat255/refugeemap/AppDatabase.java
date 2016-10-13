@@ -18,15 +18,15 @@ import dat255.refugeemap.model.db.impl.DatabaseImpl;
 import dat255.refugeemap.model.db.impl.JSONToolsImpl;
 
 /**
- * A singleton class which connects a single {@link Database}
- * instance to the rest of the application.
- * @author Shoulder
+ * A singleton class which loads and connects a single `Database`
+ * instance to the rest of the application (the 'GUI layer').
+ * @author Axel
  */
 public class AppDatabase
 {
-	public static interface Listener
+	public static interface VisibleEventsListener
 	{
-		/** Called whenever {@code updateVisibleEvents} is called. */
+		/** Called whenever `updateVisibleEvents` is called. */
 		public void onVisibleEventsChanged(List<Event> newEvents);
 	}
 
@@ -34,8 +34,14 @@ public class AppDatabase
 		"'AppDatabase.init' must be called before 'getDatabaseInstance'";
 
 	private static Database db = null;
-	private static List<Listener> listeners = new LinkedList<>();
+	private static List<VisibleEventsListener> listeners = new LinkedList<>();
 
+	/**
+	 * Initializes the `Database` instance. Must be called before
+	 * `getDatabaseInstance` to prevent a `NullPointerException`.
+	 *
+	 * Precondition: All arguments are non-null.
+	 */
 	public static void init(Context context) throws IOException
 	{
 		if (db != null) return;
@@ -51,16 +57,14 @@ public class AppDatabase
 		FileOutputStream os = new FileOutputStream(file);
 		os.write(eventBytes.getValue());
 
-		db = new DatabaseImpl(
-			new InputStreamReader(new FileInputStream(file)),
-			new JSONToolsImpl()
-		);
+		db = new DatabaseImpl(new InputStreamReader(new FileInputStream(file)),
+			new JSONToolsImpl());
 	}
 
 	/**
-	 * Returns a reference to the created {@link Database} instance.
+	 * Returns a reference to the created `Database` instance.
 	 *
-	 * @throws NullPointerException if {@code init} has not been called.
+	 * @throws NullPointerException if `init` has not been called.
 	 */
 	public static Database getDatabaseInstance() throws NullPointerException
 	{
@@ -68,12 +72,22 @@ public class AppDatabase
 		return db;
 	}
 
-	public static void addListener(Listener l)
+	/**
+	 * Adds a listener to be notified whenever `updateVisibleEvents` is called.
+	 *
+	 * Precondition: All arguments are non-null.
+	 */
+	public static void addVisibleEventsListener(VisibleEventsListener l)
 	{ listeners.add(l); }
 
+	/**
+	 * Updates all listeners added using `addVisibleEventsListener`.
+	 *
+	 * Precondition: All arguments are non-null.
+	 */
 	public static void updateVisibleEvents(List<Event> newEvents)
 	{
-		for (Listener l : listeners)
+		for (VisibleEventsListener l : listeners)
 			l.onVisibleEventsChanged(newEvents);
 	}
 }

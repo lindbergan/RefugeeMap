@@ -36,7 +36,7 @@ import dat255.refugeemap.model.db.Event;
 import static android.graphics.Bitmap.createBitmap;
 
 public class GMapFragment extends Fragment
-        implements GoogleServicesAdapter, AppDatabase.Listener, GoogleAPIObserver {
+        implements GoogleServicesAdapter, AppDatabase.VisibleEventsListener, GoogleAPIObserver {
 
     private static final String TAG = "GMapFragment";
     ReplaceWithDetailView mCallback;
@@ -248,7 +248,7 @@ public class GMapFragment extends Fragment
 		try {
 			AppDatabase.init(getActivity());
 			mDatabase = AppDatabase.getDatabaseInstance();
-			AppDatabase.addListener(this);
+			AppDatabase.addVisibleEventsListener(this);
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}

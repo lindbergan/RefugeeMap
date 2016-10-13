@@ -4,22 +4,18 @@ import java.util.Collection;
 
 import dat255.refugeemap.model.ArrayUtils;
 import dat255.refugeemap.model.DistanceCalculator;
+import dat255.refugeemap.model.EqualityChecker;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.Filter;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.val;
 
 /**
- * @author Shoulder
+ * @author Axel
  */
 public class FilterImpl implements Filter
 {
-	/**
-	 * A class which describes the user's maximum distance to any given event.
-	 * @author Shoulder
-	 */
 	@AllArgsConstructor(access = AccessLevel.PUBLIC)
 	public static class DistanceCriteria
 	{
@@ -32,12 +28,14 @@ public class FilterImpl implements Filter
 		}
 	}
 
-	// Getters might be removed
-	@Getter private final Collection<Integer> categories;
-	@Getter private final Collection<String> searchTerms;
+	private final Collection<Integer> categories;
+	private final Collection<String> searchTerms;
 	private final DistanceCriteria distanceCriteria;
 
-	// If an argument is {@code null}, it will be counted as not being set
+	/**
+	 * Creates a `Filter` instance with the given criteria. If any
+	 * argument is `null`, it will be ignored in `doesEventFit`.
+	 */
 	public FilterImpl(Collection<Integer> ctgs, Collection<String> searchTerms,
 		DistanceCriteria distanceCriteria)
 	{
@@ -54,7 +52,7 @@ public class FilterImpl implements Filter
 
 		if (searchTerms != null)
 		{
-			val equalityChecker = new ArrayUtils.EqualityChecker<String>() {
+			val equalityChecker = new EqualityChecker<String>() {
 				@Override public boolean areEqual(String one, String two)
 				{ return one.toLowerCase().equals(two.toLowerCase()); }
 			};

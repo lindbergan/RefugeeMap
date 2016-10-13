@@ -7,7 +7,7 @@ import java.util.Collection;
  * This includes the latitude and longitude, for use when displaying on the
  * map, as well as title, address, contact information and description, for
  * use in the detail view and the 'popup' view (which contains a few details).
- * @author Shoulder
+ * @author Axel
  */
 public interface Event
 {
@@ -29,7 +29,8 @@ public interface Event
 	 * Returns the event's description in the given language.
 	 *
 	 * Preconditions:
-	 * - {@code lang} is in {@code getAvailableDescriptionLanguages}
+	 * - All arguments are non-null
+	 * - `lang` is in `getAvailableDescriptionLanguages`
 	 */
 	public String getDescription(String lang);
 

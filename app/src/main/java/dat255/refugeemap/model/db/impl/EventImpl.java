@@ -1,7 +1,6 @@
 package dat255.refugeemap.model.db.impl;
 
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 
 import dat255.refugeemap.model.db.Event;
@@ -10,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * @author Shoulder
+ * @author Axel
  */
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class EventImpl implements Event

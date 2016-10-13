@@ -1,28 +1,18 @@
 package dat255.refugeemap.model.db.impl;
 
 import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.Reader;
 import java.lang.reflect.Type;
 
 import dat255.refugeemap.model.db.JSONTools;
 
 /**
- * An implementation of {@link JSONTools} using the <b>Gson</b> library.
- * @author Shoulder
+ * An implementation of `JSONTools` using the *Gson* library.
+ * @author Axel
  */
 public class JSONToolsImpl implements JSONTools
 {
-	@Override public Object deserializeFile(String filePath, Type objectType)
-		throws FileNotFoundException
-	{
-		JsonReader reader = new JsonReader(new FileReader(filePath));
-		return new Gson().fromJson(reader, objectType);
-	}
-
 	@Override public Object deserializeFile(Reader fileReader, Type objectType)
 	{ return new Gson().fromJson(fileReader, objectType); }
 

@@ -7,7 +7,9 @@ import java.util.List;
 import dat255.refugeemap.model.db.Event;
 
 /**
- * @author Shoulder
+ * An implementation of `EventsSorter` that sorts based on
+ * the title of each event, alphabetically (from A to z).
+ * @author Axel
  */
 public class EventsSorterTitle implements EventsSorter
 {

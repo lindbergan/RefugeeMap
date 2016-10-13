@@ -46,7 +46,7 @@ import static android.view.View.VISIBLE;
 public class MainActivity extends AppCompatActivity
 		implements EventListFragment.OnListFragmentInteractionListener,
 		DetailFragment.OnFragmentInteractionListener,
-        GMapFragment.ReplaceWithDetailView, AppDatabase.Listener {
+        GMapFragment.ReplaceWithDetailView, AppDatabase.VisibleEventsListener {
 
     private String[] mDrawerListItems;
     private ViewHelper mViewHelper;

@@ -9,7 +9,9 @@ import dat255.refugeemap.model.DistanceCalculator;
 import dat255.refugeemap.model.db.Event;
 
 /**
- * @author Shoulder
+ * An implementation of `EventsSorter` that sorts based on
+ * distance to the user's point, from least to greatest.
+ * @author Axel
  */
 public class EventsSorterDistance implements EventsSorter
 {

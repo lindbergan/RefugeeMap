@@ -11,11 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 
 import dat255.refugeemap.model.db.Database;
@@ -28,7 +24,7 @@ import dat255.refugeemap.model.db.Filter;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class EventListFragment extends Fragment implements AppDatabase.Listener{
+public class EventListFragment extends Fragment implements AppDatabase.VisibleEventsListener {
 	private int mColumnCount = 1;
 	private static final String TAG = "EventListFragment";
 
@@ -82,7 +78,7 @@ public class EventListFragment extends Fragment implements AppDatabase.Listener{
 			}
 			eventRecycler = fillListFragment();
 			recyclerView.setAdapter(eventRecycler);
-			AppDatabase.addListener(this);
+			AppDatabase.addVisibleEventsListener(this);
 		}
 		return view;
 	}

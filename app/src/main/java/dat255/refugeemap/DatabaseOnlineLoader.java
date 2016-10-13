@@ -13,7 +13,9 @@ import java.util.concurrent.ExecutionException;
 import dat255.refugeemap.model.Wrapper;
 
 /**
- * @author Shoulder
+ * A purely static class used to set an array of bytes
+ * from a JSON file downloaded from the internet.
+ * @author Axel
  */
 public class DatabaseOnlineLoader
 {
@@ -22,14 +24,10 @@ public class DatabaseOnlineLoader
 		private static final String eventsDropboxURL = "https://dl.dropbox" +
 			"usercontent.com/s/q9vii9pslxg91sn/events.json?dl=0";
 
-		private boolean didFinishWithoutErrors = false;
 		private Wrapper<byte[]> bytes;
 
 		public LoadEventTask(Wrapper<byte[]> bytes)
 		{ this.bytes = bytes; }
-
-		public boolean finishedWithoutErrors()
-		{ return didFinishWithoutErrors; }
 
 		protected Boolean doInBackground(Void... nothing)
 		{
@@ -43,6 +41,14 @@ public class DatabaseOnlineLoader
 		}
 	};
 
+	/**
+	 * Loads the event database file (in JSON format)
+	 * into the byte array inside of `eventBytes`.
+	 *
+	 * Precondition: All arguments are non-null.
+	 *
+	 * @throws NetworkErrorException if the loading failed.
+	 */
 	public static void load(Wrapper<byte[]> eventBytes)
 		throws NetworkErrorException
 	{
