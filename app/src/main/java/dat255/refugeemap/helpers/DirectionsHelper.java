@@ -37,11 +37,14 @@ public class DirectionsHelper {
         mGoogleMap = googleMap;
     }
 
-    //NOTE: transportationMode needs to be equal to "driving", "walking", "bicycling" or "transit".
+    /*Note: Both walking and bicycling directions may sometimes not include
+    clear pedestrian or bicycling paths, so these directions will return
+    warnings in the returned result which you must display to the user.
+    For further documentation on the matter, visit:
+    https://developers.google.com/maps/documentation/directions/intro#TravelModes*/
     public void showDirection(
         LatLng origin, LatLng destination, String transportationMode) {
 
-        //TODO: determine what mode of transportation to correctly estimate the time it takes & perhaps which waypoints to avoid
         // Getting URL to the Google Directions API
 
         String validTransportMode;
@@ -67,7 +70,7 @@ public class DirectionsHelper {
         mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(13));
 
     }
-
+    //NOTE: valid transportation modes are "driving", "walking", "bicycling" or "transit".
     public boolean isTransportationModeValid(String transportationMode){
 
         return (transportationMode.equals("driving") ||

@@ -35,25 +35,30 @@ import dat255.refugeemap.model.db.Event;
 
 import static android.graphics.Bitmap.createBitmap;
 
+/**
+ * A {@link Fragment} subclass.
+ * Activities that contain this fragment must implement the
+ * {@link GMapFragment.OnMapFragmentInteractionListener} interface
+ * to handle interaction events.
+ * Use the {@link DetailFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
 public class GMapFragment extends Fragment
         implements GoogleServicesAdapter, AppDatabase.VisibleEventsListener, GoogleAPIObserver {
 
     private static final String TAG = "GMapFragment";
-    ReplaceWithDetailView mCallback;
+	OnMapFragmentInteractionListener mCallback;
     Marker mCurrentMarker;
     private GoogleMap mGoogleMap;
     private List<Event> mEventsList;
     private Database mDatabase;
     private DirectionsHelper mDirectionHelper;
     private ViewHelper mViewHelper;
+	private boolean isInfoWindowClosed;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment.
-     */
     public GMapFragment() {
-        GoogleAPIHelper googleAPIHelper = App.getGoogleApiHelper();
-        googleAPIHelper.addApiListener(this);
+		GoogleAPIHelper googleAPIHelper = App.getGoogleApiHelper();
+		googleAPIHelper.addApiListener(this);
     }
 
     @Override
@@ -61,10 +66,10 @@ public class GMapFragment extends Fragment
         super.onAttach(activity);
 
         try {
-            mCallback = (ReplaceWithDetailView) activity;
+            mCallback = (OnMapFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement ReplaceWithDetailView");
+                    + " must implement OnMapFragmentInteractionListener");
         }
     }
 
@@ -115,8 +120,8 @@ public class GMapFragment extends Fragment
 
 	public void configGoogleWidgets() {
 		mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
-        mGoogleMap.setPadding(0, 135, 0, 135);
-
+		mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
+		mGoogleMap.setPadding(0, 135, 0, 135);
 		//TODO: add scale to the map
 	}
 
@@ -148,12 +153,7 @@ public class GMapFragment extends Fragment
 	@Override
 	public boolean onMarkerClick(Marker marker) {
 
-		//check to see if any previous direction already is displayed
-		// - in that case, remove it
-		if (mDirectionHelper.isPreviousDirectionPresent()) {
-			mDirectionHelper.removePreviousDirection();
-		}
-
+		isInfoWindowClosed = false;
 		mCurrentMarker = marker;
 		return false;
 	}
@@ -171,6 +171,13 @@ public class GMapFragment extends Fragment
     }
 
     public void showDirections(LatLng origin, LatLng destination, String transportation) {
+
+		//check to see if any previous direction already is displayed
+		// - in that case, remove it
+		if (mDirectionHelper.isPreviousDirectionPresent()) {
+			mDirectionHelper.removePreviousDirection();
+		}
+
 		mDirectionHelper.showDirection(
 			origin, destination, transportation);
 	}
@@ -214,11 +221,16 @@ public class GMapFragment extends Fragment
     @Override
     public void onMapClick(LatLng latLng) {
 
-		//check if there is any directions present, in that case
-		// - remove it
-		if (mDirectionHelper.isPreviousDirectionPresent()) {
-			mDirectionHelper.removePreviousDirection();
+		//check to see if any infoWindow is open to know if directions needs to be erased
+		if (isInfoWindowClosed) {
+			//check if there is any directions present, in that case
+			// - remove it
+			if (mDirectionHelper.isPreviousDirectionPresent()) {
+				mDirectionHelper.removePreviousDirection();
+			}
 		}
+
+		isInfoWindowClosed = true;
 	}
 
 	/* When the infoWindow is clicked, we send a notification about which marker
@@ -286,7 +298,17 @@ public class GMapFragment extends Fragment
 		placeMarkers(mEventsList);
 	}
 
-	public interface ReplaceWithDetailView {
+	/**
+	 * This interface must be implemented by activities that contain this
+	 * fragment to allow an interaction in this fragment to be communicated
+	 * to the activity and potentially other fragments contained in that
+	 * activity.
+	 * <p/>
+	 * See the Android Training lesson <a href=
+	 * "http://developer.android.com/training/basics/fragments/communicating.html"
+	 * >Communicating with Other Fragments</a> for more information.
+	 */
+	public interface OnMapFragmentInteractionListener {
 		void onInfoWindowClicked(Marker marker);
 	}
 }

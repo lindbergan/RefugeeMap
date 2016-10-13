@@ -25,7 +25,7 @@ import dat255.refugeemap.MainActivity;
 import dat255.refugeemap.R;
 import dat255.refugeemap.model.db.Event;
 
-/* A helper class that takes care of most of the different view changes
+/* A helper class that takes care of the different view changes
 and custom view content*/
 
 public class ViewHelper {
@@ -43,7 +43,7 @@ public class ViewHelper {
 	private DrawerLayout mDrawer;
 	private ListView mDrawerListView;
 	private String[] mDrawerListItems;
-	private String[] mEventInformation;
+	private Event mCurrentEvent;
 
 	private Drawable mMapIcon;
 	private Drawable mListIcon;
@@ -224,7 +224,7 @@ public class ViewHelper {
 
 		//For: click on mListIcon item
 		else if (args.equals("list_item_clicked")) {
-			Fragment frag = DetailFragment.newInstance(mEventInformation);
+			Fragment frag = DetailFragment.newInstance(mCurrentEvent);
 			fm.beginTransaction().add(R.id.fragment_container, frag)
 					.hide(currentFragments[LIST_FRAGMENT]).
 					hide(currentFragments[SAVED_LIST_FRAGMENT]).commit();
@@ -239,7 +239,7 @@ public class ViewHelper {
 
 		//For: click on marker
 		else if (args.equals("marker_clicked")) {
-			Fragment frag = DetailFragment.newInstance(mEventInformation);
+			Fragment frag = DetailFragment.newInstance(mCurrentEvent);
 			fm.beginTransaction().add(R.id.fragment_container, frag)
 					.hide(currentFragments[MAP_FRAGMENT]).commit();
 			setToggleButtonVisible(false);
@@ -292,7 +292,6 @@ public class ViewHelper {
 				R.layout.drawer_list_item, R.id.drawer_list_item,
 				mDrawerListItems));
 
-		//hook up the listener
 		mDrawerListView.setOnItemClickListener(new DrawerItemClickListener());
 	}
 
@@ -315,7 +314,6 @@ public class ViewHelper {
 		if (marker.getTag() != null) {
 			Event activeEvent = (Event) marker.getTag();
 
-			//extracting the text fields
 			TextView infoTitle = (TextView) customView.findViewById(
 					R.id.info_title);
 			TextView infoTime = (TextView) customView.findViewById(
@@ -354,10 +352,7 @@ public class ViewHelper {
         }
 	}
 
-	public String[] getEventInformation() {
-		return mEventInformation;
-	}
-	public void setEventInformation(String[] eventInformation) {
-		mEventInformation = eventInformation;
+	public void setCurrentEvent(Event event) {
+		mCurrentEvent = event;
 	}
 }

@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
+import dat255.refugeemap.helpers.GoogleAPIHelper;
 import dat255.refugeemap.helpers.ViewHelper;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
@@ -46,7 +47,7 @@ import static android.view.View.VISIBLE;
 public class MainActivity extends AppCompatActivity
 		implements EventListFragment.OnListFragmentInteractionListener,
 		DetailFragment.OnFragmentInteractionListener,
-        GMapFragment.ReplaceWithDetailView, AppDatabase.VisibleEventsListener {
+        GMapFragment.OnMapFragmentInteractionListener,AppDatabase.VisibleEventsListener {
 
     private String[] mDrawerListItems;
     private ViewHelper mViewHelper;
@@ -60,11 +61,13 @@ public class MainActivity extends AppCompatActivity
 	private Toolbar toolbar;
 	private ArrayList<Integer> activeCategories = new ArrayList<>();
 	private String currentLocale;
+	private GoogleAPIHelper mGoogleAPIHelper;
 
 	@Override protected void onCreate(Bundle savedInstanceState)
 	{
         super.onCreate(savedInstanceState);
         mViewHelper = new ViewHelper(this);
+		mGoogleAPIHelper = new GoogleAPIHelper(getApplicationContext());
 		setContentView(R.layout.activity_main);
 		ActivityCompat.requestPermissions(this, new String[]{
             Manifest.permission.ACCESS_FINE_LOCATION}, 1);
@@ -86,7 +89,7 @@ public class MainActivity extends AppCompatActivity
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-		// setLocaleToArabic();
+		//setLocaleToArabic();
         mViewHelper.stateSwitch("app_start");
         mDrawerListItems = getResources().getStringArray(R.array.drawer_list_items);
 		mViewHelper.setUpNavigationDrawer(mDrawerListItems);
@@ -111,26 +114,14 @@ public class MainActivity extends AppCompatActivity
 
 		if(marker.getTag() instanceof Event) {
 			Event currentEvent = (Event) marker.getTag();
-			mViewHelper.setEventInformation(extractDetailedInformation(
-				currentEvent));
+			mViewHelper.setCurrentEvent(currentEvent);
+			mViewHelper.stateSwitch("marker_clicked");
 		}
-
-        mViewHelper.stateSwitch("marker_clicked");
-	}
-
-	public String[] extractDetailedInformation(Event event){
-
-		//TODO:Need to have "time" variable as well
-		return new String[]{event.getID().toString(), event.getTitle(),
-			event.getAddress(), event.getContactInformation(),
-			event.getDescription("sv"), //OBS!!
-			event.getLongitude().toString(), event.getLatitude().toString()};
 	}
 
 	@Override
 	public void onListFragmentInteraction(Event item) {
-
-		mViewHelper.setEventInformation(extractDetailedInformation(item));
+		mViewHelper.setCurrentEvent(item);
         mViewHelper.stateSwitch("list_item_clicked");
 	}
   
@@ -316,14 +307,16 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	@Override
-	public void DirectionButtonPressed(LatLng origin, LatLng destination, String transportationMode){
+	public void DirectionButtonPressed(LatLng destination, String transportationMode){
 		//Change to MapView
 		mViewHelper.stateSwitch("center_on_map");
 
         //Call the corresponding method in GMap
         Fragment f = getFragmentManager().findFragmentByTag("map");
         if(f instanceof GMapFragment){
-            ((GMapFragment) f).showDirections(origin,destination,transportationMode);
+
+            ((GMapFragment) f).showDirections(mGoogleAPIHelper
+				.getCurrentLocation(),destination,transportationMode);
         }
 	}
 	/**

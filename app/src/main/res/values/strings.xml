@@ -8,4 +8,10 @@
 
     <string name="swedish_locale_id">sv</string>
     <string name="arabic_locale_id">ar</string>
+
+    <string name="detail_address_label">" " Adress " " </string>
+    <string name="detal_time_label">" " Tid " "</string>
+    <string name="detail_contact_label">Kontakt</string>
+    <string name="detail_description_label">Beskrivning</string>
+
 </resources>

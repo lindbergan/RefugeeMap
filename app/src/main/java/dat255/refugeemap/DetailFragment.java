@@ -31,31 +31,18 @@ import dat255.refugeemap.model.db.Event;
 public class DetailFragment extends Fragment {
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_ID = "id";
-    private static final String ARG_TITLE = "title";
-    private static final String ARG_ADRESS = "adress";
-    private static final String ARG_CONTACT = "phoneNumber";
-    private static final String ARG_DESCRIPTION = "description";
-    private static final String ARG_LONGITUDE = "longitude";
-    private static final String ARG_LATITUDE = "latitude";
-
-    private String id;
+	private static String EVENT_ID;
+    private int id;
 	private String title;
-	private String adress;
+	private String address;
+	private String time;
 	private String contact;
 	private String description;
-	private String longitude;
-    private String latitude;
-	private String loremIpsum = "Lorem ipsum dolor sit amet, consectetur " +
-		"adipiscing elit. Duis suscipit justo ac metus malesuada aliquet. " +
-		"Donec ac arcu nulla. Sed nec pellentesque dui. Maecenas placerat mi " +
-		"eget ante sagittis, sit amet commodo lacus mollis. Cras " +
-		"consecteturegestas ligula, et malesuada libero auctor at. Cras " +
-		"congue " + "lacus a venenatis hendrerit. Quisque vel faucibus ligula.";
-
+	private double longitude;
+    private double latitude;
 	private ImageButton saveButton;
 	private OnFragmentInteractionListener mListener;
-    private Button mDirectionButton;
-
+    private ImageButton mDirectionButton;
 	private String toLocale = App
 			.getInstance()
 			.getBaseContext()
@@ -74,26 +61,53 @@ public class DetailFragment extends Fragment {
 	 * Use this factory method to create a new instance of
 	 * this fragment using the provided parameters.
 	 *
-	 * @param data An array of strings.
+	 * @param event An Event.
 	 * @return A new instance of fragment DetailFragment.
 	 */
-	public static DetailFragment newInstance(String[] data) {
+	public static DetailFragment newInstance(Event event) {
 		DetailFragment fragment = new DetailFragment();
 		Bundle args = new Bundle();
-		args.putString(ARG_ID, data[0]);
-		args.putString(ARG_TITLE, data[1]);
-		args.putString(ARG_ADRESS, data[2]);
-		args.putString(ARG_CONTACT, data[3]);
-		args.putString(ARG_DESCRIPTION, data[4]);
-        args.putString(ARG_LONGITUDE, data[5]);
-        args.putString(ARG_LATITUDE, data[6]);
+		args.putString(ARG_ID, String.valueOf(event.getID()));
+		EVENT_ID = String.valueOf(event.getID());
         fragment.setArguments(args);
 		return fragment;
 	}
 
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if (getArguments() != null) {
+			mActiveEvent = AppDatabase.getDatabaseInstance()
+				.getEvent(Integer.parseInt(EVENT_ID));
+			id = mActiveEvent.getID();
+			title = mActiveEvent.getTitle();
+			address = mActiveEvent.getAddress();
+			time = mActiveEvent.getDateInformation();
+			contact = mActiveEvent.getContactInformation();
+			description = mActiveEvent.getDescription("sv"); //NOTE: need to be set to currentLanguage
+			longitude = mActiveEvent.getLongitude();
+			latitude = mActiveEvent.getLatitude();
+		}
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
+		// Inflate the layout for this fragment
+		if (savedInstanceState == null)
+			System.out.println("nullSaved");
+
+		mRootView = inflater.inflate(R.layout.fragment_detail,
+			container, false);
+
+		setUpSaveButton();
+		setUpDirectionButton();
+		repaint();
+		return mRootView;
+	}
+
 	public void translateEvent() {
 		if (getArguments() != null) {
-			mActiveEvent = AppDatabase.getDatabaseInstance().getEvent(Integer.valueOf(id));
 			if (needTranslation()) {
 				HashMap<String, String> mValues = null;
 				try {
@@ -103,17 +117,16 @@ public class DetailFragment extends Fragment {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				title = mValues.get(ARG_TITLE);
+				//title = mValues.get(ARG_TITLE);
 				Log.v(DetailFragment.class.getSimpleName(), title);
-				description = mValues.get(ARG_DESCRIPTION);
+				//description = mValues.get(ARG_DESCRIPTION);
 				Log.v(DetailFragment.class.getSimpleName(), description);
 			}
 			else {
 				title = mActiveEvent.getTitle();
-				//organization = String.valueOf(mActiveEvent.getOwnerID());
 				description = mActiveEvent.getDescription("sv");
 				contact = mActiveEvent.getContactInformation();
-				id = String.valueOf(mActiveEvent.getID());
+				id = mActiveEvent.getID();
 			}
 			repaint();
 		}
@@ -128,81 +141,42 @@ public class DetailFragment extends Fragment {
 		urlConnectionHelper.setFromLocale(currentTextLocale);
 		urlConnectionHelper.setToLocale(userLocale);
 		HashMap<String, String> mValues = new HashMap<>();
-		mValues.put(ARG_TITLE, title);
-		mValues.put(ARG_DESCRIPTION, description);
-		mValues.put(ARG_ID, id);
+		mValues.put(mActiveEvent.getTitle(), title);
+		mValues.put(mActiveEvent.getDescription(toLocale), description);
+		mValues.put(ARG_ID, String.valueOf(id));
 		return urlConnectionHelper.getTranslatedEventDescription(mValues);
-	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		if (getArguments() != null) {
-            id = getArguments().getString(ARG_ID);
-            title = getArguments().getString(ARG_TITLE);
-            adress = getArguments().getString(ARG_ADRESS);
-            contact = getArguments().getString(ARG_CONTACT);
-            description = getArguments().getString(ARG_DESCRIPTION);
-            longitude = getArguments().getString(ARG_LONGITUDE);
-            latitude = getArguments().getString(ARG_LATITUDE);
-        }
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-							 Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
-		if (savedInstanceState == null)
-			System.out.println("nullSaved");
-
-		mRootView = inflater.inflate(R.layout.fragment_detail,
-			container, false);
-
-		((TextView) mRootView.findViewById(R.id.detail_title)).setText(title);
-		((TextView) mRootView.findViewById(R.id.detail_adress_event)).setText(adress);
-		((TextView) mRootView.findViewById(R.id.detail_contact_event)).setText(contact);
-		((TextView) mRootView.findViewById(R.id.detail_description_event)).setText(description);
-
-		//NOTE: Remove later on, when detailed view is confirmed working:
-		((TextView) mRootView.findViewById(R.id.detail_description_event)).setText(loremIpsum);
-
-		saveButton = (ImageButton) mRootView.findViewById(R.id.saveButton);
-		setUpSaveButton();
-        mDirectionButton = (Button) mRootView.findViewById(R.id.directionButton);
-		setUpDirectionButton();
-
-		repaint();
-		return mRootView;
 	}
 
 	public void repaint() {
 		((TextView) mRootView.findViewById(R.id.detail_title)).setText(title);
-		//((TextView) mRootView.findViewById(R.id.organizationTextView)).setText(organization);
-		((TextView) mRootView.findViewById(R.id.detail_description_event)).setText(description);
+		((TextView) mRootView.findViewById(R.id.detail_adress_event)).setText(address);
+		((TextView) mRootView.findViewById(R.id.detal_time_event)).setText(time);
 		((TextView) mRootView.findViewById(R.id.detail_contact_event)).setText(contact);
-		//((TextView) mRootView.findViewById(R.id.dateTextView)).setText(date);
-		saveButton = (ImageButton) mRootView.findViewById(R.id.saveButton);
-		setUpSaveButton();
+		((TextView) mRootView.findViewById(R.id.detail_description_event)).setText(description);
 	}
 
 	public void setUpDirectionButton(){
 
-        mDirectionButton.setOnClickListener(new View.OnClickListener() {
+		mDirectionButton = (ImageButton) mRootView.findViewById(R.id.directionButton);
+
+		mDirectionButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
 
-				LatLng origin = new LatLng(57.70, 11.97);//mGoogleAPIHelper.getCurrentLocation(); Should be our current pos
-				LatLng destination = new LatLng(Double.parseDouble(latitude),Double.parseDouble(longitude));
+				LatLng destination = new LatLng(latitude,longitude);
 				String transportationMode ="walking";
 
-                mListener.DirectionButtonPressed(origin,destination,transportationMode);
+                mListener.DirectionButtonPressed(destination,transportationMode);
 
 			}
 		});
 	}
 
 	public void setUpSaveButton() {
-		if (mListener.isEventSaved(this.id)) {
+
+		saveButton = (ImageButton) mRootView.findViewById(R.id.saveButton);
+
+		if (mListener.isEventSaved((String.valueOf(id)))) {
 			saveButton.setBackgroundResource(R.drawable.ic_remove_circle_black_48dp);
 		} else {
 			saveButton.setBackgroundResource(R.drawable.ic_add_circle_black_48dp);
@@ -218,13 +192,13 @@ public class DetailFragment extends Fragment {
 	public void onButtonPressed(String action) {
 		if (mListener != null && action == getString(R.string.save_event_button_clicked_key)) {
 
-			boolean actionSuccessful = mListener.onSaveEventButtonPressed(this.id);
+			boolean actionSuccessful = mListener.onSaveEventButtonPressed(String.valueOf(id));
 
 			if (actionSuccessful) {
 
 				mListener.updateSavedEventsFrag();
 
-				if (mListener.isEventSaved(this.id)) {
+				if (mListener.isEventSaved(String.valueOf(id))) {
 
 					//saveButton.setBackgroundResource(R.drawable.ic_remove_circle_black_48dp);
 					Toast.makeText(getActivity().getApplicationContext(), "Event saved", Toast.LENGTH_SHORT).show();
@@ -268,7 +242,7 @@ public class DetailFragment extends Fragment {
 	public interface OnFragmentInteractionListener {
 		boolean onSaveEventButtonPressed(String id);
 		boolean isEventSaved(String id);
-        void DirectionButtonPressed(LatLng origin, LatLng destination, String transportationMode);
+        void DirectionButtonPressed(LatLng destination, String transportationMode);
 		void updateSavedEventsFrag();
 	}
 }
