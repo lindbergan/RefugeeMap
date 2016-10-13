@@ -35,11 +35,4 @@ public interface Database
 	 * Precondition: All arguments are non-null.
 	 */
 	public List<Event> getEventsByFilter(Filter filter, EventsSorter sorter);
-
-	// -----------------------------------
-	// --- DEPRECATED, WILL BE REMOVED ---
-	// -----------------------------------
-
-	@Deprecated public List<Event> getAllEvents();
-	@Deprecated public List<Event> getEventsByFilter(Filter filter);
 }

@@ -28,6 +28,8 @@ public class FilterImpl implements Filter
 		}
 	}
 
+	public static final Filter EMPTY_FILTER = new FilterImpl(null, null, null);
+
 	private final Collection<Integer> categories;
 	private final Collection<String> searchTerms;
 	private final DistanceCriteria distanceCriteria;

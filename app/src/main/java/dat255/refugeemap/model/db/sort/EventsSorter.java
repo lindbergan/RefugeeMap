@@ -16,4 +16,8 @@ public interface EventsSorter
 	 * Precondition: All arguments are non-null.
 	 */
 	public void sort(List<Event> list);
+
+	public static EventsSorter NULL_SORTER = new EventsSorter() {
+		@Override public void sort(List<Event> list) {}
+	};
 }

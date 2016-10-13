@@ -17,6 +17,8 @@ import java.util.List;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.Filter;
+import dat255.refugeemap.model.db.impl.FilterImpl;
+import dat255.refugeemap.model.db.sort.EventsSorter;
 
 /**
  * A fragment representing a list of Items.
@@ -84,7 +86,9 @@ public class EventListFragment extends Fragment implements AppDatabase.VisibleEv
 	}
 
 	public EventRecyclerViewAdapter fillListFragment() {
-		return new EventRecyclerViewAdapter(mDatabase.getAllEvents(), mListener);
+		return new EventRecyclerViewAdapter(mDatabase.
+			getEventsByFilter(FilterImpl.EMPTY_FILTER,
+			EventsSorter.NULL_SORTER), mListener);
 	}
 
 	/**
@@ -92,7 +96,8 @@ public class EventListFragment extends Fragment implements AppDatabase.VisibleEv
 	 */
 
 	public EventRecyclerViewAdapter fillListFragment(Filter filter) {
-		return new EventRecyclerViewAdapter(mDatabase.getEventsByFilter(filter), mListener);
+		return new EventRecyclerViewAdapter(mDatabase.getEventsByFilter(filter,
+			EventsSorter.NULL_SORTER), mListener);
 	}
 
 	public EventRecyclerViewAdapter fillListFragment(List<Event> events){

@@ -39,6 +39,7 @@ import dat255.refugeemap.helpers.ViewHelper;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.impl.FilterImpl;
+import dat255.refugeemap.model.db.sort.EventsSorter;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.view.View.GONE;
@@ -131,7 +132,9 @@ public class MainActivity extends AppCompatActivity
             // Check if last click time was too recent in order to avoid
             // accidental double-click
             currentTime - lastSearchClickTime > clickThreshold) {
-            AppDatabase.updateVisibleEvents(mDatabase.getAllEvents());
+            AppDatabase.updateVisibleEvents(mDatabase.
+            	getEventsByFilter(FilterImpl.EMPTY_FILTER,
+            	EventsSorter.NULL_SORTER));
             this.searchEdit.setVisibility(VISIBLE);
             this.searchEdit.requestFocus();
             this.logo.setVisibility(GONE);
@@ -161,7 +164,8 @@ public class MainActivity extends AppCompatActivity
 		}
 		toggleCategoryButton(cat, buttonActivated);
 		FilterImpl filter = new FilterImpl(activeCategories, null, null);
-		List<Event> newEvents = mDatabase.getEventsByFilter(filter);
+		List<Event> newEvents = mDatabase.getEventsByFilter(filter,
+			EventsSorter.NULL_SORTER);
 
 		AppDatabase.updateVisibleEvents(newEvents);
 	}
@@ -189,7 +193,8 @@ public class MainActivity extends AppCompatActivity
 					String input = searchEdit.getText().toString();
 					Collection<String> searchTerms = Arrays.asList(input.split(" "));
 					FilterImpl filter = new FilterImpl(null, searchTerms, null);
-					List<Event> newEvents = mDatabase.getEventsByFilter(filter);
+					List<Event> newEvents = mDatabase.getEventsByFilter(filter,
+						EventsSorter.NULL_SORTER);
 					AppDatabase.updateVisibleEvents(newEvents);
 					toggleSearchFocus(v);
 				}

@@ -83,18 +83,4 @@ public class DatabaseImpl implements Database
 	// Only to be used for testing.
 	public static DatabaseImpl create(List<Event> events)
 	{ return new DatabaseImpl(events); }
-
-	// Will be removed
-	@Deprecated@Override public List<Event> getAllEvents()
-	{ return events; }
-
-	// Will be removed
-	@Deprecated@Override public List<Event> getEventsByFilter(Filter filter)
-	{
-		LinkedList<Event> list = new LinkedList<>();
-		for (Event e : events)
-			if (filter.doesEventFit(e))
-				list.add(e);
-		return list;
-	}
 }

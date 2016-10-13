@@ -32,6 +32,8 @@ import dat255.refugeemap.helpers.GoogleAPIHelper;
 import dat255.refugeemap.helpers.ViewHelper;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
+import dat255.refugeemap.model.db.impl.FilterImpl;
+import dat255.refugeemap.model.db.sort.EventsSorter;
 
 import static android.graphics.Bitmap.createBitmap;
 
@@ -107,7 +109,8 @@ public class GMapFragment extends Fragment
 	}
 
 	public void getEvents() {
-		mEventsList = mDatabase.getAllEvents();
+		mEventsList = mDatabase.getEventsByFilter(FilterImpl.EMPTY_FILTER,
+			EventsSorter.NULL_SORTER);
 		placeMarkers(mEventsList);
 	}
 
