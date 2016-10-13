@@ -45,14 +45,14 @@
 
     <ListView
         android:id="@+id/drawer_listView"
-        android:layout_width="240dp"
+        android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"
-        android:background="#ffffff"/>
+        android:divider="@color/drawerDivider"
+        android:dividerHeight="1.5dp"
+        android:background="@color/drawerBackground"/>
 
 </android.support.v4.widget.DrawerLayout>

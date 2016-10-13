@@ -172,6 +172,7 @@ public class DetailFragment extends Fragment {
 		});
 	}
 
+	/** @author Jonathan S */
 	public void setUpSaveButton() {
 
 		saveButton = (ImageButton) mRootView.findViewById(R.id.saveButton);
@@ -188,7 +189,7 @@ public class DetailFragment extends Fragment {
 			}
 		});
 	}
-
+	/** @author Jonathan S */
 	public void onButtonPressed(String action) {
 		if (mListener != null && action == getString(R.string.save_event_button_clicked_key)) {
 
@@ -238,7 +239,8 @@ public class DetailFragment extends Fragment {
 	 * See the Android Training lesson <a href=
 	 * "http://developer.android.com/training/basics/fragments/communicating.html"
 	 * >Communicating with Other Fragments</a> for more information.
-	 */
+	 *
+	 * @author Jonathan S */
 	public interface OnFragmentInteractionListener {
 		boolean onSaveEventButtonPressed(String id);
 		boolean isEventSaved(String id);

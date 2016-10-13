@@ -41,6 +41,8 @@ import dat255.refugeemap.model.db.Filter;
 import dat255.refugeemap.model.db.impl.FilterImpl;
 import dat255.refugeemap.model.db.sort.EventsSorter;
 
+import lombok.Getter;
+
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -60,10 +62,12 @@ public class MainActivity extends AppCompatActivity
     private ImageButton searchBtn;
     private Database mDatabase;
 	private Toolbar toolbar;
+
 	private int activeCategory = FilterImpl.NULL_CATEGORY;
 	Collection<String> activeSearchTerms = null;
-	private String currentLocale;
 	private GoogleAPIHelper mGoogleAPIHelper;
+	@Getter private String currentLocale;
+
 
 	@Override protected void onCreate(Bundle savedInstanceState)
 	{
@@ -111,7 +115,6 @@ public class MainActivity extends AppCompatActivity
 		}
     }
 
-    @Override
 	public void onInfoWindowClicked(Marker marker) {
 
 		if(marker.getTag() instanceof Event) {
@@ -238,6 +241,7 @@ public class MainActivity extends AppCompatActivity
 	public void onVisibleEventsChanged(List<Event> newEvents) {
 	}
 
+    /** @author Jonathan S */
 	@Override
 	public boolean onSaveEventButtonPressed(String id) {
 		SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
@@ -264,6 +268,7 @@ public class MainActivity extends AppCompatActivity
 		return editor.commit(); //returns true if save/remove was successful
 	}
 
+    /** @author Jonathan S */
 	@Override
 	public boolean isEventSaved(String id) {
 		try {
@@ -280,6 +285,7 @@ public class MainActivity extends AppCompatActivity
 
 	}
 
+    /** @author Jonathan S */
     public List<Event> getSavedEvents(){
 
         Set<String> savedEventsStr = getPreferences(Context.MODE_PRIVATE)
@@ -297,6 +303,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /** @author Jonathan S */
 	@Override
 
 	public void updateSavedEventsFrag(){
@@ -348,9 +355,6 @@ public class MainActivity extends AppCompatActivity
         currentLocale = getString(R.string.swedish_locale_id);
 	}
 
-    public String getCurrentLocale() {
-        return currentLocale;
-    }
 }
 
 

@@ -9,7 +9,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.Marker;
 
+import java.util.ArrayList;
+import java.util.List;
 
 import dat255.refugeemap.DetailFragment;
 import dat255.refugeemap.EventListFragment;
@@ -44,6 +46,7 @@ public class ViewHelper {
 	private ListView mDrawerListView;
 	private String[] mDrawerListItems;
 	private Event mCurrentEvent;
+
 
 	private Drawable mMapIcon;
 	private Drawable mListIcon;
@@ -102,7 +105,7 @@ public class ViewHelper {
 		//**** end mMapIcon and mListIcon toggle button *****
 
 		//For "Favourites" button pressed
-
+        /** @author Jonathan S, Adrian */
 		else if (args.equals("favourites_button_pressed")) {
 			if (currentFragments[DETAIL_FRAGMENT] != null) {
 				fm.beginTransaction()
@@ -281,16 +284,21 @@ public class ViewHelper {
 			mToggleImageButton.setVisibility(View.INVISIBLE);
 	}
 
+
 	public void setUpNavigationDrawer(String[] drawerListItems) {
 		mDrawerListItems = drawerListItems;
 		mDrawer = (DrawerLayout) mActivity.findViewById(R.id.drawer_layout);
 		mDrawerListView = (ListView) mActivity.findViewById(
 				R.id.drawer_listView);
 
-		//setting the custom content in the drawer
-		mDrawerListView.setAdapter(new ArrayAdapter<String>(mActivity,
-				R.layout.drawer_list_item, R.id.drawer_list_item,
-				mDrawerListItems));
+        List<String> navItems = new ArrayList<>();
+        for(int i = 0; i < drawerListItems.length; i++){
+            String item = drawerListItems[i];
+            navItems.add(item);
+        }
+
+        mDrawerListView.setAdapter(new DrawerListAdapter(mActivity.getApplicationContext(),
+                navItems));
 
 		mDrawerListView.setOnItemClickListener(new DrawerItemClickListener());
 	}
@@ -328,6 +336,8 @@ public class ViewHelper {
 		return customView;
 	}
 
+
+    /** @author Jonathan S */
 	private class DrawerItemClickListener
 			implements ListView.OnItemClickListener {
 		@Override
