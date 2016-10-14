@@ -165,9 +165,9 @@ public class DetailFragment extends Fragment {
 		saveButton = (ImageButton) mRootView.findViewById(R.id.saveButton);
 
 		if (mListener.isEventSaved((String.valueOf(id)))) {
-			saveButton.setBackgroundResource(R.drawable.ic_remove_circle_black_48dp);
+			saveButton.setBackgroundResource(R.drawable.ic_star_yellow_button);
 		} else {
-			saveButton.setBackgroundResource(R.drawable.ic_add_circle_black_48dp);
+			saveButton.setBackgroundResource(R.drawable.ic_star_black_button);
 		}
 		saveButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -188,10 +188,10 @@ public class DetailFragment extends Fragment {
 
 				if (mListener.isEventSaved(String.valueOf(id))) {
 
-					//saveButton.setBackgroundResource(R.drawable.ic_remove_circle_black_48dp);
+					saveButton.setBackgroundResource(R.drawable.ic_star_yellow_button);
 					Toast.makeText(getActivity().getApplicationContext(), "Event saved", Toast.LENGTH_SHORT).show();
 				} else {
-					//saveButton.setBackgroundResource(R.drawable.ic_add_circle_black_48dp);
+					saveButton.setBackgroundResource(R.drawable.ic_star_black_button);
 					Toast.makeText(getActivity().getApplicationContext(), "Event removed", Toast.LENGTH_SHORT).show();
 				}
 			} else {

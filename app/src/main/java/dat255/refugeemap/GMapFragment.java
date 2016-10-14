@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import dat255.refugeemap.helpers.DirectionsHelper;
@@ -57,6 +58,7 @@ public class GMapFragment extends Fragment
     private DirectionsHelper mDirectionHelper;
     private ViewHelper mViewHelper;
 	private boolean isInfoWindowClosed;
+	private List<Marker> mMarkerList = new ArrayList<Marker>();
 
     public GMapFragment() {
 		GoogleAPIHelper googleAPIHelper = App.getGoogleApiHelper();
@@ -151,11 +153,11 @@ public class GMapFragment extends Fragment
 
         Marker activeMarker = mGoogleMap.addMarker(properties);
         activeMarker.setTag(event);
-    }
+		mMarkerList.add(activeMarker);
+	}
 
 	@Override
 	public boolean onMarkerClick(Marker marker) {
-
 		isInfoWindowClosed = false;
 		mCurrentMarker = marker;
 		return false;
@@ -175,14 +177,46 @@ public class GMapFragment extends Fragment
 
     public void showDirections(LatLng origin, LatLng destination, String transportation) {
 
-		//check to see if any previous direction already is displayed
-		// - in that case, remove it
-		if (mDirectionHelper.isPreviousDirectionPresent()) {
-			mDirectionHelper.removePreviousDirection();
-		}
+		removePreviousDirections();
 
-		mDirectionHelper.showDirection(
-			origin, destination, transportation);
+		//check if user comes from favourites.
+		// In that case - remove old infoWindow & display the correct one
+		showCorrectInfoWindow(destination);
+
+		mDirectionHelper.showDirection(origin, destination, transportation);
+	}
+
+	public void showCorrectInfoWindow(LatLng destination){
+
+		if(!mCurrentMarker.getPosition().equals(destination)){
+			mCurrentMarker.hideInfoWindow();
+
+			if (doesMarkerExist(destination)) {
+				findMarkerByLatLng(destination).showInfoWindow();
+			}
+		}
+	}
+
+	public boolean doesMarkerExist(LatLng latLng){
+
+		for (int i = 0; i < mMarkerList.size(); i++){
+
+			if (mMarkerList.get(i).getPosition().equals(latLng)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private Marker findMarkerByLatLng(LatLng latLng) {
+
+		for (int i = 0; i < mMarkerList.size(); i++) {
+
+			if (mMarkerList.get(i).getPosition().equals(latLng)) {
+			mCurrentMarker = mMarkerList.get(i);
+			}
+		}
+		return mCurrentMarker;
 	}
 
     public Bitmap createMarkerBitmap(int category){
@@ -221,18 +255,20 @@ public class GMapFragment extends Fragment
 		return bitmap;
 	}
 
+	public void removePreviousDirections(){
+
+		if (mDirectionHelper.isPreviousDirectionPresent()) {
+			mDirectionHelper.removePreviousDirection();
+		}
+	}
+
     @Override
     public void onMapClick(LatLng latLng) {
 
 		//check to see if any infoWindow is open to know if directions needs to be erased
 		if (isInfoWindowClosed) {
-			//check if there is any directions present, in that case
-			// - remove it
-			if (mDirectionHelper.isPreviousDirectionPresent()) {
-				mDirectionHelper.removePreviousDirection();
-			}
+			removePreviousDirections();
 		}
-
 		isInfoWindowClosed = true;
 	}
 

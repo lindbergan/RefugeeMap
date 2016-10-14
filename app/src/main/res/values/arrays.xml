@@ -10,9 +10,9 @@
 
     <!-- Array containing references to drawables. The size should match 'drawer_list'items' -->
     <integer-array name="drawer_list_items_icons">
-        <item>@drawable/ic_person_black_48dp</item>
-        <item>@drawable/ic_star_black_48dp</item>
-        <item>@drawable/ic_language_black_48dp</item>
-        <item>@drawable/ic_satellite_black_48dp</item>
+        <item>@drawable/ic_person_red_48dp</item>
+        <item>@drawable/ic_star_yellow_48dp</item>
+        <item>@drawable/ic_language_blue_48dp</item>
+        <item>@drawable/ic_satellite_green_48dp</item>
     </integer-array>
 </resources>
