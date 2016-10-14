@@ -20,59 +20,27 @@ import dat255.refugeemap.model.db.Event;
 
 public class UrlConnectionHelper {
 
-	private String toLocale = App
-			.getInstance()
-			.getBaseContext()
-			.getResources()
-			.getConfiguration()
-			.locale
-			.toString();
-	private String fromLocale = "sv";
-
-	String getToLocale() {
-		return toLocale;
-	}
-
-	String getFromLocale() {
-		return fromLocale;
-	}
-
-	public void setToLocale(String toLocale) {
-		this.toLocale = toLocale;
-	}
-
-	public void setFromLocale(String fromLocale) {
-		this.fromLocale = fromLocale;
-	}
-
-	public HashMap<String, String> getTranslatedEventDescription(HashMap<String, String> args) throws ExecutionException, InterruptedException {
-		AsyncTask<HashMap<String, String>, Boolean, HashMap<String, String>> execute = new RetrieveFeedTask().execute(args);
+	public HashMap<String, String> translateEvent(Event event) throws ExecutionException, InterruptedException {
+		Event[] array = new Event[1];
+		array[0] = event;
+		AsyncTask<Event, Boolean, HashMap<String, String>> execute = new RetrieveFeedTask().execute(array);
 		return execute.get();
 	}
 
 }
 
-class RetrieveFeedTask extends AsyncTask<HashMap<String, String>, Boolean, HashMap<String, String>> {
-
-	UrlConnectionHelper url = new UrlConnectionHelper();
+class RetrieveFeedTask extends AsyncTask<Event, Boolean, HashMap<String, String>> {
 
 	@Override
-	protected HashMap<String, String> doInBackground(HashMap<String, String>... args) {
+	protected HashMap<String, String> doInBackground(Event... events) {
+
+		HashMap<String, String> result = new HashMap<>();
 		try {
 
-			String CLIENT_ID = "h2359918@mvrht.com";
-			String CLIENT_SECRET = "+itinbYoNupzDZf/1F44HKt9h+hwNA4Ph36LBA7iZR0";
-			String description = args[0].get("description");
-			String urlString =
-					"https://api.datamarket.azure.com/Bing/MicrosoftTranslator/v1/Translate?Text=%27"
-							+ description.replace("", "%20") + " %27&To=%27" + url.getToLocale()
-							+ "%27&From=%27" + url.getFromLocale() + "%27";
-
-			URL url = new URL(urlString);
+			String urlAsString = getUrl(events[0].getDescription("sv"));
+			URL url = new URL(urlAsString);
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			byte[] b = Base64.encode((CLIENT_ID+":"+CLIENT_SECRET).getBytes("UTF-8"), 2);
-			String encoded = new String(b);
-			connection.setRequestProperty("Authorization", "Basic " + encoded);
+			connection.setRequestProperty("Authorization", "Basic " + encodeAuthorizationKey());
 
 			String inputLine;
 			List<String> list = new LinkedList<>();
@@ -80,24 +48,56 @@ class RetrieveFeedTask extends AsyncTask<HashMap<String, String>, Boolean, HashM
 			while ((inputLine = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine()) != null) {
 				list.add(inputLine);
 			}
+			connection.disconnect();
+			String xmlAsString = "";
 
 			for (String str : list) {
-				inputLine = str + " ";
+				xmlAsString = xmlAsString + str;
 			}
 
-			for (String str : inputLine.split("<")) {
-				if (str.contains("d:Text")) {
-					args[0].remove("description");
-					args[0].put("description", str.split(">")[1]);
-					break;
-				}
-			}
-
-			connection.disconnect();
+			result.put("description", extractFromXml(xmlAsString));
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return args[0];
+		return result;
+	}
+
+	private String encodeAuthorizationKey() throws UnsupportedEncodingException {
+		String CLIENT_ID = "h2359918@mvrht.com";
+		String CLIENT_SECRET = "+itinbYoNupzDZf/1F44HKt9h+hwNA4Ph36LBA7iZR0";
+		byte[] b = Base64.encode((CLIENT_ID+":"+CLIENT_SECRET).getBytes("UTF-8"), 2);
+		String encoded = new String(b);
+		return encoded;
+	}
+
+	private String extractFromXml(String inputLine) {
+		for (String str : inputLine.split("<")) {
+			if (str.contains("d:Text")) {
+				return str.split(">")[1];
+			}
+		}
+		return "Translation failed";
+	}
+
+	private String getUrl(String description) {
+		String fromLocale = "sv";
+		String toLocale = App
+				.getInstance()
+				.getBaseContext()
+				.getResources()
+				.getConfiguration()
+				.locale
+				.toString();
+
+		String urlString = "https://api.datamarket.azure.com"
+						+ "/Bing/MicrosoftTranslator/v1/Translate?Text=%27"
+						+ description.replace(" ", "%20")
+						+ " %27&To=%27"
+						+ toLocale
+						+ "%27&From=%27"
+						+ fromLocale
+						+ "%27";
+		return urlString;
 	}
 }

@@ -190,6 +190,7 @@ public class ViewHelper {
 									.commit();
 							mFragmentHistory[1] = null;
 							mFragmentHistory[0] = GMapFragment.class;
+							toggleImage(mListIcon);
 							setToggleButtonVisible(true);
 						}
 					}

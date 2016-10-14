@@ -3,12 +3,11 @@ package dat255.refugeemap;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +42,7 @@ public class DetailFragment extends Fragment {
 	private ImageButton saveButton;
 	private OnFragmentInteractionListener mListener;
     private ImageButton mDirectionButton;
+	private ImageView categoryIcon;
 	private String toLocale = App
 			.getInstance()
 			.getBaseContext()
@@ -79,75 +79,66 @@ public class DetailFragment extends Fragment {
 		if (getArguments() != null) {
 			mActiveEvent = AppDatabase.getDatabaseInstance()
 				.getEvent(Integer.parseInt(EVENT_ID));
+
 			id = mActiveEvent.getID();
 			title = mActiveEvent.getTitle();
 			address = mActiveEvent.getAddress();
 			time = mActiveEvent.getDateInformation();
 			contact = mActiveEvent.getContactInformation();
-			description = mActiveEvent.getDescription("sv"); //NOTE: need to be set to currentLanguage
+			/*if (needTranslation()) {
+				UrlConnectionHelper translateHelper = new UrlConnectionHelper();
+				try {
+					HashMap<String, String> translated = translateHelper.translateEvent(mActiveEvent);
+					description = translated.get("description");
+				} catch (ExecutionException | InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			else {
+				description = mActiveEvent.getDescription("sv");
+			}*/
+			description = mActiveEvent.getDescription("sv");
 			longitude = mActiveEvent.getLongitude();
 			latitude = mActiveEvent.getLatitude();
 		}
 	}
 
+	private void setCategoryIcon() {
+		int category = mActiveEvent.getCategories()[0];
+		switch(category){
+			case 0:
+				categoryIcon.setImageDrawable(getResources().getDrawable(R.drawable.marker0));
+				break;
+			case 1:
+				categoryIcon.setImageDrawable(getResources().getDrawable(R.drawable.marker1));
+				break;
+			case 2:
+				categoryIcon.setImageDrawable(getResources().getDrawable(R.drawable.marker2));
+				break;
+			case 3:
+				categoryIcon.setImageDrawable(getResources().getDrawable(R.drawable.marker3));
+				break;
+			default:categoryIcon.setImageDrawable(getResources().getDrawable(R.drawable.marker0));
+				break;
+		}
+	}
+
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-							 Bundle savedInstanceState) {
-		// Inflate the layout for this fragment
-		if (savedInstanceState == null)
-			System.out.println("nullSaved");
-
-		mRootView = inflater.inflate(R.layout.fragment_detail,
-			container, false);
-
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		mRootView = inflater.inflate(R.layout.fragment_detail, container, false);
 		setUpSaveButton();
 		setUpDirectionButton();
 		repaint();
+		setCategoryIcon();
 		return mRootView;
-	}
-
-	public void translateEvent() {
-		if (getArguments() != null) {
-			if (needTranslation()) {
-				HashMap<String, String> mValues = null;
-				try {
-					mValues = getEventTranslated(toLocale, mActiveEvent.getDescription("sv"));
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				//title = mValues.get(ARG_TITLE);
-				Log.v(DetailFragment.class.getSimpleName(), title);
-				//description = mValues.get(ARG_DESCRIPTION);
-				Log.v(DetailFragment.class.getSimpleName(), description);
-			}
-			else {
-				title = mActiveEvent.getTitle();
-				description = mActiveEvent.getDescription("sv");
-				contact = mActiveEvent.getContactInformation();
-				id = mActiveEvent.getID();
-			}
-			repaint();
-		}
 	}
 
 	public boolean needTranslation() {
 		return !mActiveEvent.getAvailableDescriptionLanguages().contains(toLocale);
 	}
 
-	public HashMap<String, String> getEventTranslated(String userLocale, String currentTextLocale) throws ExecutionException, InterruptedException {
-		UrlConnectionHelper urlConnectionHelper = new UrlConnectionHelper();
-		urlConnectionHelper.setFromLocale(currentTextLocale);
-		urlConnectionHelper.setToLocale(userLocale);
-		HashMap<String, String> mValues = new HashMap<>();
-		mValues.put(mActiveEvent.getTitle(), title);
-		mValues.put(mActiveEvent.getDescription(toLocale), description);
-		mValues.put(ARG_ID, String.valueOf(id));
-		return urlConnectionHelper.getTranslatedEventDescription(mValues);
-	}
-
 	public void repaint() {
+		categoryIcon = (ImageView) mRootView.findViewById(R.id.detail_baloon);
 		((TextView) mRootView.findViewById(R.id.detail_title)).setText(title);
 		((TextView) mRootView.findViewById(R.id.detail_adress_event)).setText(address);
 		((TextView) mRootView.findViewById(R.id.detal_time_event)).setText(time);
@@ -158,16 +149,12 @@ public class DetailFragment extends Fragment {
 	public void setUpDirectionButton(){
 
 		mDirectionButton = (ImageButton) mRootView.findViewById(R.id.directionButton);
-
 		mDirectionButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-
 				LatLng destination = new LatLng(latitude,longitude);
 				String transportationMode ="walking";
-
                 mListener.DirectionButtonPressed(destination,transportationMode);
-
 			}
 		});
 	}
