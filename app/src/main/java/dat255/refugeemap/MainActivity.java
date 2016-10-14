@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import dat255.refugeemap.helpers.GoogleAPIHelper;
+import dat255.refugeemap.helpers.SavedEventsHelper;
 import dat255.refugeemap.helpers.ViewHelper;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity
 
     private String[] mDrawerListItems;
     private ViewHelper mViewHelper;
+	private SavedEventsHelper mSavedEventsHelper;
     private long lastSearchClickTime = 0;
     private int clickThreshold = 500;
     private InputMethodManager inputManager;
@@ -74,6 +76,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         mViewHelper = new ViewHelper(this);
 		mGoogleAPIHelper = new GoogleAPIHelper(getApplicationContext());
+		mSavedEventsHelper = new SavedEventsHelper(this);
 		setContentView(R.layout.activity_main);
 		ActivityCompat.requestPermissions(this, new String[]{
             Manifest.permission.ACCESS_FINE_LOCATION}, 1);
@@ -241,84 +244,33 @@ public class MainActivity extends AppCompatActivity
 	public void onVisibleEventsChanged(List<Event> newEvents) {
 	}
 
-    /** @author Jonathan S */
 	@Override
 	public boolean onSaveEventButtonPressed(String id) {
-		SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = prefs.edit();
-
-		//creates new TreeSet if no Set already linked to key
-		Set<String> savedEvents = prefs.getStringSet(getString(
-            R.string.saved_events_key),
-            new TreeSet<String>());
-		Set<String> updatedEventList = new TreeSet<>(savedEvents);
-
-		if (!savedEvents.contains(id)) {
-
-			updatedEventList.add(id);
-			editor.putStringSet(getString(R.string.saved_events_key),
-                updatedEventList);
-		} else {
-
-			updatedEventList.remove(id);
-			editor.putStringSet(getString(R.string.saved_events_key),
-                updatedEventList);
-		}
-
-		return editor.commit(); //returns true if save/remove was successful
+        return mSavedEventsHelper.onSaveEventButtonPressed(id);
 	}
 
-    /** @author Jonathan S */
 	@Override
 	public boolean isEventSaved(String id) {
-		try {
-			SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
-			return prefs.getStringSet(getString(R.string.saved_events_key), null).contains(id);
-		} catch (NullPointerException e) {
-			return false;
-		}
+		return mSavedEventsHelper.isEventSaved(id);
 	}
 
 	@Override
 	public void onBackPressed() {
         mViewHelper.stateSwitch("back_button_pressed");
-
 	}
 
-    /** @author Jonathan S */
     public List<Event> getSavedEvents(){
-
-        Set<String> savedEventsStr = getPreferences(Context.MODE_PRIVATE)
-            .getStringSet(getString(R.string.saved_events_key), null);
-
-        if(savedEventsStr != null){
-            List<Integer> savedEventsIds = new LinkedList<>();
-
-            for(String s : savedEventsStr){
-                savedEventsIds.add(Integer.valueOf(s));
-            }
-            return mDatabase.getEvents(savedEventsIds);
-        }else{
-            return null;
-        }
+        return mSavedEventsHelper.getSavedEvents();
     }
 
-    /** @author Jonathan S */
 	@Override
-
 	public void updateSavedEventsFrag(){
-
-		android.app.Fragment frag = getFragmentManager().findFragmentByTag("saved_events_list_frag");
-			if(frag instanceof EventListFragment){
-				//((EventListFragment) frag).fillListFragment(getSavedEvents());
-				((EventListFragment) frag).onVisibleEventsChanged(getSavedEvents());
-			}
-
+        mSavedEventsHelper.updateSavedEventsFrag();
 		}
 
 	protected void onStart() {
 		super.onStart();
-
+        updateSavedEventsFrag();
 		App.getGoogleApiHelper().connect();
 	}
 
