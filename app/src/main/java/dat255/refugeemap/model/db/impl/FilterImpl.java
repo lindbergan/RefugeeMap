@@ -3,8 +3,6 @@ package dat255.refugeemap.model.db.impl;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
 import dat255.refugeemap.model.ArrayUtils;
 import dat255.refugeemap.model.DistanceCalculator;
@@ -32,71 +30,59 @@ public class FilterImpl implements Filter
 		}
 	}
 
+	/** @author Sebastian */
 	@AllArgsConstructor(access = AccessLevel.PUBLIC)
 	public static class TimeCriteria
 	{
-
 		public boolean doesEventFit(Event e)
 		{
-			List<HashMap<String, Integer>> openingHours = e.getOpeningHours();
+			int[][] timeData = e.getTimeData();
 
 			Calendar c = Calendar.getInstance();
 			c.setTime(new Date());
 
-			// Monday - Friday = 0 - 6
-			int currentDayOfWeek = c.get(Calendar.DAY_OF_WEEK ) - 2; //
+			// Monday to Sunday represented by the indices 0 to 6
+			int currentDayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 2;
 			int currentHourOfDay =  c.get(Calendar.HOUR_OF_DAY);
 
-			for(int i = 0; i < openingHours.size(); i++) {
-				HashMap<String, Integer> day = openingHours.get(i);
+			for(int i = 0; i < timeData.length; i++)
+			{
+				int[] day = timeData[i];
 
-				int weekday = day.get("day");
-				int startHours = day.get("start_hours");
-				int endHours = day.get("end_hours");
-				if (currentDayOfWeek == weekday
+				int weekDay = day[0];
+				int startHours = day[1];
+				int endHours = day[3];
+				if (currentDayOfWeek == weekDay
 					&& currentHourOfDay > startHours
-					&& currentHourOfDay < endHours) {
-					return true;
-				}
+					&& currentHourOfDay < endHours)
+						return true;
 			}
 
 			return false;
-
 		}
-
 	}
 
-	// Getters might be removed
 	public static final int NULL_CATEGORY = -1;
 
 	public static final Filter EMPTY_FILTER =
-		new FilterImpl(NULL_CATEGORY, null, null);
+		new FilterImpl(NULL_CATEGORY, null, null, null);
 
 	private final int category;
 	private final Collection<String> searchTerms;
 	private final DistanceCriteria distanceCriteria;
-	private  TimeCriteria timeCriteria;
+	private final TimeCriteria timeCriteria;
 
 	/**
 	 * Creates a `Filter` instance with the given criteria.
-	 * To ignore `category`, set to `EMPTY_FILTER`.
-	 * To ignore `searchTerms` and/or `distanceCriteria`, set to `null`.
+	 * To ignore `category`, set it to `EMPTY_FILTER`.
+	 * To ignore any other criteria, set it to `null`.
 	 */
 	public FilterImpl(int category, Collection<String> searchTerms,
-		DistanceCriteria distanceCriteria)
+		DistanceCriteria distCriteria, TimeCriteria timeCriteria)
 	{
 		this.category = category;
 		this.searchTerms = searchTerms;
-		this.distanceCriteria = distanceCriteria;
-	}
-
-	// If an argument is {@code null}, it will be counted as not being set
-	public FilterImpl(int category, Collection<String> searchTerms,
-					  DistanceCriteria distanceCriteria, TimeCriteria timeCriteria)
-	{
-		this.category = category;
-		this.searchTerms = searchTerms;
-		this.distanceCriteria = distanceCriteria;
+		this.distanceCriteria = distCriteria;
 		this.timeCriteria = timeCriteria;
 	}
 
@@ -130,8 +116,9 @@ public class FilterImpl implements Filter
 
 	@Override public boolean isEmpty()
 	{
-		return ((category == NULL_CATEGORY) && (searchTerms == null ||
-			searchTerms.size() == 0) && (distanceCriteria == null)
-			&& (timeCriteria == null));
+		return ((category == NULL_CATEGORY) &&
+			(searchTerms == null || searchTerms.size() == 0) &&
+			(distanceCriteria == null) &&
+			(timeCriteria == null));
 	}
 }

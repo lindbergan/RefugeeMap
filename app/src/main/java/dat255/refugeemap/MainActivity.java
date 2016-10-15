@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity
             // Check if last click time was too recent in order to avoid
             // accidental double-click
             currentTime - lastSearchClickTime > clickThreshold) {
-			Filter f = new FilterImpl(activeCategory, activeSearchTerms, null);
+			Filter f = new FilterImpl(activeCategory, activeSearchTerms, null, null);
             AppDatabase.updateVisibleEvents(mDatabase.getEventsByFilter(f,
             	EventsSorter.NULL_SORTER));
             this.searchEdit.setVisibility(VISIBLE);
@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity
 		}
 
 		FilterImpl filter = new FilterImpl(activeCategory,
-			activeSearchTerms, null);
+			activeSearchTerms, null, null);
 		List<Event> newEvents = mDatabase.getEventsByFilter(filter,
 			EventsSorter.NULL_SORTER);
 
@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity
 					String input = searchEdit.getText().toString();
 					activeSearchTerms = Arrays.asList(input.split(" "));
 					FilterImpl filter = new FilterImpl(activeCategory,
-						activeSearchTerms, null);
+						activeSearchTerms, null, null);
 					List<Event> newEvents = mDatabase.getEventsByFilter(filter,
 						EventsSorter.NULL_SORTER);
 					AppDatabase.updateVisibleEvents(newEvents);

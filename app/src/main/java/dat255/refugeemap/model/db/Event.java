@@ -1,8 +1,6 @@
 package dat255.refugeemap.model.db;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 
 /**
  * An interface with accessor methods for all information tied to an event.
@@ -27,9 +25,7 @@ public interface Event
 	public String getAddress();
 	public String getContactInformation();
 
-	/** edit by Sebastian **/
-	public ArrayList<HashMap<String, Integer>> getOpeningHours();
-	/** end edit by Sebastian **/
+	public int[][] getTimeData();
 
 	/**
 	 * Returns the event's description in the given language.
