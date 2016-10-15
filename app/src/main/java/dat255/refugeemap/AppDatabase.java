@@ -56,9 +56,10 @@ public class AppDatabase
 		File file = new File(context.getFilesDir(), "events.json");
 		FileOutputStream os = new FileOutputStream(file);
 		os.write(eventBytes.getValue());
+		os.close();
 
-		db = new DatabaseImpl(new InputStreamReader(new FileInputStream(file)),
-			new JSONToolsImpl());
+		db = new DatabaseImpl(new InputStreamReader(new FileInputStream(file),
+			"UTF-8"), new JSONToolsImpl());
 	}
 
 	/**

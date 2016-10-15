@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity
 		DetailFragment.OnFragmentInteractionListener,
         GMapFragment.OnMapFragmentInteractionListener,AppDatabase.VisibleEventsListener {
 
-    private String[] mDrawerListItems;
     private ViewHelper mViewHelper;
 	private SavedEventsHelper mSavedEventsHelper;
     private long lastSearchClickTime = 0;
@@ -64,8 +63,6 @@ public class MainActivity extends AppCompatActivity
     private ImageView logo;
     private EditText searchEdit;
     private ImageButton searchBtn;
-	private Button distanceButton;
-	private Button timeButton;
     private Database mDatabase;
 	private Toolbar toolbar;
 	private List<CategoryChangeListener> mActiveCategoryChangeListeners = new
@@ -105,8 +102,7 @@ public class MainActivity extends AppCompatActivity
 		}
 		//setLocaleToArabic();
         mViewHelper.stateSwitch("app_start");
-        mDrawerListItems = getResources().getStringArray(R.array.drawer_list_items);
-		mViewHelper.setUpNavigationDrawer(mDrawerListItems);
+		mViewHelper.setUpNavigationDrawer(getResources());
 
 
 		/**
@@ -293,7 +289,7 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	@Override
-	public void DirectionButtonPressed(LatLng destination, String transportationMode){
+	public void onDirectionButtonPressed(LatLng destination, String transportationMode){
 		//Change to MapView
 		mViewHelper.stateSwitch("center_on_map");
 

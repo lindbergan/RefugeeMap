@@ -49,13 +49,10 @@ class RetrieveFeedTask extends AsyncTask<Event, Boolean, HashMap<String, String>
 				list.add(inputLine);
 			}
 			connection.disconnect();
-			String xmlAsString = "";
 
-			for (String str : list) {
-				xmlAsString = xmlAsString + str;
-			}
-
-			result.put("description", extractFromXml(xmlAsString));
+			StringBuilder builder = new StringBuilder("");
+			for (String str : list) builder.append(str);
+			result.put("description", extractFromXml(builder.toString()));
 
 		} catch (IOException e) {
 			e.printStackTrace();

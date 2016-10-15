@@ -12,7 +12,10 @@ public class App extends Application  {
 	public void onCreate() {
 		super.onCreate();
 
+		// Since `onCreate` will always be called once, having
+		// `mInstance` be non-final is not a problem
 		mInstance = this;
+
 		mGoogleAPIHelper = new GoogleAPIHelper(getApplicationContext());
 	}
 

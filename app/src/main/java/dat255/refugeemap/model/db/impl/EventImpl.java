@@ -4,34 +4,43 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import dat255.refugeemap.model.db.Event;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
  * @author Axel
  */
-@AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class EventImpl implements Event
 {
-	private final Integer id;
-	@Getter private final Integer ownerID;
-	@Getter private final Integer[] categories;
-	@Getter private final String[] tags;
-	@Getter private final Double latitude, longitude;
-	@Getter private final String dateInformation, title,
+	private Integer id;
+	@Getter private Integer ownerID;
+	private Integer[] categories;
+	private String[] tags;
+	@Getter private Double latitude, longitude;
+	@Getter private String dateInformation, title,
 		address, contactInformation;
-	private final HashMap<String, String> descriptions;
-	@Getter private final int[][] timeData;
+	private HashMap<String, String> descriptions;
+	private int[][] timeData;
+
+	// Gson requires zero-argument constructor
+	public EventImpl() {}
 
 	public Integer getID()
 	{ return id; }
 
-	@Override public Collection<String> getAvailableDescriptionLanguages()
-	{ return descriptions.keySet(); }
+	public Integer[] getCategories()
+	{ return categories.clone(); }
+
+	public String[] getTags()
+	{ return tags.clone(); }
 
 	@Override public String getDescription(String lang)
 	{ return descriptions.get(lang); }
+
+	@Override public Collection<String> getAvailableDescriptionLanguages()
+	{ return descriptions.keySet(); }
+
+	public int[][] getTimeData()
+	{ return timeData.clone(); }
 
 	@Override public boolean equals(Object o)
 	{ return (this == o); }

@@ -26,8 +26,8 @@ import dat255.refugeemap.helpers.DataParser;
 
 public class DirectionsHelper {
 
-    private final String API_DEST = "https://maps.googleapis.com/maps/api/directions/json?";
-    private final String API_KEY = "AIzaSyDUBRjMFZm7l7cvzLE1mTup3QI1qh4IoxM";
+    private static final String API_DEST = "https://maps.googleapis.com/maps/api/directions/json?";
+    private static final String API_KEY = "AIzaSyDUBRjMFZm7l7cvzLE1mTup3QI1qh4IoxM";
     private GoogleMap mGoogleMap;
     private String duration;
     private String distance;
@@ -155,8 +155,8 @@ public class DirectionsHelper {
         } catch (Exception e) {
             Log.d("Exception", e.toString());
         } finally {
-            iStream.close();
-            urlConnection.disconnect();
+            if (iStream != null) iStream.close();
+            if (urlConnection != null) urlConnection.disconnect();
         }
         return data;
     }

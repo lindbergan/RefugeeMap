@@ -13,10 +13,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.HashMap;
-import java.util.concurrent.ExecutionException;
-
-import dat255.refugeemap.helpers.UrlConnectionHelper;
 import dat255.refugeemap.model.db.Event;
 
 /**
@@ -154,7 +150,7 @@ public class DetailFragment extends Fragment {
 			public void onClick(View view) {
 				LatLng destination = new LatLng(latitude,longitude);
 				String transportationMode ="walking";
-                mListener.DirectionButtonPressed(destination,transportationMode);
+                mListener.onDirectionButtonPressed(destination,transportationMode);
 			}
 		});
 	}
@@ -178,7 +174,8 @@ public class DetailFragment extends Fragment {
 	}
 	/** @author Jonathan S */
 	public void onButtonPressed(String action) {
-		if (mListener != null && action == getString(R.string.save_event_button_clicked_key)) {
+		if (mListener != null &&
+			action.equals(getString(R.string.save_event_button_clicked_key))) {
 
 			boolean actionSuccessful = mListener.onSaveEventButtonPressed(String.valueOf(id));
 
@@ -231,7 +228,7 @@ public class DetailFragment extends Fragment {
 	public interface OnFragmentInteractionListener {
 		boolean onSaveEventButtonPressed(String id);
 		boolean isEventSaved(String id);
-        void DirectionButtonPressed(LatLng destination, String transportationMode);
+        void onDirectionButtonPressed(LatLng destination, String transportationMode);
 		void updateSavedEventsFrag();
 	}
 }

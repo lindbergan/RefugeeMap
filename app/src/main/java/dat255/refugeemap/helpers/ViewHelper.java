@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -34,11 +35,11 @@ and custom view content*/
 
 public class ViewHelper {
 
-	public final int MAP_FRAGMENT = 0;
-	public final int LIST_FRAGMENT = 1;
-	public final int DETAIL_FRAGMENT = 2;
-	public final int SAVED_LIST_FRAGMENT = 3;
-	public final int LIST_FILTER_BUTTONS = 4;
+	public static final int MAP_FRAGMENT = 0;
+	public static final int LIST_FRAGMENT = 1;
+	public static final int DETAIL_FRAGMENT = 2;
+	public static final int SAVED_LIST_FRAGMENT = 3;
+	public static final int LIST_FILTER_BUTTONS = 4;
 	FragmentManager fm;
 	private boolean drawerOpen = false;
 	private Class[] mFragmentHistory = new Class[2];
@@ -47,7 +48,6 @@ public class ViewHelper {
 	private ImageButton mToggleImageButton;
 	private DrawerLayout mDrawer;
 	private ListView mDrawerListView;
-	private LinearLayout filterButtons;
 	private String[] mDrawerListItems;
 	private Event mCurrentEvent;
 
@@ -307,17 +307,15 @@ public class ViewHelper {
 	}
 
 
-	public void setUpNavigationDrawer(String[] drawerListItems) {
-		mDrawerListItems = drawerListItems;
+	public void setUpNavigationDrawer(Resources resources) {
+		mDrawerListItems = resources.getStringArray(R.array.drawer_list_items);
 		mDrawer = (DrawerLayout) mActivity.findViewById(R.id.drawer_layout);
 		mDrawerListView = (ListView) mActivity.findViewById(
 				R.id.drawer_listView);
 
-        List<String> navItems = new ArrayList<>();
-        for(int i = 0; i < drawerListItems.length; i++){
-            String item = drawerListItems[i];
-            navItems.add(item);
-        }
+		List<String> navItems = new ArrayList<>();
+		for(int i = 0; i < mDrawerListItems.length; i++)
+			navItems.add(mDrawerListItems[i]);
 
         mDrawerListView.setAdapter(new DrawerListAdapter(mActivity.getApplicationContext(),
                 navItems));
@@ -389,6 +387,6 @@ public class ViewHelper {
 	}
 
 	public Fragment[] getCurrentFragments() {
-		return currentFragments;
+		return currentFragments.clone();
 	}
 }

@@ -219,27 +219,11 @@ public class GMapFragment extends Fragment
 		return mCurrentMarker;
 	}
 
-    public Bitmap createMarkerBitmap(int category){
-        //int id = getResources().getIdentifier("marker"+category, "drawable", this.getActivity().getPackageName());
-        //Bitmap markerBitmap = BitmapFactory.decodeResource(getResources(), id);
-        //return markerBitmap;
-        Bitmap markerBitmap=null;
-        switch(category){
-            case 0:
-                markerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.marker0);
-                break;
-            case 1:
-                markerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.marker1);
-                break;
-            case 2:
-                markerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.marker2);
-                break;
-            case 3:
-                markerBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.marker3);
-                break;
-        }
-        return markerBitmap;
-    }
+	public Bitmap createMarkerBitmap(int category) {
+		int id = getResources().getIdentifier("marker"+category, "drawable", this.getActivity().getPackageName());
+		Bitmap markerBitmap = BitmapFactory.decodeResource(getResources(), id);
+		return markerBitmap;
+	}
 
     public Bitmap combineBitmaps(Bitmap b1, Bitmap b2){
 
