@@ -46,17 +46,20 @@ public class AppDatabase
 	{
 		if (db != null) return;
 
-		Wrapper<byte[]> eventBytes = new Wrapper<>(null);
-		try {
-			DatabaseOnlineLoader.load(eventBytes);
-		} catch(NetworkErrorException e) {
-			System.exit(-1); // temp
-		}
-
 		File file = new File(context.getFilesDir(), "events.json");
-		FileOutputStream os = new FileOutputStream(file);
-		os.write(eventBytes.getValue());
-		os.close();
+
+		Wrapper<byte[]> eventBytes = new Wrapper<>(null);
+
+		try
+		{
+			DatabaseOnlineLoader.load(eventBytes);
+			FileOutputStream os = new FileOutputStream(file);
+			os.write(eventBytes.getValue());
+			os.close();
+		} catch(NetworkErrorException e)
+		{
+			if (!file.exists()) System.exit(-1); // TEMPORARY SOLUTION
+		}
 
 		db = new DatabaseImpl(new InputStreamReader(new FileInputStream(file),
 			"UTF-8"), new JSONToolsImpl());
