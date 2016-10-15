@@ -88,6 +88,7 @@ public class ListFilterButtonsFragment extends Fragment implements
 
 		final Button distanceFilterButton = (Button)fragmentView.findViewById(R.id
 			.distance_button);
+		setButtonToInactive(distanceFilterButton);
 
 		final Button timeFilterButton = (Button)fragmentView.findViewById(R.id
 			.time_button);
