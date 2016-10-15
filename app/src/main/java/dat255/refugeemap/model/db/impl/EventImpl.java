@@ -1,5 +1,6 @@
 package dat255.refugeemap.model.db.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -19,6 +20,7 @@ public class EventImpl implements Event
 	@Getter private final Integer[] categories;
 	@Getter private final String[] tags;
 	@Getter private final Double latitude, longitude;
+	@Getter private final ArrayList<HashMap<String, Integer>> openingHours;
 	@Getter private final String dateInformation, title,
 		address, contactInformation;
 	private final HashMap<String, String> descriptions;

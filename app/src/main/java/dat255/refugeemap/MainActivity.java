@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -25,6 +26,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -62,9 +64,12 @@ public class MainActivity extends AppCompatActivity
     private ImageView logo;
     private EditText searchEdit;
     private ImageButton searchBtn;
+	private Button distanceButton;
+	private Button timeButton;
     private Database mDatabase;
 	private Toolbar toolbar;
-
+	private List<CategoryChangeListener> mActiveCategoryChangeListeners = new
+		ArrayList<>();
 	private int activeCategory = FilterImpl.NULL_CATEGORY;
 	Collection<String> activeSearchTerms = null;
 	private GoogleAPIHelper mGoogleAPIHelper;
@@ -102,6 +107,17 @@ public class MainActivity extends AppCompatActivity
         mViewHelper.stateSwitch("app_start");
         mDrawerListItems = getResources().getStringArray(R.array.drawer_list_items);
 		mViewHelper.setUpNavigationDrawer(mDrawerListItems);
+
+
+		/**
+		 * The List Filter Buttons Fragment now listens to when categories
+		 * change
+		 */
+		Fragment[] currentFragments = mViewHelper.getCurrentFragments();
+		CategoryChangeListener listFilterButtons =
+			(CategoryChangeListener)currentFragments[mViewHelper
+				.LIST_FILTER_BUTTONS];
+		mActiveCategoryChangeListeners.add(listFilterButtons);
 	}
 
     public void setUpViews(){
@@ -175,6 +191,8 @@ public class MainActivity extends AppCompatActivity
 			activeSearchTerms, null);
 		List<Event> newEvents = mDatabase.getEventsByFilter(filter,
 			EventsSorter.NULL_SORTER);
+
+		this.broadcastActiveCategory();
 
 		AppDatabase.updateVisibleEvents(newEvents);
 	}
@@ -307,6 +325,20 @@ public class MainActivity extends AppCompatActivity
         currentLocale = getString(R.string.swedish_locale_id);
 	}
 
+    public String getCurrentLocale() {
+        return currentLocale;
+    }
+
+	public int getActiveCategory() {
+		return activeCategory;
+	}
+
+	public void broadcastActiveCategory() {
+		for (int i = 0; i < mActiveCategoryChangeListeners.size(); i++) {
+			mActiveCategoryChangeListeners.get(i)
+				.onCategoryChange(activeCategory);
+		}
+	}
 }
 
 

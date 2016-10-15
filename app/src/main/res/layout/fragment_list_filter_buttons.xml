@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:id="@+id/list_filter_buttons">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.09">
+
+        <TextView
+            android:text="Find Events:"
+            android:layout_width="wrap_content"
+            android:layout_height="57dp"
+            android:id="@+id/textView3"
+            android:textAlignment="center"
+            android:gravity="top|bottom"
+            android:layout_margin="5dp"
+            android:layout_weight="0.30"/>
+
+        <Button
+            android:text="Close By"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:id="@+id/distance_button"
+            style="?android:attr/buttonBarButtonStyle"
+            android:background="@color/colorPrimary"
+            android:layout_weight="0.22"
+            android:textColor="@color/colorAccent"
+            android:layout_margin="5dp"/>
+
+        <Button
+            android:text="Today"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:id="@+id/time_button"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_weight="0.22"
+            android:textColor="@color/common_google_signin_btn_text_light_default"
+            android:layout_margin="5dp"
+            android:textColorLink="?attr/actionMenuTextColor"
+            android:background="@color/TYPLITEVITTYP"/>
+
+        <Button
+            android:text="Button"
+            android:layout_width="32dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/button4"
+            android:layout_weight="1"
+            android:visibility="invisible"/>
+    </LinearLayout>
+
+</LinearLayout>

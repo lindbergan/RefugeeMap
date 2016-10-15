@@ -21,8 +21,7 @@ public class DatabaseOnlineLoader
 {
 	private static class LoadEventTask extends AsyncTask<Void, Void, Boolean>
 	{
-		private static final String eventsDropboxURL = "https://dl.dropbox" +
-			"usercontent.com/s/q9vii9pslxg91sn/events.json?dl=0";
+		private static final String eventsDropboxURL = "https://dl.dropboxusercontent.com/s/2gih0rg8oqcxecu/events.json?dl=0";
 
 		private Wrapper<byte[]> bytes;
 

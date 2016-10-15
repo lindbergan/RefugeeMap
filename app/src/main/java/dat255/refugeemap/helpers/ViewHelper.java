@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +26,7 @@ import dat255.refugeemap.EventListFragment;
 import dat255.refugeemap.GMapFragment;
 import dat255.refugeemap.MainActivity;
 import dat255.refugeemap.R;
+import dat255.refugeemap.ListFilterButtonsFragment;
 import dat255.refugeemap.model.db.Event;
 
 /* A helper class that takes care of the different view changes
@@ -32,18 +34,20 @@ and custom view content*/
 
 public class ViewHelper {
 
-	private final int MAP_FRAGMENT = 0;
-	private final int LIST_FRAGMENT = 1;
-	private final int DETAIL_FRAGMENT = 2;
-	private final int SAVED_LIST_FRAGMENT = 3;
+	public final int MAP_FRAGMENT = 0;
+	public final int LIST_FRAGMENT = 1;
+	public final int DETAIL_FRAGMENT = 2;
+	public final int SAVED_LIST_FRAGMENT = 3;
+	public final int LIST_FILTER_BUTTONS = 4;
 	FragmentManager fm;
 	private boolean drawerOpen = false;
 	private Class[] mFragmentHistory = new Class[2];
-	private Fragment[] currentFragments = new Fragment[4];
+	private Fragment[] currentFragments = new Fragment[5];
 	private Activity mActivity;
 	private ImageButton mToggleImageButton;
 	private DrawerLayout mDrawer;
 	private ListView mDrawerListView;
+	private LinearLayout filterButtons;
 	private String[] mDrawerListItems;
 	private Event mCurrentEvent;
 
@@ -63,18 +67,23 @@ public class ViewHelper {
 			Fragment mapFrag = new GMapFragment();
 			Fragment listFrag = new EventListFragment();
 			Fragment savedListFrag = new EventListFragment();
+			Fragment listFilterBtnsFrag = new ListFilterButtonsFragment();
 			initializeViews(mActivity.findViewById(R.id.main_layout));
 			fm.beginTransaction()
 					.add(R.id.fragment_container, mapFrag, "map")
 					.add(R.id.fragment_container, listFrag, "list")
+					.add(R.id.fragment_container, listFilterBtnsFrag,
+						"list_filter_buttons")
 					.add(R.id.fragment_container, savedListFrag, "saved_events_list_frag")
 					.hide(listFrag)
 					.hide(savedListFrag)
+					.hide(listFilterBtnsFrag)
 					.show(mapFrag)
 					.commit();
 			currentFragments[MAP_FRAGMENT] = mapFrag;
 			currentFragments[LIST_FRAGMENT] = listFrag;
 			currentFragments[SAVED_LIST_FRAGMENT] = savedListFrag;
+			currentFragments[LIST_FILTER_BUTTONS] = listFilterBtnsFrag;
 			mFragmentHistory[0] = GMapFragment.class;
 			mFragmentHistory[1] = null;
 		}
@@ -84,8 +93,11 @@ public class ViewHelper {
 		else if (args.equals("map_list_toggle")) {
 			if (mFragmentHistory[0] == (GMapFragment.class)) {
 				Fragment frag = currentFragments[LIST_FRAGMENT];
+				Fragment listFilterButtonsFrag =
+					currentFragments[LIST_FILTER_BUTTONS];
 				fm.beginTransaction()
 						.show(frag)
+						.show(listFilterButtonsFrag)
 						.hide(currentFragments[MAP_FRAGMENT])
 						.commit();
 				mFragmentHistory[1] = mFragmentHistory[0];
@@ -96,6 +108,7 @@ public class ViewHelper {
 				fm.beginTransaction()
 						.show(frag)
 						.hide(currentFragments[LIST_FRAGMENT])
+						.hide(currentFragments[LIST_FILTER_BUTTONS])
 						.commit();
 				mFragmentHistory[1] = mFragmentHistory[0];
 				mFragmentHistory[0] = GMapFragment.class;
@@ -115,6 +128,7 @@ public class ViewHelper {
 			if (mFragmentHistory[0] == EventListFragment.class) {
 				fm.beginTransaction()
 						.hide(currentFragments[LIST_FRAGMENT])
+						.hide(currentFragments[LIST_FILTER_BUTTONS])
 						.commit();
 			}
 			if (mFragmentHistory[0] == GMapFragment.class) {
@@ -124,6 +138,7 @@ public class ViewHelper {
 			}
 			fm.beginTransaction()
 					.show(currentFragments[SAVED_LIST_FRAGMENT])
+					.show(currentFragments[LIST_FILTER_BUTTONS])
 					.commit();
 			closeDrawer();
 			mFragmentHistory[1] = mFragmentHistory[0];
@@ -155,6 +170,7 @@ public class ViewHelper {
 
 				else{
 					fm.beginTransaction()
+							.hide(currentFragments[LIST_FILTER_BUTTONS])
 							.hide(currentFragments[SAVED_LIST_FRAGMENT])
 							.commit();
 
@@ -164,6 +180,7 @@ public class ViewHelper {
 							fm.beginTransaction()
 									.remove(currentFragments[DETAIL_FRAGMENT])
 									.show(currentFragments[LIST_FRAGMENT])
+									.show(currentFragments[LIST_FILTER_BUTTONS])
 									.hide(currentFragments[MAP_FRAGMENT])
 									.commit();
 
@@ -175,6 +192,7 @@ public class ViewHelper {
 							fm.beginTransaction()
 									.remove(currentFragments[DETAIL_FRAGMENT])
 									.hide(currentFragments[LIST_FRAGMENT])
+									.hide(currentFragments[LIST_FILTER_BUTTONS])
 									.show(currentFragments[MAP_FRAGMENT])
 									.commit();
 							mFragmentHistory[1] = null;
@@ -186,6 +204,7 @@ public class ViewHelper {
 							fm.beginTransaction()
 									.remove(currentFragments[DETAIL_FRAGMENT])
 									.hide(currentFragments[LIST_FRAGMENT])
+									.hide(currentFragments[LIST_FILTER_BUTTONS])
 									.show(currentFragments[MAP_FRAGMENT])
 									.commit();
 							mFragmentHistory[1] = null;
@@ -199,6 +218,7 @@ public class ViewHelper {
 						fm.beginTransaction()
 								.show(frag)
 								.hide(currentFragments[LIST_FRAGMENT])
+								.hide(currentFragments[LIST_FILTER_BUTTONS])
 								.hide(currentFragments[SAVED_LIST_FRAGMENT])
 								.commit();
 						mFragmentHistory[1] = null;
@@ -230,8 +250,9 @@ public class ViewHelper {
 		else if (args.equals("list_item_clicked")) {
 			Fragment frag = DetailFragment.newInstance(mCurrentEvent);
 			fm.beginTransaction().add(R.id.fragment_container, frag)
-					.hide(currentFragments[LIST_FRAGMENT]).
-					hide(currentFragments[SAVED_LIST_FRAGMENT]).commit();
+					.hide(currentFragments[LIST_FRAGMENT])
+					.hide(currentFragments[LIST_FILTER_BUTTONS])
+					.hide(currentFragments[SAVED_LIST_FRAGMENT]).commit();
 			setToggleButtonVisible(false);
 			/** @author: Sebastian **/
 			/** end edit by Sebastian **/
@@ -365,5 +386,9 @@ public class ViewHelper {
 
 	public void setCurrentEvent(Event event) {
 		mCurrentEvent = event;
+	}
+
+	public Fragment[] getCurrentFragments() {
+		return currentFragments;
 	}
 }
