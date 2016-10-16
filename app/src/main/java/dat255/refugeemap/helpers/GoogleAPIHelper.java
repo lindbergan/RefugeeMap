@@ -74,8 +74,7 @@ public class GoogleAPIHelper implements GoogleApiClient.ConnectionCallbacks,
 	public void onConnected(Bundle bundle) {
 		//You are connected do what ever you want
 		//Like i get last known location
-
-		if (ContextCompat.checkSelfPermission(mContext,
+		/*if (ContextCompat.checkSelfPermission(mContext,
 			Manifest.permission.ACCESS_FINE_LOCATION)
 			!= PackageManager.PERMISSION_GRANTED) {
 			ActivityCompat.requestPermissions((Activity) mContext,
@@ -89,6 +88,21 @@ public class GoogleAPIHelper implements GoogleApiClient.ConnectionCallbacks,
 			Location location = LocationServices.FusedLocationApi
 				.getLastLocation(mGoogleApiClient);
 
+			if (location != null) {
+				this.currentLocation = new LatLng(location.getLatitude(),
+					location.getLongitude());
+				this.notifyConnectionListeners();
+			}
+		}*/
+	}
+
+	public void notifyPositionPermissions(){
+		if(ContextCompat.checkSelfPermission(mContext,
+			Manifest.permission.ACCESS_FINE_LOCATION)
+			== PackageManager.PERMISSION_GRANTED){
+
+			Location location = LocationServices.FusedLocationApi
+				.getLastLocation(mGoogleApiClient);
 			if (location != null) {
 				this.currentLocation = new LatLng(location.getLatitude(),
 					location.getLongitude());

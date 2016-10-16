@@ -214,6 +214,10 @@ public class GMapFragment extends Fragment
 				return false;
 		}
 
+		public boolean isMyLocationEnabled(){
+				return mGoogleMap.isMyLocationEnabled();
+		}
+
 		private Marker findMarkerByLatLng(LatLng latLng) {
 				for (int i = 0; i < mMarkerList.size(); i++) {
 						if (mMarkerList.get(i).getPosition().equals(latLng)) {

@@ -3,12 +3,13 @@ package dat255.refugeemap;
 import android.Manifest;
 import android.app.Fragment;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
@@ -16,11 +17,11 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -29,11 +30,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
-import java.util.TreeSet;
 
 import dat255.refugeemap.helpers.GoogleAPIHelper;
 import dat255.refugeemap.helpers.SavedEventsHelper;
@@ -46,7 +44,6 @@ import dat255.refugeemap.model.db.sort.EventsSorter;
 
 import lombok.Getter;
 
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
@@ -68,6 +65,7 @@ public class MainActivity extends AppCompatActivity
 	private List<CategoryChangeListener> mActiveCategoryChangeListeners = new
 		ArrayList<>();
 	private int activeCategory = FilterImpl.NULL_CATEGORY;
+	private final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 20;
 	Collection<String> activeSearchTerms = null;
 	private GoogleAPIHelper mGoogleAPIHelper;
 	@Getter private String currentLocale;
@@ -77,18 +75,20 @@ public class MainActivity extends AppCompatActivity
 	{
         super.onCreate(savedInstanceState);
         mViewHelper = new ViewHelper(this);
+		if (ContextCompat.checkSelfPermission(this,
+			Manifest.permission.ACCESS_FINE_LOCATION)
+			!= PackageManager.PERMISSION_GRANTED) {
+				ActivityCompat.requestPermissions(this,
+				new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+				MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+			// MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
+			// app-defined int constant. The callback method gets the
+			// result of the request.
+		}
 		mGoogleAPIHelper = new GoogleAPIHelper(getApplicationContext());
 		mSavedEventsHelper = new SavedEventsHelper(this);
 		setContentView(R.layout.activity_main);
-		ActivityCompat.requestPermissions(this, new String[]{
-            Manifest.permission.ACCESS_FINE_LOCATION}, 1);
-
-		while (PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(
-            this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-			System.out.println("" + ActivityCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_FINE_LOCATION));
-		}
-
         setUpViews();
         setUpToolbar();
         this.inputManager = (InputMethodManager) getSystemService(
@@ -289,17 +289,34 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	@Override
+	public void onRequestPermissionsResult(int requestCode,
+																				 String permissions[], int[] grantResults) {
+		switch (requestCode) {
+			case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+				if (grantResults.length > 0
+					&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+					mGoogleAPIHelper.notifyPositionPermissions();
+				}
+			}
+		}
+	}
+
+	@Override
 	public void onDirectionButtonPressed(LatLng destination, String transportationMode){
 		//Change to MapView
 		mViewHelper.stateSwitch("center_on_map");
 
+
         //Call the corresponding method in GMap
         Fragment f = getFragmentManager().findFragmentByTag("map");
-        if(f instanceof GMapFragment){
+		if(f instanceof GMapFragment && ((GMapFragment) f).isMyLocationEnabled()){
 
             ((GMapFragment) f).showDirections(mGoogleAPIHelper
 				.getCurrentLocation(),destination,transportationMode);
-        }
+        }else{
+					Toast.makeText(this, R.string.directions_toast,
+						Toast.LENGTH_LONG).show();
+				}
 	}
 	/**
 	 * setLocaleToArabic is used for testing purposes.
