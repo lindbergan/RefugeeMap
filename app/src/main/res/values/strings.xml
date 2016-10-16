@@ -1,12 +1,18 @@
 <resources>
-    <string name="app_name">RefugeeMap</string>
-    <string name="title_activity_dummy">DummyActivity</string>
-
-    <string name="path_ctgs.json">src/main/java/dat255/refugeemap/ctgs.json</string>
-    <string name="path_db.json">src/main/java/dat255/refugeemap/db.json</string>
-
-    <string name="save_event_button_clicked">SAVE_BUTTON_CLICKED</string>
-    <string name="saved_events_key">SAVED_EVENTS</string>
+    <string name="app_name">MaraMap</string>
     <string name="directions">Directions</string>
+    <string name="nav_men_profile">Profile</string>
+    <string name="nav_men_favorites">Favorites</string>
+    <string name="nav_men_lang_options">Language options</string>
+    <string name="nav_men_lang_size_search">Search size</string>
+    <string name="directions_toast">The app must be allowed to use your location</string>
+
+    <string name="swedish_locale_id">sv</string>
+    <string name="arabic_locale_id">ar</string>
+
+    <string name="detail_address_label">" " Adress " " </string>
+    <string name="detal_time_label">" " Tid " "</string>
+    <string name="detail_contact_label">Kontakt</string>
+    <string name="detail_description_label">Beskrivning</string>
 
 </resources>

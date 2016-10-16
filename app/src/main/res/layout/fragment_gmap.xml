@@ -9,24 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/directions_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right|bottom"
-        android:text="@string/directions"
-        android:padding="20dp"
-        android:layout_marginTop="20dp"
-        android:visibility="gone"/>
-
-        <TextView
-            android:id="@+id/info_time_and_distance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:layout_gravity="left|bottom"
-            android:visibility="gone"/>
-
     </fragment>
 
 </FrameLayout>

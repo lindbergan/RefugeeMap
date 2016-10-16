@@ -2,6 +2,7 @@ package dat255.refugeemap;
 
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,14 +14,13 @@ import android.widget.TextView;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import dat255.refugeemap.EventListFragment.OnListFragmentInteractionListener;
 import dat255.refugeemap.helpers.GoogleAPIHelper;
 import dat255.refugeemap.model.DistanceCalculator;
-import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
-import dat255.refugeemap.model.db.EventCollection;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link dat255.refugeemap.model.db.Event} and makes a call to the
@@ -33,16 +33,27 @@ public class EventRecyclerViewAdapter
 
 	private final static String TAG = "EventRecyclerViewAdapt";
 
-	private EventCollection mEvents;
+	private List<Event> mEvents;
 	private final OnListFragmentInteractionListener mListener;
-	private HashMap<String, Integer> listItemColor = new HashMap<>();
+	private HashMap<Integer, Integer> listItemColor = new HashMap<>();
 	private LatLng currentLocation;
 
-	public EventRecyclerViewAdapter(EventCollection events,
-									OnListFragmentInteractionListener listener) {
+	/**
+	 * Set the colors or drawables that we want to use here
+	 */
+
+	private void initListItemColors(ViewHolder holder) {
+		listItemColor.put(0, ContextCompat.getColor(holder.mView.getContext(), R.color.colorCategory1));
+		listItemColor.put(1, ContextCompat.getColor(holder.mView.getContext(), R.color.colorCategory2));
+		listItemColor.put(2, ContextCompat.getColor(holder.mView.getContext(), R.color.colorCategory3));
+		listItemColor.put(3, ContextCompat.getColor(holder.mView.getContext(), R.color.colorCategory4));
+	}
+
+	public EventRecyclerViewAdapter(List<Event> events,
+		OnListFragmentInteractionListener listener)
+	{
 		mEvents = events;
 		mListener = listener;
-		initListItemColors();
 
 		GoogleAPIHelper googleAPIHelper = App.getGoogleApiHelper();
 		googleAPIHelper.addApiListener(this);
@@ -55,36 +66,15 @@ public class EventRecyclerViewAdapter
 	}
 
 	/**
-	 * Set the colors or drawables that we want to use here
-	 */
-
-	public void initListItemColors() {
-		Database database = AppDatabase.getDatabaseInstance();
-		listItemColor.put(database.getCategoryName(0), Color.RED);
-		listItemColor.put(database.getCategoryName(1), Color.GREEN);
-		listItemColor.put(database.getCategoryName(2), Color.BLUE);
-	}
-
-	/**
 	 * If mItem has > 1 categories the layout gets a gradient with corresponding colors
 	 */
 
 	private void setListItemColor(final ViewHolder holder) {
-		Database database = AppDatabase.getDatabaseInstance();
-		int[] tempArray = new int[holder.mItem.getCategories().length];
-
+		initListItemColors(holder);
 		for (int i  = 0; i < holder.mItem.getCategories().length; i++) {
-			if (holder.mItem.getCategories().length > 1) {
-				tempArray[i] = listItemColor.get(database.getCategoryName(holder.mItem.getCategories()[i]));
-				holder.mLayout.setBackground(new GradientDrawable(GradientDrawable.Orientation.TR_BL, tempArray));
-			}
-			else {
-				holder.mLayout.setBackgroundColor(listItemColor.get(database.getCategoryName(holder.mItem.getCategories()[i])));
-			}
+			holder.mLayout.setBackgroundColor(listItemColor.get(holder.mItem.getCategories()[0]));
 		}
-
 	}
-
 
 	@Override
 	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -128,10 +118,10 @@ public class EventRecyclerViewAdapter
 
 	@Override
 	public int getItemCount() {
-		return mEvents.getSize();
+		return mEvents.size();
 	}
 
-	public void setEvents(EventCollection newEvents){
+	public void setEvents(List<Event> newEvents){
 		mEvents=newEvents;
 	}
 

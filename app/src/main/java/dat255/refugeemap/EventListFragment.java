@@ -11,16 +11,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.util.List;
 
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
-import dat255.refugeemap.model.db.EventCollection;
 import dat255.refugeemap.model.db.Filter;
+import dat255.refugeemap.model.db.impl.FilterImpl;
+import dat255.refugeemap.model.db.sort.EventsSorter;
 
 /**
  * A fragment representing a list of Items.
@@ -28,7 +26,7 @@ import dat255.refugeemap.model.db.Filter;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class EventListFragment extends Fragment implements AppDatabase.Listener{
+public class EventListFragment extends Fragment implements AppDatabase.VisibleEventsListener {
 	private int mColumnCount = 1;
 	private static final String TAG = "EventListFragment";
 
@@ -82,13 +80,15 @@ public class EventListFragment extends Fragment implements AppDatabase.Listener{
 			}
 			eventRecycler = fillListFragment();
 			recyclerView.setAdapter(eventRecycler);
-			AppDatabase.addListener(this);
+			AppDatabase.addVisibleEventsListener(this);
 		}
 		return view;
 	}
 
 	public EventRecyclerViewAdapter fillListFragment() {
-		return new EventRecyclerViewAdapter(mDatabase.getAllEvents(), mListener);
+		return new EventRecyclerViewAdapter(mDatabase.
+			getEventsByFilter(FilterImpl.EMPTY_FILTER,
+			EventsSorter.NULL_SORTER), mListener);
 	}
 
 	/**
@@ -96,10 +96,11 @@ public class EventListFragment extends Fragment implements AppDatabase.Listener{
 	 */
 
 	public EventRecyclerViewAdapter fillListFragment(Filter filter) {
-		return new EventRecyclerViewAdapter(mDatabase.getEventsByFilter(filter), mListener);
+		return new EventRecyclerViewAdapter(mDatabase.getEventsByFilter(filter,
+			EventsSorter.NULL_SORTER), mListener);
 	}
 
-	public EventRecyclerViewAdapter fillListFragment(EventCollection events){
+	public EventRecyclerViewAdapter fillListFragment(List<Event> events){
 		return new EventRecyclerViewAdapter(events, mListener);
 	}
 
@@ -132,7 +133,7 @@ public class EventListFragment extends Fragment implements AppDatabase.Listener{
 	}
 
 	@Override
-	public void onVisibleEventsChanged(EventCollection newEvents){
+	public void onVisibleEventsChanged(List<Event> newEvents){
 		eventRecycler.setEvents(newEvents);
 		eventRecycler.notifyDataSetChanged();
 	}

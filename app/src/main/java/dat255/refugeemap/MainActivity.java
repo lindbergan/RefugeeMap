@@ -1,14 +1,15 @@
 package dat255.refugeemap;
 
 import android.Manifest;
-import android.app.FragmentManager;
+import android.app.Fragment;
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
@@ -20,85 +21,99 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
-import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Locale;
 
-import dat255.refugeemap.detailView.DetailFragment;
+import dat255.refugeemap.helpers.GoogleAPIHelper;
+import dat255.refugeemap.helpers.SavedEventsHelper;
 import dat255.refugeemap.helpers.ViewHelper;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
-import dat255.refugeemap.model.db.EventCollection;
-import dat255.refugeemap.model.db.impl.DatabaseImpl;
+import dat255.refugeemap.model.db.Filter;
 import dat255.refugeemap.model.db.impl.FilterImpl;
-import dat255.refugeemap.model.db.impl.JSONToolsImpl;
+import dat255.refugeemap.model.db.sort.EventsSorter;
 
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import lombok.Getter;
+
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 public class MainActivity extends AppCompatActivity
 		implements EventListFragment.OnListFragmentInteractionListener,
 		DetailFragment.OnFragmentInteractionListener,
-        GMapFragment.ReplaceWithDetailView, AppDatabase.Listener {
+        GMapFragment.OnMapFragmentInteractionListener,AppDatabase.VisibleEventsListener {
 
-    private String[] mDrawerListItems;
     private ViewHelper mViewHelper;
+	private SavedEventsHelper mSavedEventsHelper;
     private long lastSearchClickTime = 0;
     private int clickThreshold = 500;
     private InputMethodManager inputManager;
     private ImageView logo;
     private EditText searchEdit;
     private ImageButton searchBtn;
-    public static String sDefSystemLanguage;
     private Database mDatabase;
 	private Toolbar toolbar;
-	private ArrayList<Integer> activeCategories = new ArrayList<>();
-
-
+	private List<CategoryChangeListener> mActiveCategoryChangeListeners = new
+		ArrayList<>();
+	private int activeCategory = FilterImpl.NULL_CATEGORY;
+	private final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 20;
+	Collection<String> activeSearchTerms = null;
+	private GoogleAPIHelper mGoogleAPIHelper;
+	@Getter private String currentLocale;
 
 
 	@Override protected void onCreate(Bundle savedInstanceState)
 	{
         super.onCreate(savedInstanceState);
         mViewHelper = new ViewHelper(this);
-		setContentView(R.layout.activity_main);
-		ActivityCompat.requestPermissions(this, new String[]{
-            Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+		if (ContextCompat.checkSelfPermission(this,
+			Manifest.permission.ACCESS_FINE_LOCATION)
+			!= PackageManager.PERMISSION_GRANTED) {
+				ActivityCompat.requestPermissions(this,
+				new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+				MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
 
-		while (PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(
-            this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-			System.out.println("" + ActivityCompat.checkSelfPermission(
-                this, Manifest.permission.ACCESS_FINE_LOCATION));
+			// MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION is an
+			// app-defined int constant. The callback method gets the
+			// result of the request.
 		}
-
+		mGoogleAPIHelper = new GoogleAPIHelper(getApplicationContext());
+		mSavedEventsHelper = new SavedEventsHelper(this);
+		setContentView(R.layout.activity_main);
         setUpViews();
         setUpToolbar();
         this.inputManager = (InputMethodManager) getSystemService(
             Context.INPUT_METHOD_SERVICE);
 
         try {
-			this.mDatabase = new DatabaseImpl(new InputStreamReader(
-                getResources().openRawResource(R.raw.ctgs)),
-                new InputStreamReader(getResources().openRawResource(R.raw.db)),
-                new JSONToolsImpl());
-		} catch (FileNotFoundException ex) {
+        	AppDatabase.init(this);
+			this.mDatabase = AppDatabase.getDatabaseInstance();
+		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-
+		//setLocaleToArabic();
         mViewHelper.stateSwitch("app_start");
-        mDrawerListItems = getResources().getStringArray(
-            R.array.drawer_list_items);
-		mViewHelper.setUpNavigationDrawer(mDrawerListItems);
+		mViewHelper.setUpNavigationDrawer(getResources());
+
+
+		/**
+		 * The List Filter Buttons Fragment now listens to when categories
+		 * change
+		 */
+		Fragment[] currentFragments = mViewHelper.getCurrentFragments();
+		CategoryChangeListener listFilterButtons =
+			(CategoryChangeListener)currentFragments[mViewHelper
+				.LIST_FILTER_BUTTONS];
+		mActiveCategoryChangeListeners.add(listFilterButtons);
 	}
 
     public void setUpViews(){
@@ -107,22 +122,26 @@ public class MainActivity extends AppCompatActivity
         this.searchBtn = (ImageButton) findViewById(R.id.action_search);
     }
 
-
-
     public void setUpToolbar(){
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
+		setSupportActionBar(toolbar);
+		if (getSupportActionBar() != null) {
+			getSupportActionBar().setDisplayShowTitleEnabled(false);
+		}
     }
 
-    @Override
 	public void onInfoWindowClicked(Marker marker) {
-        mViewHelper.stateSwitch("marker_clicked");
+
+		if(marker.getTag() instanceof Event) {
+			Event currentEvent = (Event) marker.getTag();
+			mViewHelper.setCurrentEvent(currentEvent);
+			mViewHelper.stateSwitch("marker_clicked");
+		}
 	}
 
 	@Override
 	public void onListFragmentInteraction(Event item) {
+		mViewHelper.setCurrentEvent(item);
         mViewHelper.stateSwitch("list_item_clicked");
 	}
   
@@ -132,7 +151,9 @@ public class MainActivity extends AppCompatActivity
             // Check if last click time was too recent in order to avoid
             // accidental double-click
             currentTime - lastSearchClickTime > clickThreshold) {
-            AppDatabase.updateVisibleEvents(mDatabase.getAllEvents());
+			Filter f = new FilterImpl(activeCategory, activeSearchTerms, null, null);
+            AppDatabase.updateVisibleEvents(mDatabase.getEventsByFilter(f,
+            	EventsSorter.NULL_SORTER));
             this.searchEdit.setVisibility(VISIBLE);
             this.searchEdit.requestFocus();
             this.logo.setVisibility(GONE);
@@ -149,20 +170,25 @@ public class MainActivity extends AppCompatActivity
         lastSearchClickTime = currentTime;
     }
 
-	public void onCategoryClick(View view){
-		int cat = Integer.parseInt(view.getTag().toString());
-		boolean buttonActivated=false;
-		if (activeCategories.contains(cat)){
-			int index = activeCategories.indexOf(cat);
-			activeCategories.remove(index);
-			buttonActivated=true;
+	public void onCategoryClick(View view) {
+		int ctgPressed = Integer.parseInt(view.getTag().toString());
+
+		if (ctgPressed == activeCategory) {
+			activeCategory = FilterImpl.NULL_CATEGORY;
+			toggleCategoryButton(ctgPressed, true);
+		} else {
+			if (activeCategory != FilterImpl.NULL_CATEGORY)
+				toggleCategoryButton(activeCategory, true);
+			toggleCategoryButton(ctgPressed, false);
+			activeCategory = ctgPressed;
 		}
-		else {
-			activeCategories.add(cat);
-		}
-		toggleCategoryButton(cat, buttonActivated);
-		FilterImpl filter = new FilterImpl(activeCategories, null, null);
-		EventCollection newEvents = mDatabase.getEventsByFilter(filter);
+
+		FilterImpl filter = new FilterImpl(activeCategory,
+			activeSearchTerms, null, null);
+		List<Event> newEvents = mDatabase.getEventsByFilter(filter,
+			EventsSorter.NULL_SORTER);
+
+		this.broadcastActiveCategory();
 
 		AppDatabase.updateVisibleEvents(newEvents);
 	}
@@ -188,9 +214,11 @@ public class MainActivity extends AppCompatActivity
 				if (actionId == EditorInfo.IME_NULL
 						&& event.getAction() == KeyEvent.ACTION_DOWN) {
 					String input = searchEdit.getText().toString();
-					Collection<String> searchTerms = Arrays.asList(input.split(" "));
-					FilterImpl filter = new FilterImpl(null, searchTerms, null);
-					EventCollection newEvents = mDatabase.getEventsByFilter(filter);
+					activeSearchTerms = Arrays.asList(input.split(" "));
+					FilterImpl filter = new FilterImpl(activeCategory,
+						activeSearchTerms, null, null);
+					List<Event> newEvents = mDatabase.getEventsByFilter(filter,
+						EventsSorter.NULL_SORTER);
 					AppDatabase.updateVisibleEvents(newEvents);
 					toggleSearchFocus(v);
 				}
@@ -227,87 +255,102 @@ public class MainActivity extends AppCompatActivity
     }
 
 	@Override
-	public void onVisibleEventsChanged(EventCollection newEvents) {
+	public void onVisibleEventsChanged(List<Event> newEvents) {
 	}
 
 	@Override
 	public boolean onSaveEventButtonPressed(String id) {
-		SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = prefs.edit();
-
-		//creates new TreeSet if no Set already linked to key
-		Set<String> savedEvents = prefs.getStringSet(getString(
-            R.string.saved_events_key),
-            new TreeSet<String>());
-		Set<String> updatedEventList = new TreeSet<>(savedEvents);
-
-		if (!savedEvents.contains(id)) {
-
-			updatedEventList.add(id);
-			editor.putStringSet(getString(R.string.saved_events_key),
-                updatedEventList);
-		} else {
-
-			updatedEventList.remove(id);
-			editor.putStringSet(getString(R.string.saved_events_key),
-                updatedEventList);
-		}
-
-		return editor.commit(); //returns true if save/remove was successful
+        return mSavedEventsHelper.onSaveEventButtonPressed(id);
 	}
 
 	@Override
 	public boolean isEventSaved(String id) {
-		try {
-			SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
-			return prefs.getStringSet(getString(R.string.saved_events_key),null)
-                .contains(id);
-		} catch (NullPointerException e) {
-			return false;
-		}
+		return mSavedEventsHelper.isEventSaved(id);
 	}
-
-
 
 	@Override
 	public void onBackPressed() {
         mViewHelper.stateSwitch("back_button_pressed");
-
 	}
 
-    public EventCollection getSavedEvents(){
-
-        Set<String> savedEventsStr = getPreferences(Context.MODE_PRIVATE)
-            .getStringSet(getString(R.string.saved_events_key), null);
-
-        if(savedEventsStr != null){
-            List<Integer> savedEventsIds = new LinkedList<>();
-
-            for(String s : savedEventsStr){
-                savedEventsIds.add(Integer.valueOf(s));
-            }
-            return mDatabase.getEvents(savedEventsIds);
-        }else{
-            return null;
-        }
+    public List<Event> getSavedEvents(){
+        return mSavedEventsHelper.getSavedEvents();
     }
 
 	@Override
-
 	public void updateSavedEventsFrag(){
-
-		android.app.Fragment frag = getFragmentManager().findFragmentByTag("saved_events_list_frag");
-			if(frag instanceof EventListFragment){
-				//((EventListFragment) frag).fillListFragment(getSavedEvents());
-				((EventListFragment) frag).onVisibleEventsChanged(getSavedEvents());
-			}
-
+        mSavedEventsHelper.updateSavedEventsFrag();
 		}
 
 	protected void onStart() {
 		super.onStart();
-
+        updateSavedEventsFrag();
 		App.getGoogleApiHelper().connect();
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode,
+																				 String permissions[], int[] grantResults) {
+		switch (requestCode) {
+			case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+				if (grantResults.length > 0
+					&& grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+					mGoogleAPIHelper.notifyPositionPermissions();
+				}
+			}
+		}
+	}
+
+	@Override
+	public void onDirectionButtonPressed(LatLng destination, String transportationMode){
+		//Change to MapView
+		mViewHelper.stateSwitch("center_on_map");
+
+
+        //Call the corresponding method in GMap
+        Fragment f = getFragmentManager().findFragmentByTag("map");
+		if(f instanceof GMapFragment && ((GMapFragment) f).isMyLocationEnabled()){
+
+            ((GMapFragment) f).showDirections(mGoogleAPIHelper
+				.getCurrentLocation(),destination,transportationMode);
+        }else{
+					Toast.makeText(this, R.string.directions_toast,
+						Toast.LENGTH_LONG).show();
+				}
+	}
+	/**
+	 * setLocaleToArabic is used for testing purposes.
+	 * Changes reading from R -> L and changes all text to arabic
+	 */
+	public void setLocaleToArabic() {
+		Configuration newConfig = new Configuration();
+		newConfig.setLocale(new Locale("ar"));
+		getBaseContext().getResources().updateConfiguration(newConfig,
+				getBaseContext().getResources().getDisplayMetrics());
+		currentLocale = getString(R.string.arabic_locale_id);
+	}
+
+	public void setLocaleToSwedish() {
+		Configuration newConfig = new Configuration();
+		newConfig.setLocale(new Locale("sv"));
+		getBaseContext().getResources().updateConfiguration(newConfig,
+				getBaseContext().getResources().getDisplayMetrics());
+        currentLocale = getString(R.string.swedish_locale_id);
+	}
+
+    public String getCurrentLocale() {
+        return currentLocale;
+    }
+
+	public int getActiveCategory() {
+		return activeCategory;
+	}
+
+	public void broadcastActiveCategory() {
+		for (int i = 0; i < mActiveCategoryChangeListeners.size(); i++) {
+			mActiveCategoryChangeListeners.get(i)
+				.onCategoryChange(activeCategory);
+		}
 	}
 }
 

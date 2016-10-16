@@ -26,8 +26,8 @@ import dat255.refugeemap.helpers.DataParser;
 
 public class DirectionsHelper {
 
-    private final String API_DEST = "https://maps.googleapis.com/maps/api/directions/json?";
-    private final String API_KEY = "AIzaSyDUBRjMFZm7l7cvzLE1mTup3QI1qh4IoxM";
+    private static final String API_DEST = "https://maps.googleapis.com/maps/api/directions/json?";
+    private static final String API_KEY = "AIzaSyDUBRjMFZm7l7cvzLE1mTup3QI1qh4IoxM";
     private GoogleMap mGoogleMap;
     private String duration;
     private String distance;
@@ -37,16 +37,29 @@ public class DirectionsHelper {
         mGoogleMap = googleMap;
     }
 
+    /*Note: Both walking and bicycling directions may sometimes not include
+    clear pedestrian or bicycling paths, so these directions will return
+    warnings in the returned result which you must display to the user.
+    For further documentation on the matter, visit:
+    https://developers.google.com/maps/documentation/directions/intro#TravelModes*/
     public void showDirection(
-        LatLng origin, LatLng destination, String transportation) {
+        LatLng origin, LatLng destination, String transportationMode) {
 
-        //TODO: determine what mode of transportation to correctly estimate the time it takes & perhaps which waypoints to avoid
         // Getting URL to the Google Directions API
+
+        String validTransportMode;
+
+        if(isTransportationModeValid(transportationMode)){
+            validTransportMode = transportationMode;
+        }
+        else{
+            validTransportMode = "driving"; //default
+        }
 
         String originAsString = latLngToString(origin);
         String destinationAsString = latLngToString(destination);
 
-        String url = getUrl(originAsString, destinationAsString);
+        String url = getUrl(originAsString, destinationAsString, validTransportMode);
         Log.d("onMapClick", url);
         FetchUrl FetchUrl = new FetchUrl();
 
@@ -54,8 +67,16 @@ public class DirectionsHelper {
         FetchUrl.execute(url);
         //move map camera
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(origin));
-        mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+        mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(13));
 
+    }
+    //NOTE: valid transportation modes are "driving", "walking", "bicycling" or "transit".
+    public boolean isTransportationModeValid(String transportationMode){
+
+        return (transportationMode.equals("driving") ||
+            transportationMode.equals("walking") ||
+            transportationMode.equals("transit") ||
+            transportationMode.equals("bicycling"));
     }
 
     public String latLngToString(LatLng latLng) {
@@ -65,9 +86,9 @@ public class DirectionsHelper {
     }
 
 
-    public String getUrl(String origin, String destination) {
+    public String getUrl(String origin, String destination, String transportationMode) {
         return API_DEST + "origin=" + origin + "&" + "destination="
-            + destination + "&" + "key=" + API_KEY;
+            + destination + "&" + "mode=" + transportationMode + "&" + "key=" + API_KEY;
     }
 
     // Fetches data from url passed
@@ -134,8 +155,8 @@ public class DirectionsHelper {
         } catch (Exception e) {
             Log.d("Exception", e.toString());
         } finally {
-            iStream.close();
-            urlConnection.disconnect();
+            if (iStream != null) iStream.close();
+            if (urlConnection != null) urlConnection.disconnect();
         }
         return data;
     }
@@ -215,7 +236,6 @@ public class DirectionsHelper {
             // Drawing polyline in the Google Map for the i-th route
             if(lineOptions != null) {
                 mCurrentDirection = mGoogleMap.addPolyline(lineOptions);
-                //setDurationAndDistanceText();
             }
             else {
                 Log.d("onPostExecute","without Polylines drawn");

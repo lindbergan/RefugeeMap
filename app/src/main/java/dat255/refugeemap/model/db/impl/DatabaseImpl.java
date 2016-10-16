@@ -2,62 +2,47 @@ package dat255.refugeemap.model.db.impl;
 
 import java.io.FileNotFoundException;
 import java.io.Reader;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
-import dat255.refugeemap.model.ArrayUtils;
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
-import dat255.refugeemap.model.db.EventCollection;
 import dat255.refugeemap.model.db.Filter;
 import dat255.refugeemap.model.db.JSONTools;
+import dat255.refugeemap.model.db.sort.EventsSorter;
 
 /**
- * @author Shoulder
+ * @author Axel
  */
 public class DatabaseImpl implements Database
 {
-	private final String[] categoryNames;
+	private final HashMap<Locale, String[]> categoryNames = new HashMap<>();
 
 	// TODO Maybe change to a HashMap<Integer, Event> for quick access by ID
-	private final EventCollection events;
+	private final List<Event> events;
 
-	private Event.SortInfo prevSortInfo = new Event.SortInfo() {
-		public int getInternalID() { return -1; }
-	};
+	private EventsSorter prevSorter = null;
 
-	public DatabaseImpl(String ctgNamesFilePath, String eventsFilePath,
-		JSONTools json) throws FileNotFoundException
+	public DatabaseImpl(Reader eventsReader, JSONTools json)
+		throws FileNotFoundException
 	{
-		categoryNames = (String[])(json.
-			deserializeFile(ctgNamesFilePath, String[].class));
-		events = new EventArray((EventImpl[])(json.
-			deserializeFile(eventsFilePath, EventImpl[].class)));
+		events = Arrays.asList((Event[])json.deserializeFile(eventsReader,
+			EventImpl[].class));
 	}
-
-	// may be removed
-	public DatabaseImpl(Reader ctgNamesReader, Reader eventsReader,
-		JSONTools json) throws FileNotFoundException
-	{
-		categoryNames = (String[])(json.
-			deserializeFile(ctgNamesReader, String[].class));
-		events = new EventArray((EventImpl[])(json.
-			deserializeFile(eventsReader, EventImpl[].class)));
-	}
-
-	@Override public String getCategoryName(int id)
-	{ return categoryNames[id]; }
 
 	@Override public Event getEvent(Integer id)
 	{
 		for (Event e : events)
-			if (e.getID() == id)
+			if (e.getID().equals(id))
 				return e;
 		return null;
 	}
 
-	@Override public EventCollection getEvents(List<Integer> idList)
+	@Override public List<Event> getEvents(List<Integer> idList)
 	{
 		LinkedList<Event> eventList = new LinkedList<>();
 		for (Event e : events)
@@ -67,18 +52,18 @@ public class DatabaseImpl implements Database
 					it.remove();
 					eventList.add(e);
 				}
-		return new EventList(eventList);
+		return eventList;
 	}
 
 	@Override
-	public EventCollection getEventsByFilter(Filter filter, Event.SortInfo info)
+	public List<Event> getEventsByFilter(Filter filter, EventsSorter sorter)
 	{
 		if (filter.isEmpty())
 		{
-			if (prevSortInfo.getInternalID() != info.getInternalID())
+			if (prevSorter != sorter)
 			{
-				events.sort(info);
-				prevSortInfo = info;
+				sorter.sort(events);
+				prevSorter = sorter;
 			}
 
 			return events;
@@ -88,33 +73,14 @@ public class DatabaseImpl implements Database
 		for (Event e : events)
 			if (filter.doesEventFit(e))
 				list.add(e);
-		EventCollection ec = new EventList(list);
-		ec.sort(info);
-		return ec;
+		sorter.sort(list);
+		return list;
 	}
 
 	// Only exists for testing purposes ('create')
-	private DatabaseImpl(String[] categoryNames, EventCollection events)
-	{
-		this.categoryNames = categoryNames;
-		this.events = events;
-	}
+	private DatabaseImpl(List<Event> events) { this.events = events; }
 
 	// Only to be used for testing.
-	public static DatabaseImpl create(String[] ctgNames, EventCollection events)
-	{ return new DatabaseImpl(ctgNames, events); }
-
-	// Will be removed
-	@Deprecated@Override public EventCollection getAllEvents()
-	{ return events; }
-
-	// Will be removed
-	@Deprecated@Override public EventCollection getEventsByFilter(Filter filter)
-	{
-		LinkedList<Event> list = new LinkedList<>();
-		for (Event e : events)
-			if (filter.doesEventFit(e))
-				list.add(e);
-		return new EventList(list);
-	}
+	public static DatabaseImpl create(List<Event> events)
+	{ return new DatabaseImpl(events); }
 }
