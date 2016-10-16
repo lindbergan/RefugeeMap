@@ -50,19 +50,20 @@ public class GMapFragment extends Fragment
         implements GoogleServicesAdapter, AppDatabase.VisibleEventsListener, GoogleAPIObserver {
 
     private static final String TAG = "GMapFragment";
-	OnMapFragmentInteractionListener mCallback;
+		OnMapFragmentInteractionListener mCallback;
     Marker mCurrentMarker;
     private GoogleMap mGoogleMap;
     private List<Event> mEventsList;
+		private List<Event>	currentShownEvents = new ArrayList<Event>();
     private Database mDatabase;
     private DirectionsHelper mDirectionHelper;
     private ViewHelper mViewHelper;
-	private boolean isInfoWindowClosed;
-	private List<Marker> mMarkerList = new ArrayList<Marker>();
+		private boolean isInfoWindowClosed;
+		private List<Marker> mMarkerList = new ArrayList<Marker>();
 
     public GMapFragment() {
-		GoogleAPIHelper googleAPIHelper = App.getGoogleApiHelper();
-		googleAPIHelper.addApiListener(this);
+				GoogleAPIHelper googleAPIHelper = App.getGoogleApiHelper();
+				googleAPIHelper.addApiListener(this);
     }
 
     @Override
@@ -91,53 +92,54 @@ public class GMapFragment extends Fragment
         }
 
         configGoogleWidgets();
-		placeMarkers(mEventsList);
-		animateMapCamera(App.getGoogleApiHelper().getCurrentLocation());
-	}
-
-	@Override
-	public void onApiConnected(GoogleAPIHelper googleAPIHelper) {
-		animateMapCamera(googleAPIHelper.getCurrentLocation());
-	}
-
-	public void animateMapCamera(LatLng latLng) {
-		mGoogleMap.moveCamera(
-				CameraUpdateFactory.newLatLngZoom(latLng, 15));
-	}
-
-	public void setUpHelpers() {
-		mDirectionHelper = new DirectionsHelper(mGoogleMap);
-		mViewHelper = new ViewHelper(getActivity());
-	}
-
-	public void getEvents() {
-		mEventsList = mDatabase.getEventsByFilter(FilterImpl.EMPTY_FILTER,
-			EventsSorter.NULL_SORTER);
-		placeMarkers(mEventsList);
-	}
-
-	public void initiateListeners() {
-		mGoogleMap.setOnInfoWindowClickListener(this);
-		mGoogleMap.setOnMarkerClickListener(this);
-		mGoogleMap.setInfoWindowAdapter(this);
-		mGoogleMap.setOnMapClickListener(this);
-	}
-
-	public void configGoogleWidgets() {
-		mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
-		mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
-		mGoogleMap.setPadding(0, 135, 0, 135);
-		//TODO: add scale to the map
-	}
-
-	/* a method that creates markers from events and places them on the map*/
-	public void placeMarkers(List<Event> eventsList) {
-		if (eventsList != null) {
-			for (Event e : eventsList) {
-				newMarker(e);
-			}
+				placeMarkers(mEventsList);
+				animateMapCamera(App.getGoogleApiHelper().getCurrentLocation());
 		}
-	}
+
+		@Override
+		public void onApiConnected(GoogleAPIHelper googleAPIHelper) {
+				animateMapCamera(googleAPIHelper.getCurrentLocation());
+		}
+
+		public void animateMapCamera(LatLng latLng) {
+				mGoogleMap.moveCamera(
+				CameraUpdateFactory.newLatLngZoom(latLng, 15));
+		}
+
+		public void setUpHelpers() {
+				mDirectionHelper = new DirectionsHelper(mGoogleMap);
+				mViewHelper = new ViewHelper(getActivity());
+		}
+
+		public void getEvents() {
+				mEventsList = mDatabase.getEventsByFilter(FilterImpl.EMPTY_FILTER,
+				EventsSorter.NULL_SORTER);
+				placeMarkers(currentShownEvents);
+				currentShownEvents = mEventsList;
+		}
+
+		public void initiateListeners() {
+				mGoogleMap.setOnInfoWindowClickListener(this);
+				mGoogleMap.setOnMarkerClickListener(this);
+				mGoogleMap.setInfoWindowAdapter(this);
+				mGoogleMap.setOnMapClickListener(this);
+		}
+
+		public void configGoogleWidgets() {
+				mGoogleMap.getUiSettings().setMapToolbarEnabled(false);
+				mGoogleMap.getUiSettings().setZoomControlsEnabled(true);
+				mGoogleMap.setPadding(0, 135, 0, 135);
+				//TODO: add scale to the map
+		}
+
+		/* a method that creates markers from events and places them on the map*/
+		public void placeMarkers(List<Event> eventsList) {
+				if (eventsList != null) {
+						for (Event e : eventsList) {
+								newMarker(e);
+						}
+				}
+		}
 
     public void newMarker(Event event) {
         LatLng markerPosition = new LatLng(
@@ -145,23 +147,29 @@ public class GMapFragment extends Fragment
         MarkerOptions properties = new MarkerOptions();
 
         BitmapDescriptor marker = createMarker(event.getCategories());
-
-        properties.position(markerPosition)
-            .title(event.getTitle())
-            .icon(marker);
+				if (!currentShownEvents.contains(event)) {
+						properties.position(markerPosition)
+								.title(event.getTitle())
+								.icon(marker).alpha(0.35f);
+				}
+				else {
+						properties.position(markerPosition)
+								.title(event.getTitle())
+								.icon(marker);
+				}
         // TODO: 2016-09-26 .getIcon needs to be implemented /Adrian
 
         Marker activeMarker = mGoogleMap.addMarker(properties);
         activeMarker.setTag(event);
-		mMarkerList.add(activeMarker);
-	}
+				mMarkerList.add(activeMarker);
+		}
 
-	@Override
-	public boolean onMarkerClick(Marker marker) {
-		isInfoWindowClosed = false;
-		mCurrentMarker = marker;
-		return false;
-	}
+		@Override
+		public boolean onMarkerClick(Marker marker) {
+				isInfoWindowClosed = false;
+				mCurrentMarker = marker;
+				return false;
+		}
 
     public BitmapDescriptor createMarker(Integer[] eventCategories){
         int category = eventCategories[0];
@@ -177,53 +185,49 @@ public class GMapFragment extends Fragment
 
     public void showDirections(LatLng origin, LatLng destination, String transportation) {
 
-		removePreviousDirections();
+				removePreviousDirections();
 
-		//check if user comes from favourites.
-		// In that case - remove old infoWindow & display the correct one
-		showCorrectInfoWindow(destination);
+				//check if user comes from favourites.
+				// In that case - remove old infoWindow & display the correct one
+				showCorrectInfoWindow(destination);
 
-		mDirectionHelper.showDirection(origin, destination, transportation);
-	}
-
-	public void showCorrectInfoWindow(LatLng destination){
-
-		if(!mCurrentMarker.getPosition().equals(destination)){
-			mCurrentMarker.hideInfoWindow();
-
-			if (doesMarkerExist(destination)) {
-				findMarkerByLatLng(destination).showInfoWindow();
-			}
+				mDirectionHelper.showDirection(origin, destination, transportation);
 		}
-	}
 
-	public boolean doesMarkerExist(LatLng latLng){
+		public void showCorrectInfoWindow(LatLng destination){
 
-		for (int i = 0; i < mMarkerList.size(); i++){
+				if(!mCurrentMarker.getPosition().equals(destination)){
+						mCurrentMarker.hideInfoWindow();
 
-			if (mMarkerList.get(i).getPosition().equals(latLng)){
-				return true;
-			}
+						if (doesMarkerExist(destination)) {
+								findMarkerByLatLng(destination).showInfoWindow();
+						}
+				}
 		}
-		return false;
-	}
 
-	private Marker findMarkerByLatLng(LatLng latLng) {
-
-		for (int i = 0; i < mMarkerList.size(); i++) {
-
-			if (mMarkerList.get(i).getPosition().equals(latLng)) {
-			mCurrentMarker = mMarkerList.get(i);
-			}
+		public boolean doesMarkerExist(LatLng latLng){
+				for (int i = 0; i < mMarkerList.size(); i++){
+						if (mMarkerList.get(i).getPosition().equals(latLng)){
+								return true;
+						}
+				}
+				return false;
 		}
-		return mCurrentMarker;
-	}
 
-	public Bitmap createMarkerBitmap(int category) {
-		int id = getResources().getIdentifier("marker"+category, "drawable", this.getActivity().getPackageName());
-		Bitmap markerBitmap = BitmapFactory.decodeResource(getResources(), id);
-		return markerBitmap;
-	}
+		private Marker findMarkerByLatLng(LatLng latLng) {
+				for (int i = 0; i < mMarkerList.size(); i++) {
+						if (mMarkerList.get(i).getPosition().equals(latLng)) {
+								mCurrentMarker = mMarkerList.get(i);
+						}
+				}
+				return mCurrentMarker;
+		}
+
+		public Bitmap createMarkerBitmap(int category) {
+				int id = getResources().getIdentifier("marker"+category, "drawable", this.getActivity().getPackageName());
+				Bitmap markerBitmap = BitmapFactory.decodeResource(getResources(), id);
+				return markerBitmap;
+		}
 
     public Bitmap combineBitmaps(Bitmap b1, Bitmap b2){
 
@@ -233,108 +237,103 @@ public class GMapFragment extends Fragment
         b1 = createBitmap(b1, 0, 0, b1.getWidth() / 2,b1.getHeight());
         b2 = createBitmap(b2, b2.getWidth()/2, 0, b2.getWidth()/2, b2.getHeight());
 
-		combo.drawBitmap(b1, 0f, 0f, null);
-		combo.drawBitmap(b2, b1.getWidth(), 0f, null);
+				combo.drawBitmap(b1, 0f, 0f, null);
+				combo.drawBitmap(b2, b1.getWidth(), 0f, null);
 
-		return bitmap;
-	}
-
-	public void removePreviousDirections(){
-
-		if (mDirectionHelper.isPreviousDirectionPresent()) {
-			mDirectionHelper.removePreviousDirection();
+				return bitmap;
 		}
-	}
+
+		public void removePreviousDirections(){
+				if (mDirectionHelper.isPreviousDirectionPresent()) {
+						mDirectionHelper.removePreviousDirection();
+				}
+		}
 
     @Override
     public void onMapClick(LatLng latLng) {
-
-		//check to see if any infoWindow is open to know if directions needs to be erased
-		if (isInfoWindowClosed) {
-			removePreviousDirections();
+				//check to see if any infoWindow is open to know if directions needs to be erased
+				if (isInfoWindowClosed) {
+						removePreviousDirections();
+				}
+				isInfoWindowClosed = true;
 		}
-		isInfoWindowClosed = true;
-	}
 
-	/* When the infoWindow is clicked, we send a notification about which marker
-	its about to the main activity. The main activity can then show the correct
-	detailed view, with the values associated to the marker object.
-	*/
-	@Override
-	public void onInfoWindowClick(Marker marker) {
-		mCallback.onInfoWindowClicked(marker);
-	}
+		/* When the infoWindow is clicked, we send a notification about which marker
+		its about to the main activity. The main activity can then show the correct
+		detailed view, with the values associated to the marker object.
+		*/
+		@Override
+		public void onInfoWindowClick(Marker marker) {
+				mCallback.onInfoWindowClicked(marker);
+		}
 
-	@Override
-	public View getInfoWindow(Marker marker) {
+		@Override
+		public View getInfoWindow(Marker marker) {
 		return null;
 	}
 
-	/* Our custom implementation of the infoWindow.*/
-	@Override
-	public View getInfoContents(Marker marker) {
+		/* Our custom implementation of the infoWindow.*/
+		@Override
+		public View getInfoContents(Marker marker) {
 		return mViewHelper.getCustomInfoView(marker);
 	}
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+		@Override
+		public void onCreate(Bundle savedInstanceState) {
+				super.onCreate(savedInstanceState);
 
-		try {
-			AppDatabase.init(getActivity());
-			mDatabase = AppDatabase.getDatabaseInstance();
-			AppDatabase.addVisibleEventsListener(this);
-		} catch (IOException ex) {
-			ex.printStackTrace();
+				try {
+						AppDatabase.init(getActivity());
+						mDatabase = AppDatabase.getDatabaseInstance();
+						AppDatabase.addVisibleEventsListener(this);
+				} catch (IOException ex) {
+						ex.printStackTrace();
+				}
 		}
-	}
 
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
-		MapFragment fragment = (MapFragment) getChildFragmentManager().
-				findFragmentById(R.id.map);
-		fragment.getMapAsync(this);
-	}
+		@Override
+		public void onViewCreated(View view, Bundle savedInstanceState) {
+				super.onViewCreated(view, savedInstanceState);
+				MapFragment fragment = (MapFragment) getChildFragmentManager().
+								findFragmentById(R.id.map);
+				fragment.getMapAsync(this);
+		}
 
-	@Override
-	public void onStart() {
-		super.onStart();
-	}
+		@Override
+		public void onStart() {
+				super.onStart();
+		}
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-	}
+		@Override
+		public void onDestroy() {
+				super.onDestroy();
+		}
 
-	@Nullable
-	@Override
-	public View onCreateView(
+		@Nullable
+		@Override
+		public View onCreateView(
 			LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.fragment_gmap, container, false);
-	}
+				return inflater.inflate(R.layout.fragment_gmap, container, false);
+		}
 
-	@Override
-	public void onVisibleEventsChanged(List<Event> newEvents) {
-		mGoogleMap.clear();
-		mEventsList = newEvents;
-		placeMarkers(mEventsList);
-	}
+		@Override
+		public void onVisibleEventsChanged(List<Event> newEvents) {
+				mGoogleMap.clear();
+				currentShownEvents = newEvents;
+				placeMarkers(mEventsList);
+		}
 
-	/**
-	 * This interface must be implemented by activities that contain this
-	 * fragment to allow an interaction in this fragment to be communicated
-	 * to the activity and potentially other fragments contained in that
-	 * activity.
-	 * <p/>
-	 * See the Android Training lesson <a href=
-	 * "http://developer.android.com/training/basics/fragments/communicating.html"
-	 * >Communicating with Other Fragments</a> for more information.
-	 */
-	public interface OnMapFragmentInteractionListener {
-		void onInfoWindowClicked(Marker marker);
-	}
+		/**
+	 	* This interface must be implemented by activities that contain this
+	 	* fragment to allow an interaction in this fragment to be communicated
+	 	* to the activity and potentially other fragments contained in that
+	 	* activity.
+	 	* <p/>
+	 	* See the Android Training lesson <a href=
+	 	* "http://developer.android.com/training/basics/fragments/communicating.html"
+	 	* >Communicating with Other Fragments</a> for more information.
+	 	*/
+		public interface OnMapFragmentInteractionListener {
+				void onInfoWindowClicked(Marker marker);
+		}
 }
-
-
-
