@@ -17,7 +17,7 @@ public class EventsSorterTitle implements EventsSorter
 
 	Comparator<Event> eventComp = new Comparator<Event>() {
 		@Override public int compare(Event e1, Event e2)
-		{ return strComp.compare(e1.getTitle(), e2.getTitle()); }
+		{ return strComp.compare(e2.getTitle(), e1.getTitle()); }
 	};
 
 	public EventsSorterTitle(Comparator strComp)
