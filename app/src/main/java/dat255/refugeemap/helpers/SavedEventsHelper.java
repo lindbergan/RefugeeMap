@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -12,6 +13,7 @@ import java.util.TreeSet;
 
 import dat255.refugeemap.AppDatabase;
 import dat255.refugeemap.EventListFragment;
+import dat255.refugeemap.ListFilterButtonsFragment;
 import dat255.refugeemap.R;
 import dat255.refugeemap.model.db.Event;
 
@@ -23,6 +25,7 @@ import dat255.refugeemap.model.db.Event;
 public class SavedEventsHelper {
 
     private Activity mActivity;
+    private List<SavedEventListener> savedEventListeners = new ArrayList<>();
 
     public SavedEventsHelper(Activity activity){
         mActivity = activity;
@@ -48,6 +51,7 @@ public class SavedEventsHelper {
             editor.putStringSet(mActivity.getString(R.string.saved_events_key), updatedEventList);
 
         }
+        updateSavedEventListeners();
         return editor.commit(); //returns true if save/remove was successful
     }
 
@@ -89,6 +93,22 @@ public class SavedEventsHelper {
             ((EventListFragment) frag).onVisibleEventsChanged(getSavedEvents());
         }
 
+        updateSavedEventListeners();
+
+
+    }
+
+    public static interface SavedEventListener {
+        public void onSavedEvent(List<Event> savedEvents);
+    }
+
+    public void addSavedEventListener(SavedEventListener listener) {
+        savedEventListeners.add(listener);
+    }
+
+    public void updateSavedEventListeners() {
+        for (SavedEventListener l : savedEventListeners)
+            l.onSavedEvent(getSavedEvents());
     }
 }
 

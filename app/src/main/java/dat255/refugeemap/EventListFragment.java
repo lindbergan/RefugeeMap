@@ -26,11 +26,12 @@ import dat255.refugeemap.model.db.sort.EventsSorter;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class EventListFragment extends Fragment implements AppDatabase.VisibleEventsListener {
+public class EventListFragment extends Fragment implements AppDatabase
+	.VisibleEventsListener, ListFilterButtonsFragment.ListFilterListener {
 	private int mColumnCount = 1;
 	private static final String TAG = "EventListFragment";
 
-	private OnListFragmentInteractionListener mListener;
+	protected OnListFragmentInteractionListener mListener;
 
 	private Database mDatabase;
 
@@ -52,6 +53,7 @@ public class EventListFragment extends Fragment implements AppDatabase.VisibleEv
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		ListFilterButtonsFragment.addFilteredEventsListener(this);
 
 		//Log.v(TAG, "Lat: " + latLng.latitude + " Lng: " + latLng.longitude);
 	}
@@ -134,6 +136,12 @@ public class EventListFragment extends Fragment implements AppDatabase.VisibleEv
 
 	@Override
 	public void onVisibleEventsChanged(List<Event> newEvents){
+		eventRecycler.setEvents(newEvents);
+		eventRecycler.notifyDataSetChanged();
+	}
+
+	@Override
+	public void onListFilterChanged(List<Event> newEvents) {
 		eventRecycler.setEvents(newEvents);
 		eventRecycler.notifyDataSetChanged();
 	}

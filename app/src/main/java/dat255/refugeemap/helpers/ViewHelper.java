@@ -24,6 +24,7 @@ import java.util.List;
 
 import dat255.refugeemap.DetailFragment;
 import dat255.refugeemap.EventListFragment;
+import dat255.refugeemap.FavoritesListFragment;
 import dat255.refugeemap.GMapFragment;
 import dat255.refugeemap.MainActivity;
 import dat255.refugeemap.R;
@@ -44,7 +45,7 @@ public class ViewHelper {
 	private boolean drawerOpen = false;
 	private Class[] mFragmentHistory = new Class[2];
 	private Fragment[] currentFragments = new Fragment[5];
-	private Activity mActivity;
+	private MainActivity mActivity;
 	private ImageButton mToggleImageButton;
 	private DrawerLayout mDrawer;
 	private ListView mDrawerListView;
@@ -55,8 +56,9 @@ public class ViewHelper {
 	private Drawable mMapIcon;
 	private Drawable mListIcon;
 
-	public ViewHelper(Activity activity) {
+	public ViewHelper(MainActivity activity) {
 		mActivity = activity;
+		activity.getSavedEventsHelper();
 		fm = mActivity.getFragmentManager();
 	}
 
@@ -66,7 +68,8 @@ public class ViewHelper {
 		if (args.equals("app_start")) {
 			Fragment mapFrag = new GMapFragment();
 			Fragment listFrag = new EventListFragment();
-			Fragment savedListFrag = new EventListFragment();
+			FavoritesListFragment savedListFrag = new FavoritesListFragment();
+			mActivity.getSavedEventsHelper().addSavedEventListener(savedListFrag);
 			Fragment listFilterBtnsFrag = new ListFilterButtonsFragment();
 			initializeViews(mActivity.findViewById(R.id.main_layout));
 			fm.beginTransaction()
@@ -137,6 +140,7 @@ public class ViewHelper {
 						.commit();
 			}
 			fm.beginTransaction()
+					.hide(currentFragments[LIST_FILTER_BUTTONS])
 					.show(currentFragments[SAVED_LIST_FRAGMENT])
 					.show(currentFragments[LIST_FILTER_BUTTONS])
 					.commit();
