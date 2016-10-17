@@ -108,7 +108,7 @@ public class GMapFragment extends Fragment
 
 		public void setUpHelpers() {
 				mDirectionHelper = new DirectionsHelper(mGoogleMap);
-				mViewHelper = new ViewHelper(getActivity());
+				mViewHelper = new ViewHelper((MainActivity) getActivity());
 		}
 
 		public void getEvents() {

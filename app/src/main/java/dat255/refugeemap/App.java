@@ -2,10 +2,12 @@ package dat255.refugeemap;
 import android.app.Application;
 
 import dat255.refugeemap.helpers.GoogleAPIHelper;
+import dat255.refugeemap.helpers.SavedEventsHelper;
 
 public class App extends Application  {
 	private GoogleAPIHelper mGoogleAPIHelper;
 	private static App mInstance;
+	private static SavedEventsHelper savedEventsHelper;
 	private static final String TAG = "App";
 
 	@Override

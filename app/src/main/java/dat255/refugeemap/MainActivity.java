@@ -50,7 +50,8 @@ import static android.view.View.VISIBLE;
 public class MainActivity extends AppCompatActivity
 		implements EventListFragment.OnListFragmentInteractionListener,
 		DetailFragment.OnFragmentInteractionListener,
-        GMapFragment.OnMapFragmentInteractionListener,AppDatabase.VisibleEventsListener {
+        GMapFragment.OnMapFragmentInteractionListener,AppDatabase
+		.VisibleEventsListener, ListFilterButtonsFragment.ListFilterListener {
 
     private ViewHelper mViewHelper;
 	private SavedEventsHelper mSavedEventsHelper;
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity
 		setContentView(R.layout.activity_main);
         setUpViews();
         setUpToolbar();
+		ListFilterButtonsFragment.addFilteredEventsListener(this);
         this.inputManager = (InputMethodManager) getSystemService(
             Context.INPUT_METHOD_SERVICE);
 
@@ -351,6 +353,20 @@ public class MainActivity extends AppCompatActivity
 			mActiveCategoryChangeListeners.get(i)
 				.onCategoryChange(activeCategory);
 		}
+	}
+
+	@Override
+	public void onListFilterChanged(List<Event> newEvents) {
+		toggleCategoryButton(0, true);
+		toggleCategoryButton(1, true);
+		toggleCategoryButton(2, true);
+		toggleCategoryButton(3, true);
+		activeCategory = FilterImpl.NULL_CATEGORY;
+		AppDatabase.updateVisibleEvents(newEvents);
+	}
+
+	public SavedEventsHelper getSavedEventsHelper() {
+		return mSavedEventsHelper;
 	}
 }
 
