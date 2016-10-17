@@ -32,8 +32,6 @@ public class EventsSorterDistance implements EventsSorter
 			Double dist = DistanceCalculator.getGreatCircleDistance(userLat,
 				userLon, e.getLatitude(), e.getLongitude());
 			distMap.put(e.getID(), dist);
-
-			System.out.println("(" + e.getID() + ") " + dist);
 		}
 
 		Collections.sort(list, new Comparator<Event>() {
