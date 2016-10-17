@@ -25,18 +25,23 @@ public class EventsSorterDistance implements EventsSorter
 
 	@Override public void sort(List<Event> list)
 	{
-		final HashMap<Integer, Double> distances = new HashMap<>();
+		final HashMap<Integer, Double> distMap = new HashMap<>();
 
 		for (Event e : list)
 		{
-			Double distance = DistanceCalculator.getGreatCircleDistance(userLat,
+			Double dist = DistanceCalculator.getGreatCircleDistance(userLat,
 				userLon, e.getLatitude(), e.getLongitude());
-			distances.put(e.getID(), distance);
+			distMap.put(e.getID(), dist);
+
+			System.out.println("(" + e.getID() + ") " + dist);
 		}
 
 		Collections.sort(list, new Comparator<Event>() {
 			@Override public int compare(Event e1, Event e2)
-			{ return (int)Math.round(distances.get(e1) - distances.get(e2)); }
+			{
+				double dist = distMap.get(e1.getID()) - distMap.get(e2.getID());
+				return (dist == 0.f ? 0 : (dist < 0 ? -1 : 1));
+			}
 		});
 	}
 }
