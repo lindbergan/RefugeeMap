@@ -64,12 +64,13 @@ public class FavoritesListFragment extends EventListFragment
 	}
 
 	@Override
-	public EventRecyclerViewAdapter fillListFragment() {
-		return new EventRecyclerViewAdapter(mSavedEventsHelper.getSavedEvents(), mListener);
+	public EventRecyclerViewAdapter fillListFragment(List<Event> savedEvents) {
+		return new EventRecyclerViewAdapter(savedEvents, mListener);
 	}
 
 	@Override
 	public void onSavedEvent(List<Event> savedEvents) {
 		mEventRecyclerViewAdapter.setEvents(savedEvents);
+		mEventRecyclerViewAdapter.notifyDataSetChanged();
 	}
 }
