@@ -25,7 +25,7 @@ public class EventsSorterTitle implements EventsSorter
 
 	public EventsSorterTitle(Locale locale)
 	{
-		lang = locale.getCountry();
+		lang = locale.getLanguage();
 		strComp = Collator.getInstance(locale);
 	}
 
