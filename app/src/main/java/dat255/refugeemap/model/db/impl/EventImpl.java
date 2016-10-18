@@ -16,9 +16,8 @@ public class EventImpl implements Event
 	private Integer[] categories;
 	private String[] tags;
 	@Getter private Double latitude, longitude;
-	@Getter private String dateInformation, title,
-		address, contactInformation;
-	private HashMap<String, String> descriptions;
+	@Getter private String dateInformation, address, contactInformation;
+	private HashMap<String, String> titles, descriptions;
 	private int[][] timeData;
 
 	// Gson requires zero-argument constructor
@@ -33,11 +32,14 @@ public class EventImpl implements Event
 	public String[] getTags()
 	{ return tags.clone(); }
 
+	@Override public String getTitle(String lang)
+	{ return titles.get(lang); }
+
 	@Override public String getDescription(String lang)
 	{ return descriptions.get(lang); }
 
-	@Override public Collection<String> getAvailableDescriptionLanguages()
-	{ return descriptions.keySet(); }
+	@Override public Collection<String> getAvailableLanguages()
+	{ return descriptions.keySet(); } // same as titles.keySet()
 
 	public int[][] getTimeData()
 	{ return timeData.clone(); }

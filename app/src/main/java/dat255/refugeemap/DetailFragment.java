@@ -77,7 +77,7 @@ public class DetailFragment extends Fragment {
 				.getEvent(Integer.parseInt(EVENT_ID));
 
 			id = mActiveEvent.getID();
-			title = mActiveEvent.getTitle();
+			title = mActiveEvent.getTitle("sv");
 			address = mActiveEvent.getAddress();
 			time = mActiveEvent.getDateInformation();
 			contact = mActiveEvent.getContactInformation();
@@ -130,7 +130,7 @@ public class DetailFragment extends Fragment {
 	}
 
 	public boolean needTranslation() {
-		return !mActiveEvent.getAvailableDescriptionLanguages().contains(toLocale);
+		return !mActiveEvent.getAvailableLanguages().contains(toLocale);
 	}
 
 	public void repaint() {
