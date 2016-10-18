@@ -89,7 +89,7 @@ public class EventRecyclerViewAdapter
 		Event event = mEvents.get(position);
 
 		holder.mItem = event;
-		holder.mIdView.setText(event.getTitle());
+		holder.mIdView.setText(event.getTitle("sv"));
 		if (currentLocation != null) {
 			double distanceToEvent = DistanceCalculator.getGreatCircleDistance(
 				currentLocation.latitude, currentLocation.longitude,

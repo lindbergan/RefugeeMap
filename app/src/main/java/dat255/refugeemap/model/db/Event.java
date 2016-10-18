@@ -21,22 +21,30 @@ public interface Event
 	public Double getLongitude();
 
 	public String getDateInformation();
-	public String getTitle();
 	public String getAddress();
 	public String getContactInformation();
 
 	public int[][] getTimeData();
 
 	/**
+	 * Returns the event's title in the given language.
+	 *
+	 * Preconditions:
+	 * - All arguments are non-null
+	 * - `lang` is in `getAvailableLanguages`
+	 */
+	public String getTitle(String lang);
+
+	/**
 	 * Returns the event's description in the given language.
 	 *
 	 * Preconditions:
 	 * - All arguments are non-null
-	 * - `lang` is in `getAvailableDescriptionLanguages`
+	 * - `lang` is in `getAvailableLanguages`
 	 */
 	public String getDescription(String lang);
 
-	public Collection<String> getAvailableDescriptionLanguages();
+	public Collection<String> getAvailableLanguages();
 
 	@Override public boolean equals(Object o);
 	public boolean equals(Event e);

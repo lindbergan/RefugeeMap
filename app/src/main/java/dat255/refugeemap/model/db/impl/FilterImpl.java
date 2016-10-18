@@ -86,6 +86,14 @@ public class FilterImpl implements Filter
 		this.timeCriteria = timeCriteria;
 	}
 
+	private boolean isTermInAnyTitle(Event e, String termLowerCase)
+	{
+		for (String lang : e.getAvailableLanguages())
+			if (e.getTitle(lang).toLowerCase().contains(termLowerCase))
+				return true;
+		return false;
+	}
+
 	@Override public boolean doesEventFit(Event e)
 	{
 		if (category != NULL_CATEGORY)
@@ -94,14 +102,14 @@ public class FilterImpl implements Filter
 
 		if (searchTerms != null)
 		{
-			val equalityChecker = new EqualityChecker<String>() {
+			val ec = new EqualityChecker<String>() {
 				@Override public boolean areEqual(String one, String two)
 				{ return one.toLowerCase().equals(two.toLowerCase()); }
 			};
 
 			for (String term : searchTerms)
-				if (!ArrayUtils.contains(e.getTags(), term, equalityChecker) &&
-					!e.getTitle().toLowerCase().contains(term.toLowerCase()))
+				if (!ArrayUtils.contains(e.getTags(), term.toLowerCase(), ec) &&
+					!isTermInAnyTitle(e, term.toLowerCase()))
 						return false;
 		}
 

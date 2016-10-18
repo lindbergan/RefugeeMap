@@ -149,12 +149,12 @@ public class GMapFragment extends Fragment
         BitmapDescriptor marker = createMarker(event.getCategories());
 				if (!currentShownEvents.contains(event)) {
 						properties.position(markerPosition)
-								.title(event.getTitle())
+								.title(event.getTitle("sv"))
 								.icon(marker).alpha(0.35f);
 				}
 				else {
 						properties.position(markerPosition)
-								.title(event.getTitle())
+								.title(event.getTitle("sv"))
 								.icon(marker);
 				}
         // TODO: 2016-09-26 .getIcon needs to be implemented /Adrian

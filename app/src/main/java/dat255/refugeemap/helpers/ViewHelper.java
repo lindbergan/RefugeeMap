@@ -353,7 +353,7 @@ public class ViewHelper {
 			TextView infoContactInfo = (TextView) customView.findViewById(
 					R.id.info_contactInformation);
 
-			infoTitle.setText(activeEvent.getTitle());
+			infoTitle.setText(activeEvent.getTitle("sv"));
 			infoTime.setText(activeEvent.getDateInformation());
 			infoContactInfo.setText(activeEvent.getContactInformation());
 		}
