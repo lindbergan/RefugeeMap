@@ -26,6 +26,7 @@ public class SavedEventsHelper {
 
     private Activity mActivity;
     private List<SavedEventListener> savedEventListeners = new ArrayList<>();
+    private List<Event> savedEvents = new ArrayList<>();
 
     public SavedEventsHelper(Activity activity){
         mActivity = activity;
@@ -51,8 +52,14 @@ public class SavedEventsHelper {
             editor.putStringSet(mActivity.getString(R.string.saved_events_key), updatedEventList);
 
         }
-        updateSavedEventListeners();
-        return editor.commit(); //returns true if save/remove was successful
+
+        //returns true if save/remove was successful
+        boolean commited = editor.commit();
+        if (commited) {
+            updateSavedEventListeners();
+        }
+        return commited;
+        // successful
     }
 
 
@@ -94,8 +101,6 @@ public class SavedEventsHelper {
         }
 
         updateSavedEventListeners();
-
-
     }
 
     public static interface SavedEventListener {
@@ -110,6 +115,12 @@ public class SavedEventsHelper {
         for (SavedEventListener l : savedEventListeners)
             l.onSavedEvent(getSavedEvents());
     }
+
+    public void updateSavedEventListeners(List<Event> savedEvents) {
+        for (SavedEventListener l : savedEventListeners)
+            l.onSavedEvent(savedEvents);
+    }
+
 }
 
 
