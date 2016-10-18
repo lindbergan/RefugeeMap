@@ -14,14 +14,18 @@
             android:orientation="horizontal"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp">
+            android:layout_marginBottom="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp">
 
-                <TextView
+                <dat255.refugeemap.TightTextView
                     android:id="@+id/detail_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:maxLength="25"
+                    android:maxEms="10"
+                    android:maxLines="2"
+                    android:gravity="center"
+                    android:ellipsize="end"
                     android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
 
                 <ImageView
@@ -29,8 +33,7 @@
                     android:layout_height="43dp"
                     android:id="@+id/detail_baloon"
                     android:background="@android:color/transparent"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="20dp"/>
+                    android:layout_marginStart="10dp"/>
 
         </LinearLayout>
 
