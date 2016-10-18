@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -28,6 +29,7 @@ public class GoogleAPIHelper implements GoogleApiClient.ConnectionCallbacks,
 	private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 20;
 	private GoogleApiClient mGoogleApiClient;
 	private Context mContext;
+	private LocationManager mLocationManager;
 	private LatLng currentLocation = new LatLng(57.70, 11.97);
 	private List<GoogleAPIObserver> mGoogleAPIObserverList = new ArrayList<>();
 
@@ -74,9 +76,10 @@ public class GoogleAPIHelper implements GoogleApiClient.ConnectionCallbacks,
 	public void onConnected(Bundle bundle) {
 		//You are connected do what ever you want
 		//Like i get last known location
-		/*if (ContextCompat.checkSelfPermission(mContext,
+		if (ContextCompat.checkSelfPermission(mContext,
 			Manifest.permission.ACCESS_FINE_LOCATION)
 			!= PackageManager.PERMISSION_GRANTED) {
+
 			ActivityCompat.requestPermissions((Activity) mContext,
 				new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
 				MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
@@ -88,12 +91,49 @@ public class GoogleAPIHelper implements GoogleApiClient.ConnectionCallbacks,
 			Location location = LocationServices.FusedLocationApi
 				.getLastLocation(mGoogleApiClient);
 
+			this.requestOnLocationChange();
+
 			if (location != null) {
 				this.currentLocation = new LatLng(location.getLatitude(),
 					location.getLongitude());
 				this.notifyConnectionListeners();
 			}
-		}*/
+		}
+	}
+
+	private void requestOnLocationChange() {
+
+		if (ContextCompat.checkSelfPermission(mContext,
+			Manifest.permission.ACCESS_FINE_LOCATION)
+			== PackageManager.PERMISSION_GRANTED) {
+			mLocationManager = (LocationManager) mContext.getSystemService(Context
+				.LOCATION_SERVICE);
+
+			mLocationManager.requestLocationUpdates(LocationManager
+				.GPS_PROVIDER, 1000, 1, new android.location.LocationListener() {
+				@Override
+				public void onLocationChanged(Location location) {
+					currentLocation = new LatLng(location.getLatitude(),
+						location.getLongitude());
+				}
+
+				@Override
+				public void onStatusChanged(String provider, int status, Bundle extras) {
+
+				}
+
+				@Override
+				public void onProviderEnabled(String provider) {
+
+				}
+
+				@Override
+				public void onProviderDisabled(String provider) {
+
+				}
+			});
+		}
+
 	}
 
 	public void notifyPositionPermissions(){
