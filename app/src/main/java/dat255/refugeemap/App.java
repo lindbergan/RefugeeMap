@@ -1,10 +1,14 @@
 package dat255.refugeemap;
 import android.app.Application;
+import android.location.Location;
+import android.util.Log;
+
+import com.google.android.gms.maps.LocationSource;
 
 import dat255.refugeemap.helpers.GoogleAPIHelper;
 import dat255.refugeemap.helpers.SavedEventsHelper;
 
-public class App extends Application  {
+public class App extends Application {
 	private GoogleAPIHelper mGoogleAPIHelper;
 	private static App mInstance;
 	private static SavedEventsHelper savedEventsHelper;
