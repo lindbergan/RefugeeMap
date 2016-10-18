@@ -63,6 +63,13 @@ public class EventListFragment extends Fragment implements AppDatabase
 							 Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_event_list, container, false);
 
+		if (getActivity() instanceof OnListFragmentInteractionListener) {
+			mListener = (OnListFragmentInteractionListener) getActivity();
+		} else {
+			throw new RuntimeException(getActivity().toString()
+				+ " must implement OnListFragmentInteractionListener");
+		}
+
 		// Set the adapter
 		if (view instanceof RecyclerView) {
 			Context context = view.getContext();
@@ -110,12 +117,7 @@ public class EventListFragment extends Fragment implements AppDatabase
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
-		if (context instanceof OnListFragmentInteractionListener) {
-			mListener = (OnListFragmentInteractionListener) context;
-		} else {
-			throw new RuntimeException(context.toString()
-				+ " must implement OnListFragmentInteractionListener");
-		}
+
 	}
 
 	@Override
