@@ -10,6 +10,9 @@
     <string name="swedish_locale_id">sv</string>
     <string name="arabic_locale_id">ar</string>
 
+    <string name="directions_error">You must have an internet
+        connection to use the directions helper.</string>
+
     <string name="detail_address_label">" " Adress " " </string>
     <string name="detal_time_label">" " Tid " "</string>
     <string name="detail_contact_label">Kontakt</string>
