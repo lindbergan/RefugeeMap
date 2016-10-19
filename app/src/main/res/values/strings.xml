@@ -1,21 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MomteeMap</string>
-    <string name="directions">Directions</string>
-    <string name="nav_men_profile">Profile</string>
-    <string name="nav_men_favorites">Favorites</string>
-    <string name="nav_men_lang_options">Language options</string>
-    <string name="nav_men_lang_size_search">Search size</string>
-    <string name="directions_toast">The app must be allowed to use your location</string>
+    <string name="app_name">Momtee</string>
+    <string name="button_gmap_directions">Directions</string>
 
-    <string name="swedish_locale_id">sv</string>
-    <string name="arabic_locale_id">ar</string>
+    <string name="nav_menu_profile">Profile</string>
+    <string name="nav_menu_favorites">Favorites</string>
+    <string name="nav_menu_lang_options">Language options</string>
+    <string name="nav_menu_lang_size_search">Search size</string>
 
-    <string name="directions_error">You must have an internet
-        connection to use the directions helper.</string>
+    <string name="toasts_directions_error">You must have an internet connection to use the directions helper.</string>
 
-    <string name="detail_address_label">" " Adress " " </string>
-    <string name="detal_time_label">" " Tid " "</string>
-    <string name="detail_contact_label">Kontakt</string>
-    <string name="detail_description_label">Beskrivning</string>
+    <string name="toast_directions">The app must be allowed to use your location</string>
 
+    <string name="textview_detail_where">Where</string>
+    <string name="textview_detail_when">When</string>
+    <string name="textview_detail_contact">Contact</string>
+    <string name="textview_detail_description">Description</string>
+
+    <string name="textview_list_filter_find_events">Filter events</string>
+    <string name="button_list_filter_close_by">Close By</string>
+    <string name="button_list_filter_today">Today</string>
+
+    <string name="toast_detail_event_saved">Event saved</string>
+    <string name="toast_detail_event_removed">Event removed</string>
+    <string name="toast_detail_action_failed">Action failed</string>
+    <string name="toast_viewhelper_no_events_saved">No saved events.</string>
 </resources>

@@ -1,10 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MaraMap</string>
-    <string name="directions">الاتجاهات</string>
-    <string name="nav_men_profile">الملف الشخصي</string>
-    <string name="nav_men_favorites">مفضلة</string>
-    <string name="nav_men_lang_options">إعدادات اللغة</string>
-    <string name="nav_men_lang_size_search">البحث الشعاع</string>
-    <string name="directions_toast">قم بتشغيل الموقع الخاص بك</string>
-    <string name="directions_error">بالإنترنتيجب أن تكون متصلا باستخدام الاتجاهات!</string>
+    <string name="button_gmap_directions">الاتجاهات</string>
+
+    <string name="nav_menu_profile">الملف الشخصي</string>
+    <string name="nav_menu_favorites">مفضلة</string>
+    <string name="nav_menu_lang_options">إعدادات اللغة</string>
+    <string name="nav_menu_lang_size_search">البحث الشعاع</string>
+
+    <string name="toast_directions">التطبيق يجب أن يكون قادرا على استخدام منصبك</string>
+
+    <string name="textview_detail_where">كل</string>
+    <string name="textview_detail_when">عندما</string>
+    <string name="textview_detail_contact">اتصال</string>
+    <string name="textview_detail_description">وصف</string>
+
+    <string name="textview_list_filter_find_events">تصفية الأحداث</string>
+    <string name="button_list_filter_close_by">الأقرب</string>
+    <string name="button_list_filter_today">اليوم</string>
+
+    <string name="toast_detail_event_saved">حفظ الحدث</string>
+    <string name="toast_detail_event_removed">إزالة الحدث</string>
+    <string name="toast_detail_action_failed">فشل</string>
+    <string name="toasts_directions_error">تحتاج إلى اتصال بالإنترنت لتكون قادرة على الحصول على الاتجاهات.</string>
+    <string name="toast_viewhelper_no_events_saved">لا حفظها الأحداث.</string>
 </resources>

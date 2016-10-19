@@ -13,7 +13,7 @@
         android:layout_weight="0.09">
 
         <TextView
-            android:text="Find Events:"
+            android:text="@string/textview_list_filter_find_events"
             android:layout_width="wrap_content"
             android:layout_height="57dp"
             android:id="@+id/textView3"
@@ -23,7 +23,7 @@
             android:layout_weight="0.30"/>
 
         <Button
-            android:text="Close By"
+            android:text="@string/button_list_filter_close_by"
             android:layout_width="wrap_content"
             android:layout_height="34dp"
             android:id="@+id/distance_button"
@@ -34,7 +34,7 @@
             android:layout_margin="5dp"/>
 
         <Button
-            android:text="Today"
+            android:text="@string/button_list_filter_today"
             android:layout_width="wrap_content"
             android:layout_height="34dp"
             android:id="@+id/time_button"

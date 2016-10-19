@@ -25,7 +25,6 @@ import java.util.List;
 
 import dat255.refugeemap.App;
 import dat255.refugeemap.R;
-import dat255.refugeemap.helpers.DataParser;
 
 public class DirectionsHelper {
 
@@ -248,7 +247,7 @@ public class DirectionsHelper {
             } else {
                 // No results from google directions api
                 CharSequence text = App.getInstance().getResources().getText
-                    (R.string.directions_error);
+                    (R.string.toasts_directions_error);
                 int duration = Toast.LENGTH_LONG;
 
                 Toast toast = Toast.makeText(App.getInstance().getApplicationContext(), text,

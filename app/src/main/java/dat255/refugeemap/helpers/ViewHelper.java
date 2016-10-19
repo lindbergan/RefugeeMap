@@ -1,6 +1,5 @@
 package dat255.refugeemap.helpers;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
@@ -12,7 +11,6 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -371,7 +369,7 @@ public class ViewHelper {
             if (mActivity instanceof MainActivity) {
 
                 if (mDrawerListItems[position]
-                        .equals((mActivity.getString(R.string.nav_men_favorites)))) {
+                        .equals((mActivity.getString(R.string.nav_menu_favorites)))) {
 
 
 					List<Event> savedEvents = ((MainActivity) mActivity)
@@ -382,7 +380,7 @@ public class ViewHelper {
                     if ( savedEvents!= null && savedEvents.size() > 0) {
                         stateSwitch("favourites_button_pressed");
                 } else {
-                        Toast.makeText(mActivity.getApplicationContext(), "No saved events",
+                        Toast.makeText(mActivity.getApplicationContext(), R.string.toast_viewhelper_no_events_saved,
                             Toast.LENGTH_SHORT).show();
                     }
                 }

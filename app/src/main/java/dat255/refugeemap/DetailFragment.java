@@ -186,13 +186,13 @@ public class DetailFragment extends Fragment {
 				if (mListener.isEventSaved(String.valueOf(id))) {
 
 					saveButton.setBackgroundResource(R.drawable.ic_star_yellow_button);
-					Toast.makeText(getActivity().getApplicationContext(), "Event saved", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity().getApplicationContext(), R.string.toast_detail_event_saved, Toast.LENGTH_SHORT).show();
 				} else {
 					saveButton.setBackgroundResource(R.drawable.ic_star_black_button);
-					Toast.makeText(getActivity().getApplicationContext(), "Event removed", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getActivity().getApplicationContext(), R.string.toast_detail_event_removed, Toast.LENGTH_SHORT).show();
 				}
 			} else {
-				Toast.makeText(getActivity().getApplicationContext(), "Action failed", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity().getApplicationContext(), R.string.toast_detail_action_failed, Toast.LENGTH_SHORT).show();
 			}
 		}
 	}

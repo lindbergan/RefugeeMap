@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-		//setLocaleToArabic();
         mViewHelper.stateSwitch("app_start");
 		mViewHelper.setUpNavigationDrawer(getResources());
 
@@ -291,8 +290,7 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	@Override
-	public void onRequestPermissionsResult(int requestCode,
-																				 String permissions[], int[] grantResults) {
+	public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
 		switch (requestCode) {
 			case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
 				if (grantResults.length > 0
@@ -316,7 +314,7 @@ public class MainActivity extends AppCompatActivity
             ((GMapFragment) f).showDirections(mGoogleAPIHelper
 				.getCurrentLocation(),destination,transportationMode);
         }else{
-					Toast.makeText(this, R.string.directions_toast,
+					Toast.makeText(this, R.string.toast_directions,
 						Toast.LENGTH_LONG).show();
 				}
 	}
@@ -339,10 +337,6 @@ public class MainActivity extends AppCompatActivity
 				getBaseContext().getResources().getDisplayMetrics());
         currentLocale = getString(R.string.swedish_locale_id);
 	}
-
-    public String getCurrentLocale() {
-        return currentLocale;
-    }
 
 	public int getActiveCategory() {
 		return activeCategory;

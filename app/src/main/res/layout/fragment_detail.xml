@@ -45,9 +45,10 @@
 
                 <TextView
                     android:textStyle="bold"
-                    android:text="@string/detail_address_label"
+                    android:text="@string/textview_detail_where"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="5dp"
                     android:layout_marginStart="20dp"/>
 
                 <TextView
@@ -69,7 +70,8 @@
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
                     android:layout_marginStart="20dp"
-                    android:text="@string/detal_time_label" />
+                    android:layout_marginEnd="5dp"
+                    android:text="@string/textview_detail_when" />
 
                 <TextView
                     android:id="@+id/detal_time_event"
@@ -89,7 +91,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textStyle="bold"
-                    android:text="@string/detail_contact_label"
+                    android:text="@string/textview_detail_contact"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"/>
@@ -115,7 +117,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/detail_description_label"
+            android:text="@string/textview_detail_description"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:textStyle="bold" />
