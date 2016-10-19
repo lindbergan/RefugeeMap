@@ -1,8 +1,6 @@
 package dat255.refugeemap.model.db.impl;
 
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 
 import dat255.refugeemap.model.ArrayUtils;
 import dat255.refugeemap.model.DistanceCalculator;
@@ -30,49 +28,38 @@ public class FilterImpl implements Filter
 		}
 	}
 
-	/** @author Sebastian */
-	@AllArgsConstructor(access = AccessLevel.PUBLIC)
 	public static class TimeCriteria
 	{
+		private final int iWeekDay;
+
+		// Precondition: `weekDayIndex` is in {0, 1, ..., 7}
+		public TimeCriteria(int weekDayIndex)
+		{ iWeekDay = weekDayIndex; }
+
 		public boolean doesEventFit(Event e)
 		{
-			int[][] timeData = e.getTimeData();
-
-			Calendar c = Calendar.getInstance();
-			c.setTime(new Date());
-
-			// Monday to Sunday represented by the indices 0 to 6
-			int currentDayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 2;
-
-			for(int i = 0; i < timeData.length; i++)
-			{
-				int[] day = timeData[i];
-
-				int weekDay = day[0];
-				if (currentDayOfWeek == weekDay)
-						return true;
-			}
-
+			final int[][] timeData = e.getTimeData();
+			for (int i = 0; i < timeData.length; i++)
+				if (iWeekDay == timeData[i][0])
+					return true;
 			return false;
 		}
 	}
 
-	public static final int NULL_CATEGORY = -1;
-
 	public static final Filter EMPTY_FILTER =
-		new FilterImpl(NULL_CATEGORY, null, null, null);
+		new FilterImpl(null, null, null, null);
 
-	private final int category;
+	private final Integer category;
 	private final Collection<String> searchTerms;
 	private final DistanceCriteria distanceCriteria;
 	private final TimeCriteria timeCriteria;
 
 	/**
 	 * Creates a `Filter` instance with the given criteria.
-	 * To ignore `category`, set it to `EMPTY_FILTER`.
+	 * To ignore `category`, set it to `NULL_CATEGORY`.
 	 * To ignore any other criteria, set it to `null`.
 	 */
-	public FilterImpl(int category, Collection<String> searchTerms,
+	public FilterImpl(Integer category, Collection<String> searchTerms,
 		DistanceCriteria distCriteria, TimeCriteria timeCriteria)
 	{
 		this.category = category;
@@ -91,7 +78,7 @@ public class FilterImpl implements Filter
 
 	@Override public boolean doesEventFit(Event e)
 	{
-		if (category != NULL_CATEGORY)
+		if (category != null)
 			if (!ArrayUtils.contains(e.getCategories(), category))
 				return false;
 
@@ -119,7 +106,7 @@ public class FilterImpl implements Filter
 
 	@Override public boolean isEmpty()
 	{
-		return ((category == NULL_CATEGORY) &&
+		return ((category == null) &&
 			(searchTerms == null || searchTerms.size() == 0) &&
 			(distanceCriteria == null) &&
 			(timeCriteria == null));

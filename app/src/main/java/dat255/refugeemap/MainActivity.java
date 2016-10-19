@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity
 	private Toolbar toolbar;
 	private List<CategoryChangeListener> mActiveCategoryChangeListeners = new
 		ArrayList<>();
-	private int activeCategory = FilterImpl.NULL_CATEGORY;
+	private Integer activeCategory = null;
 	private final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 20;
 	Collection<String> activeSearchTerms = null;
 	private GoogleAPIHelper mGoogleAPIHelper;
@@ -175,10 +175,10 @@ public class MainActivity extends AppCompatActivity
 		int ctgPressed = Integer.parseInt(view.getTag().toString());
 
 		if (ctgPressed == activeCategory) {
-			activeCategory = FilterImpl.NULL_CATEGORY;
+			activeCategory = null;
 			toggleCategoryButton(ctgPressed, true);
 		} else {
-			if (activeCategory != FilterImpl.NULL_CATEGORY)
+			if (activeCategory != null)
 				toggleCategoryButton(activeCategory, true);
 			toggleCategoryButton(ctgPressed, false);
 			activeCategory = ctgPressed;
@@ -355,7 +355,7 @@ public class MainActivity extends AppCompatActivity
 		toggleCategoryButton(1, true);
 		toggleCategoryButton(2, true);
 		toggleCategoryButton(3, true);
-		activeCategory = FilterImpl.NULL_CATEGORY;
+		activeCategory = null;
 
 		List<Event> events = mDatabase.getEventsByFilter(FilterImpl.EMPTY_FILTER,
 			EventsSorter.NULL_SORTER);

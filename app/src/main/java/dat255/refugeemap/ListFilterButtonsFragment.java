@@ -11,12 +11,14 @@ import android.widget.Button;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import dat255.refugeemap.model.db.Database;
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.impl.FilterImpl;
 import dat255.refugeemap.model.db.sort.EventsSorter;
+import lombok.val;
 
 /**
  *
@@ -28,7 +30,7 @@ public class ListFilterButtonsFragment extends Fragment implements
 	private Database mDatabase;
 	private static List<ListFilterListener> listeners =
 		new ArrayList<>();
-	private int activeCategory = FilterImpl.NULL_CATEGORY;
+	private Integer activeCategory = null;
 	private Button distanceFilterButton;
 	private Button timeFilterButton;
 	private Button activeButton;
@@ -53,8 +55,7 @@ public class ListFilterButtonsFragment extends Fragment implements
 	}
 
 	public void resetFilters() {
-		FilterImpl filter = new FilterImpl(FilterImpl.NULL_CATEGORY, null,
-			null, null);
+		FilterImpl filter = new FilterImpl(null, null, null, null);
 
 		List<Event> newEvents = mDatabase.getEventsByFilter(filter,
 			EventsSorter.NULL_SORTER);
@@ -66,7 +67,7 @@ public class ListFilterButtonsFragment extends Fragment implements
 
 		LatLng userLocation = App.getGoogleApiHelper().getCurrentLocation();
 
-		FilterImpl filter = new FilterImpl(FilterImpl.NULL_CATEGORY, null,
+		FilterImpl filter = new FilterImpl(null, null,
 			new FilterImpl.DistanceCriteria(userLocation.longitude,
 				userLocation.latitude, 100.0), null);
 
@@ -77,8 +78,9 @@ public class ListFilterButtonsFragment extends Fragment implements
 	}
 
 	public void onTimeButtonClick(View view) {
-		FilterImpl filter = new FilterImpl(FilterImpl.NULL_CATEGORY, null,
-			null, new FilterImpl.TimeCriteria());
+		val timeCriteria = new FilterImpl.TimeCriteria(Calendar.
+			getInstance().get(Calendar.DAY_OF_WEEK));
+		FilterImpl filter = new FilterImpl(null, null, null, timeCriteria);
 
 		List<Event> newEvents = mDatabase.getEventsByFilter(filter,
 			EventsSorter.NULL_SORTER);
