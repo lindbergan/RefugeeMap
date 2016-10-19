@@ -129,7 +129,7 @@ public class EventRecyclerViewAdapter
 		public final View mView;
 		public final LinearLayout mLayout;
 		public final TextView mIdView;
-		public final TextView mContentView;
+		//public final TextView mContentView;
 		public final TextView mDistanceView;
 		public Event mItem;
 
@@ -139,12 +139,13 @@ public class EventRecyclerViewAdapter
 			mView = view;
 			mLayout = (LinearLayout) view.findViewById(R.id.list_item_layout);
 			mIdView = (TextView) view.findViewById(R.id.id);
-			mContentView = (TextView) view.findViewById(R.id.content);
+			//mContentView = (TextView) view.findViewById(R.id.content);
 			mDistanceView = (TextView) view.findViewById(R.id.distance);
 		}
-		@Override
-		public String toString() {
-			return super.toString() + " '" + mContentView.getText() + "'";
-		}
+
+		//@Override
+		//public String toString() {
+		//	return super.toString() + " '" + mContentView.getText() + "'";
+		//}
 	}
 }
