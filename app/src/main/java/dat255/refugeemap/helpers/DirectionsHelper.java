@@ -3,6 +3,7 @@ package dat255.refugeemap.helpers;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,6 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import dat255.refugeemap.App;
+import dat255.refugeemap.R;
 import dat255.refugeemap.helpers.DataParser;
 
 public class DirectionsHelper {
@@ -198,47 +201,60 @@ public class DirectionsHelper {
             ArrayList<LatLng> points;
             PolylineOptions lineOptions = null;
 
-            // Traversing through all the routes
-            for (int i = 0; i < result.size(); i++) {
-                points = new ArrayList<>();
-                lineOptions = new PolylineOptions();
+            if (result != null) {
 
-                // Fetching i-th route
-                List<HashMap<String, String>> path = result.get(i);
+                // Traversing through all the routes
+                for (int i = 0; i < result.size(); i++) {
+                    points = new ArrayList<>();
+                    lineOptions = new PolylineOptions();
 
-                // Fetching all the points in i-th route
-                for (int j = 0; j < path.size(); j++) {
-                    HashMap<String, String> point = path.get(j);
+                    // Fetching i-th route
+                    List<HashMap<String, String>> path = result.get(i);
 
-                    if(j==0) {    // Get distance from the list
-                        distance = point.get("distance");
-                        continue;
-                    }else if(j==1) { // Get duration from the list
-                        duration = point.get("duration");
-                        continue;
+                    // Fetching all the points in i-th route
+                    for (int j = 0; j < path.size(); j++) {
+                        HashMap<String, String> point = path.get(j);
+
+                        if (j == 0) {    // Get distance from the list
+                            distance = point.get("distance");
+                            continue;
+                        } else if (j == 1) { // Get duration from the list
+                            duration = point.get("duration");
+                            continue;
+                        }
+
+                        double lat = Double.parseDouble(point.get("lat"));
+                        double lng = Double.parseDouble(point.get("lng"));
+                        LatLng position = new LatLng(lat, lng);
+
+                        points.add(position);
                     }
 
-                    double lat = Double.parseDouble(point.get("lat"));
-                    double lng = Double.parseDouble(point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
+                    // Adding all the points in the route to LineOptions
+                    lineOptions.addAll(points);
+                    lineOptions.width(10);
+                    lineOptions.color(Color.RED);
 
-                    points.add(position);
+                    Log.d("onPostExecute", "onPostExecute lineoptions decoded");
                 }
 
-                // Adding all the points in the route to LineOptions
-                lineOptions.addAll(points);
-                lineOptions.width(10);
-                lineOptions.color(Color.RED);
+                // Drawing polyline in the Google Map for the i-th route
+                if (lineOptions != null) {
+                    mCurrentDirection = mGoogleMap.addPolyline(lineOptions);
+                } else {
+                    Log.d("onPostExecute", "without Polylines drawn");
+                }
 
-                Log.d("onPostExecute","onPostExecute lineoptions decoded");
-            }
+            } else {
+                // No results from google directions api
+                CharSequence text = App.getInstance().getResources().getText
+                    (R.string.directions_error);
+                int duration = Toast.LENGTH_LONG;
 
-            // Drawing polyline in the Google Map for the i-th route
-            if(lineOptions != null) {
-                mCurrentDirection = mGoogleMap.addPolyline(lineOptions);
-            }
-            else {
-                Log.d("onPostExecute","without Polylines drawn");
+                Toast toast = Toast.makeText(App.getInstance().getApplicationContext(), text,
+                    duration);
+                toast.show();
+
             }
         }
     }

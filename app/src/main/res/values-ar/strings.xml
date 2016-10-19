@@ -6,4 +6,5 @@
     <string name="nav_men_lang_options">إعدادات اللغة</string>
     <string name="nav_men_lang_size_search">البحث الشعاع</string>
     <string name="directions_toast">قم بتشغيل الموقع الخاص بك</string>
+    <string name="directions_error">بالإنترنتيجب أن تكون متصلا باستخدام الاتجاهات!</string>
 </resources>

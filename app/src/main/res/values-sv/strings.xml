@@ -7,4 +7,6 @@
     <string name="nav_men_lang_options">Språkinställningar</string>
     <string name="nav_men_lang_size_search">Sökradie</string>
     <string name="directions_toast">Appen måste tillåtas att använda din plats</string>
+    <string name="directions_error">Du måste vara ansluten till internet för
+        att använda vägbeskrivningen!</string>
 </resources>
