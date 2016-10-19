@@ -362,7 +362,10 @@ public class MainActivity extends AppCompatActivity
 		toggleCategoryButton(2, true);
 		toggleCategoryButton(3, true);
 		activeCategory = FilterImpl.NULL_CATEGORY;
-		AppDatabase.updateVisibleEvents(newEvents);
+
+		List<Event> events = mDatabase.getEventsByFilter(FilterImpl.EMPTY_FILTER,
+			EventsSorter.NULL_SORTER);
+		AppDatabase.updateVisibleEvents(events);
 	}
 
 	public SavedEventsHelper getSavedEventsHelper() {
