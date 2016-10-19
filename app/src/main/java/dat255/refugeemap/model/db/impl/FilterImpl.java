@@ -43,18 +43,13 @@ public class FilterImpl implements Filter
 
 			// Monday to Sunday represented by the indices 0 to 6
 			int currentDayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 2;
-			int currentHourOfDay =  c.get(Calendar.HOUR_OF_DAY);
 
 			for(int i = 0; i < timeData.length; i++)
 			{
 				int[] day = timeData[i];
 
 				int weekDay = day[0];
-				int startHours = day[1];
-				int endHours = day[3];
-				if (currentDayOfWeek == weekDay
-					&& currentHourOfDay > startHours
-					&& currentHourOfDay < endHours)
+				if (currentDayOfWeek == weekDay)
 						return true;
 			}
 
