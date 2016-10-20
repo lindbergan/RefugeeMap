@@ -203,15 +203,15 @@ public class GMapFragment extends Fragment
 				mDirectionHelper.showDirection(origin, destination, transportation);
 		}
 
-		public void showCorrectInfoWindow(LatLng destination){
+		public void showCorrectInfoWindow(LatLng destination)
+		{
+			if (mCurrentMarker == null) return;
+			if (mCurrentMarker.getPosition().equals(destination)) return;
 
-				if(!mCurrentMarker.getPosition().equals(destination)){
-						mCurrentMarker.hideInfoWindow();
+			mCurrentMarker.hideInfoWindow();
 
-						if (doesMarkerExist(destination)) {
-								findMarkerByLatLng(destination).showInfoWindow();
-						}
-				}
+			if (doesMarkerExist(destination))
+				findMarkerByLatLng(destination).showInfoWindow();
 		}
 
 		public boolean doesMarkerExist(LatLng latLng){
