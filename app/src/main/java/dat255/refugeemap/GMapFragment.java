@@ -134,27 +134,36 @@ public class GMapFragment extends Fragment
 
 		/* a method that creates markers from events and places them on the map*/
 		public void placeMarkers(List<Event> eventsList) {
+			if (isAdded()) {
 				if (eventsList != null) {
-						for (Event e : eventsList) {
-								newMarker(e);
-						}
+					for (Event e : eventsList) {
+						newMarker(e);
+					}
 				}
+			}
 		}
 
     public void newMarker(Event event) {
         LatLng markerPosition = new LatLng(
             event.getLatitude(), event.getLongitude());
         MarkerOptions properties = new MarkerOptions();
+		String title;
+		if (App.getInstance().needTranslation(event)) {
+			title = App.getInstance().translateEvent(event).get("title");
+		}
+		else {
+			title = event.getTitle(App.getInstance().getLocale());
+		}
 
         BitmapDescriptor marker = createMarker(event.getCategories());
 				if (!currentShownEvents.contains(event)) {
 						properties.position(markerPosition)
-								.title(event.getTitle("sv"))
+								.title(title)
 								.icon(marker).alpha(0.35f);
 				}
 				else {
 						properties.position(markerPosition)
-								.title(event.getTitle("sv"))
+								.title(title)
 								.icon(marker);
 				}
         // TODO: 2016-09-26 .getIcon needs to be implemented /Adrian

@@ -1,7 +1,5 @@
 package dat255.refugeemap;
 
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -87,22 +85,24 @@ public class EventRecyclerViewAdapter
 	public void onBindViewHolder(final ViewHolder holder, int position) {
 
 		Event event = mEvents.get(position);
+		HashMap<String, String> result;
+		if (App.getInstance().needTranslation(event)) {
+			result = App.getInstance().translateEvent(event);
+			holder.mIdView.setText(result.get("title"));
+		}
+		else {
+			holder.mIdView.setText(event.getTitle(App.getInstance().getLocale()));
+		}
 
 		holder.mItem = event;
-		holder.mIdView.setText(event.getTitle("sv"));
 		if (currentLocation != null) {
 			double distanceToEvent = DistanceCalculator.getGreatCircleDistance(
 				currentLocation.latitude, currentLocation.longitude,
 				event.getLatitude(), event.getLongitude());
-
-			Locale currentLocale = App.getInstance().getApplicationContext()
-				.getResources().getConfiguration().locale;
-
 			holder.mDistanceView
-				.setText(String.format(currentLocale, "%.2f km", distanceToEvent));
+				.setText(String.format(new Locale(App.getInstance().getLocale()), "%.2f km", distanceToEvent));
 		}
 
-		//holder.mContentView.setText(mEvents.get(position).getDescription());
 		holder.mView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {

@@ -15,4 +15,10 @@
         <item>@drawable/ic_language_blue_48dp</item>
         <item>@drawable/ic_satellite_green_48dp</item>
     </integer-array>
+
+    <string-array name="language_options">
+        <item>@string/language_english</item>
+        <item>@string/language_arabic</item>
+        <item>@string/language_swedish</item>
+    </string-array>
 </resources>

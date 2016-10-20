@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">Momtee</string>
     <string name="button_gmap_directions">Directions</string>
 
     <string name="nav_menu_profile">Profile</string>
-    <string name="nav_menu_favorites">Favoirites</string>
-    <string name="nav_menu_lang_size_search">Search radius</string>
+    <string name="nav_menu_favorites">Favorites</string>
     <string name="nav_menu_lang_options">Language options</string>
+    <string name="nav_menu_lang_size_search">Search radius</string>
 
-    <string name="toasts_directions_error">You must have an internet connection to use the directions helper.</string>
     <string name="toast_directions">The app must be allowed to use your location</string>
 
     <string name="textview_detail_where">Where</string>
@@ -24,15 +22,5 @@
     <string name="toast_detail_event_removed">Event removed</string>
     <string name="toast_detail_action_failed">Action failed</string>
     <string name="toast_viewhelper_no_events_saved">No saved events</string>
-
-    <string name="save_event_button_clicked_key" translatable="false">SAVE_BUTTON_CLICKED</string>
-    <string name="saved_events_key" translatable="false">SAVED_EVENTS</string>
-
-    <string name="swedish_locale_id" translatable="false">sv</string>
-    <string name="arabic_locale_id" translatable="false">ar</string>
-    <string name="english_locale_id" translatable="false">en</string>
-
-    <string name="language_english" translatable="false">English</string>
-    <string name="language_arabic" translatable="false">العَرَبِيَّة</string>
-    <string name="language_swedish" translatable="false">Svenska</string>
+    <string name="toasts_directions_error">You must have an internet connection to use the directions helper.</string>
 </resources>

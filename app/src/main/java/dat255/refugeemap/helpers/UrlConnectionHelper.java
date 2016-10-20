@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -20,44 +19,48 @@ import dat255.refugeemap.model.db.Event;
 
 public class UrlConnectionHelper {
 
-	public HashMap<String, String> translateEvent(Event event) throws ExecutionException, InterruptedException {
+	public static HashMap<String, String> translateEvent(Event event) throws ExecutionException, InterruptedException {
 		Event[] array = new Event[1];
 		array[0] = event;
-		AsyncTask<Event, Boolean, HashMap<String, String>> execute = new RetrieveFeedTask().execute(array);
-		return execute.get();
+		return new RetrieveFeedTask().execute(array).get();
 	}
 
 }
 
 class RetrieveFeedTask extends AsyncTask<Event, Boolean, HashMap<String, String>> {
 
+	public List<String> translate(String text) throws IOException {
+		String urlAsString = getUrl(text);
+		URL url = new URL(urlAsString);
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setRequestProperty("Authorization", "Basic " + encodeAuthorizationKey());
+
+		String inputLine;
+		List<String> list = new LinkedList<>();
+
+		while ((inputLine = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine()) != null) {
+			list.add(inputLine);
+		}
+		connection.disconnect();
+		return list;
+	}
+
 	@Override
 	protected HashMap<String, String> doInBackground(Event... events) {
-
-		HashMap<String, String> result = new HashMap<>();
+		HashMap<String, String> temp = new HashMap<>();
+		StringBuilder builder = new StringBuilder("");
+		Event event = events[0];
 		try {
+			for (String str : translate(event.getDescription("en"))) builder.append(str);
+			temp.put("description", extractFromXml(builder.toString()));
 
-			String urlAsString = getUrl(events[0].getDescription("sv"));
-			URL url = new URL(urlAsString);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestProperty("Authorization", "Basic " + encodeAuthorizationKey());
-
-			String inputLine;
-			List<String> list = new LinkedList<>();
-
-			while ((inputLine = new BufferedReader(new InputStreamReader(connection.getInputStream())).readLine()) != null) {
-				list.add(inputLine);
-			}
-			connection.disconnect();
-
-			StringBuilder builder = new StringBuilder("");
-			for (String str : list) builder.append(str);
-			result.put("description", extractFromXml(builder.toString()));
-
-		} catch (IOException e) {
+			for (String str : translate(event.getTitle("en"))) builder.append(str);
+			temp.put("title", extractFromXml(builder.toString()));
+		}
+		catch (IOException e) {
 			e.printStackTrace();
 		}
-		return result;
+		return temp;
 	}
 
 	private String encodeAuthorizationKey() throws UnsupportedEncodingException {
@@ -77,24 +80,18 @@ class RetrieveFeedTask extends AsyncTask<Event, Boolean, HashMap<String, String>
 		return "Translation failed";
 	}
 
-	private String getUrl(String description) {
-		String fromLocale = "sv";
-		String toLocale = App
-				.getInstance()
-				.getBaseContext()
-				.getResources()
-				.getConfiguration()
-				.locale
-				.toString();
+	private String getUrl(String text) {
+		String fromLocale = "en";
 
 		String urlString = "https://api.datamarket.azure.com"
 						+ "/Bing/MicrosoftTranslator/v1/Translate?Text=%27"
-						+ description.replace(" ", "%20")
+						+ text.replace(" ", "%20")
 						+ " %27&To=%27"
-						+ toLocale
+						+ App.getInstance().getLocale()
 						+ "%27&From=%27"
 						+ fromLocale
 						+ "%27";
 		return urlString;
 	}
 }
+

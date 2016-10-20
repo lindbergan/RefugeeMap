@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.HashMap;
+
 import dat255.refugeemap.model.db.Event;
 
 /**
@@ -39,13 +41,6 @@ public class DetailFragment extends Fragment {
 	private OnFragmentInteractionListener mListener;
     private ImageButton mDirectionButton;
 	private ImageView categoryIcon;
-	private String toLocale = App
-			.getInstance()
-			.getBaseContext()
-			.getResources()
-			.getConfiguration()
-			.locale
-			.toString();
 	private Event mActiveEvent;
 	private View mRootView;
 
@@ -73,27 +68,20 @@ public class DetailFragment extends Fragment {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null) {
-			mActiveEvent = AppDatabase.getDatabaseInstance()
-				.getEvent(Integer.parseInt(EVENT_ID));
-
+			mActiveEvent = AppDatabase.getDatabaseInstance().getEvent(Integer.parseInt(EVENT_ID));
 			id = mActiveEvent.getID();
-			title = mActiveEvent.getTitle("sv");
 			address = mActiveEvent.getAddress();
 			time = mActiveEvent.getDateInformation();
 			contact = mActiveEvent.getContactInformation();
-			/*if (needTranslation()) {
-				UrlConnectionHelper translateHelper = new UrlConnectionHelper();
-				try {
-					HashMap<String, String> translated = translateHelper.translateEvent(mActiveEvent);
-					description = translated.get("description");
-				} catch (ExecutionException | InterruptedException e) {
-					e.printStackTrace();
-				}
+			if (App.getInstance().needTranslation(mActiveEvent)) {
+				HashMap<String, String> result = App.getInstance().translateEvent(mActiveEvent);
+				title = result.get("title");
+				description = result.get("description");
 			}
 			else {
-				description = mActiveEvent.getDescription("sv");
-			}*/
-			description = mActiveEvent.getDescription("sv");
+				title = mActiveEvent.getTitle(App.getInstance().getLocale());
+				description = mActiveEvent.getDescription(App.getInstance().getLocale());
+			}
 			longitude = mActiveEvent.getLongitude();
 			latitude = mActiveEvent.getLatitude();
 		}
@@ -127,10 +115,6 @@ public class DetailFragment extends Fragment {
 		repaint();
 		setCategoryIcon();
 		return mRootView;
-	}
-
-	public boolean needTranslation() {
-		return !mActiveEvent.getAvailableLanguages().contains(toLocale);
 	}
 
 	public void repaint() {

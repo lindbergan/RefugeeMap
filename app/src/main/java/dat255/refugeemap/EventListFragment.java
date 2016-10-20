@@ -55,7 +55,6 @@ public class EventListFragment extends Fragment implements AppDatabase
 
 		ListFilterButtonsFragment.addFilteredEventsListener(this);
 
-		//Log.v(TAG, "Lat: " + latLng.latitude + " Lng: " + latLng.longitude);
 	}
 
 	@Override

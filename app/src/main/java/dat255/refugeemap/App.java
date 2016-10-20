@@ -1,12 +1,15 @@
 package dat255.refugeemap;
 import android.app.Application;
-import android.location.Location;
-import android.util.Log;
 
-import com.google.android.gms.maps.LocationSource;
+import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 import dat255.refugeemap.helpers.GoogleAPIHelper;
 import dat255.refugeemap.helpers.SavedEventsHelper;
+import dat255.refugeemap.helpers.UrlConnectionHelper;
+import dat255.refugeemap.model.db.Event;
+import lombok.Getter;
+import lombok.Setter;
 
 public class App extends Application {
 	private GoogleAPIHelper mGoogleAPIHelper;
@@ -25,6 +28,11 @@ public class App extends Application {
 		mGoogleAPIHelper = new GoogleAPIHelper(getApplicationContext());
 	}
 
+	@Getter
+	@Setter
+	private String locale = "en";
+
+
 	public static synchronized App getInstance() {
 		return mInstance;
 	}
@@ -34,5 +42,18 @@ public class App extends Application {
 	}
 	public static GoogleAPIHelper getGoogleApiHelper() {
 		return getInstance().getGoogleApiHelperInstance();
+	}
+
+	public boolean needTranslation(Event e) {
+		return !e.getAvailableLanguages().contains(App.getInstance().getLocale());
+	}
+
+	public HashMap<String, String> translateEvent(Event e) {
+		try {
+			return UrlConnectionHelper.translateEvent(e);
+		} catch (ExecutionException | InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		return null;
 	}
 }

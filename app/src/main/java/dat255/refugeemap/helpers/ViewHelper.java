@@ -3,7 +3,6 @@ package dat255.refugeemap.helpers;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -18,8 +17,11 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
+import dat255.refugeemap.App;
 import dat255.refugeemap.DetailFragment;
 import dat255.refugeemap.EventListFragment;
 import dat255.refugeemap.FavoritesListFragment;
@@ -47,12 +49,10 @@ public class ViewHelper {
 	private ImageButton mToggleImageButton;
 	private DrawerLayout mDrawer;
 	private ListView mDrawerListView;
-	private String[] mDrawerListItems;
 	private Event mCurrentEvent;
-
-
 	private Drawable mMapIcon;
 	private Drawable mListIcon;
+	private List<String> mNavItems = new ArrayList<>();
 
 	public ViewHelper(MainActivity activity) {
 		mActivity = activity;
@@ -70,6 +70,7 @@ public class ViewHelper {
 			mActivity.getSavedEventsHelper().addSavedEventListener(savedListFrag);
 			Fragment listFilterBtnsFrag = new ListFilterButtonsFragment();
 			initializeViews(mActivity.findViewById(R.id.main_layout));
+
 			fm.beginTransaction()
 					.add(R.id.fragment_container, mapFrag, "map")
 					.add(R.id.fragment_container, listFrag, "list")
@@ -93,142 +94,144 @@ public class ViewHelper {
 		//**** Map and mListIcon toggle button ****
 		else if (args.equals("map_list_toggle")) {
 			if (mFragmentHistory[0] == (GMapFragment.class)) {
-				Fragment frag = currentFragments[LIST_FRAGMENT];
-				Fragment listFilterButtonsFrag =
-					currentFragments[LIST_FILTER_BUTTONS];
 				fm.beginTransaction()
-						.show(frag)
-						.show(listFilterButtonsFrag)
+						.show(currentFragments[LIST_FRAGMENT])
+						.show(currentFragments[LIST_FILTER_BUTTONS])
 						.hide(currentFragments[MAP_FRAGMENT])
 						.commit();
 				mFragmentHistory[1] = mFragmentHistory[0];
 				mFragmentHistory[0] = EventListFragment.class;
 				toggleImage(mMapIcon);
 			} else if (mFragmentHistory[0] == EventListFragment.class) {
-				Fragment frag = currentFragments[MAP_FRAGMENT];
 				fm.beginTransaction()
-						.show(frag)
+						.show(currentFragments[MAP_FRAGMENT])
 						.hide(currentFragments[LIST_FRAGMENT])
 						.hide(currentFragments[LIST_FILTER_BUTTONS])
 						.commit();
-				mFragmentHistory[1] = mFragmentHistory[0];
 				mFragmentHistory[0] = GMapFragment.class;
+				mFragmentHistory[1] = EventListFragment.class;
 				toggleImage(mListIcon);
 			}
 		}
 		//**** end mMapIcon and mListIcon toggle button *****
 
 		//For "Favourites" button pressed
-        /** @author Jonathan S, Adrian */
+        /** @author Jonathan S */
 		else if (args.equals("favourites_button_pressed")) {
 			if (currentFragments[DETAIL_FRAGMENT] != null) {
 				fm.beginTransaction()
 						.remove(currentFragments[DETAIL_FRAGMENT])
 						.commit();
 			}
-			if (mFragmentHistory[0] == EventListFragment.class) {
-				fm.beginTransaction()
-						.hide(currentFragments[LIST_FRAGMENT])
-						.hide(currentFragments[LIST_FILTER_BUTTONS])
-						.commit();
-			}
-			if (mFragmentHistory[0] == GMapFragment.class) {
-				fm.beginTransaction()
-						.hide(currentFragments[MAP_FRAGMENT])
-						.commit();
-			}
 			fm.beginTransaction()
 					.hide(currentFragments[LIST_FILTER_BUTTONS])
+					.hide(currentFragments[LIST_FRAGMENT])
+					.hide(currentFragments[MAP_FRAGMENT])
 					.show(currentFragments[SAVED_LIST_FRAGMENT])
-					.show(currentFragments[LIST_FILTER_BUTTONS])
 					.commit();
-			closeDrawer();
 			mFragmentHistory[1] = mFragmentHistory[0];
-			mFragmentHistory[0] = EventListFragment.class;
+			mFragmentHistory[0] = FavoritesListFragment.class;
 			setToggleButtonVisible(false);
+			closeDrawer();
 		}
 
 
 		//For back button pressed
 		else if (args.equals("back_button_pressed")) {
 
-			/** @author: Sebastian
-			 * if we're on the mMapIcon view, minimize the app (default back btn
-			behaviour)
-			 **/
-
 			if (this.drawerOpen) {
 				this.closeDrawer();
+				return;
 			}
-			else {
-				if (mFragmentHistory[1] == null) {
 
+			if (mFragmentHistory[0] == GMapFragment.class) {
+				if (mFragmentHistory[1] == null) {
 					Intent intent = new Intent(Intent.ACTION_MAIN);
 					intent.addCategory(Intent.CATEGORY_HOME);
 					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 					mActivity.startActivity(intent);
-
+					return;
 				}
+			}
 
-				else{
+			else if (mFragmentHistory[0] == EventListFragment.class) {
+				if (mFragmentHistory[1] == GMapFragment.class) {
 					fm.beginTransaction()
+							.hide(currentFragments[LIST_FRAGMENT])
 							.hide(currentFragments[LIST_FILTER_BUTTONS])
-							.hide(currentFragments[SAVED_LIST_FRAGMENT])
+							.show(currentFragments[MAP_FRAGMENT])
 							.commit();
+					mFragmentHistory[0] = mFragmentHistory[1];
+					mFragmentHistory[1] = null;
+					toggleImage(mListIcon);
+					setToggleButtonVisible(true);
+				}
+			}
 
-					if (currentFragments[DETAIL_FRAGMENT] != null) {
+			else if (mFragmentHistory[0] == FavoritesListFragment.class) {
+				if (mFragmentHistory[1] == GMapFragment.class) {
+					fm.beginTransaction()
+							.hide(currentFragments[SAVED_LIST_FRAGMENT])
+							.show(currentFragments[MAP_FRAGMENT])
+							.commit();
+					mFragmentHistory[0] = mFragmentHistory[1];
+					mFragmentHistory[1] = null;
+					toggleImage(mListIcon);
+					setToggleButtonVisible(true);
+				}
+				else if (mFragmentHistory[1] == EventListFragment.class) {
+					fm.beginTransaction()
+							.hide(currentFragments[SAVED_LIST_FRAGMENT])
+							.show(currentFragments[LIST_FILTER_BUTTONS])
+							.show(currentFragments[LIST_FRAGMENT])
+							.commit();
+					mFragmentHistory[0] = mFragmentHistory[1];
+					mFragmentHistory[1] = GMapFragment.class;
+					toggleImage(mMapIcon);
+					setToggleButtonVisible(true);
+				}
+				else {
+					fm.beginTransaction()
+							.hide(currentFragments[SAVED_LIST_FRAGMENT])
+							.show(currentFragments[MAP_FRAGMENT])
+							.commit();
+					mFragmentHistory[0] = GMapFragment.class;
+					mFragmentHistory[1] = null;
+					toggleImage(mListIcon);
+					setToggleButtonVisible(true);
+				}
+			}
 
-						if (mFragmentHistory[1] == EventListFragment.class) {
-							fm.beginTransaction()
-									.remove(currentFragments[DETAIL_FRAGMENT])
-									.show(currentFragments[LIST_FRAGMENT])
-									.show(currentFragments[LIST_FILTER_BUTTONS])
-									.hide(currentFragments[MAP_FRAGMENT])
-									.commit();
-
-							mFragmentHistory[1] = mFragmentHistory[0];
-							mFragmentHistory[0] = EventListFragment.class;
-							setToggleButtonVisible(true);
-						}
-						else if (mFragmentHistory[0] == EventListFragment.class && mFragmentHistory[1] == DetailFragment.class) {
-							fm.beginTransaction()
-									.remove(currentFragments[DETAIL_FRAGMENT])
-									.hide(currentFragments[LIST_FRAGMENT])
-									.hide(currentFragments[LIST_FILTER_BUTTONS])
-									.show(currentFragments[MAP_FRAGMENT])
-									.commit();
-							mFragmentHistory[1] = null;
-							mFragmentHistory[0] = GMapFragment.class;
-							toggleImage(mListIcon);
-							setToggleButtonVisible(true);
-						}
-						else {
-							fm.beginTransaction()
-									.remove(currentFragments[DETAIL_FRAGMENT])
-									.hide(currentFragments[LIST_FRAGMENT])
-									.hide(currentFragments[LIST_FILTER_BUTTONS])
-									.show(currentFragments[MAP_FRAGMENT])
-									.commit();
-							mFragmentHistory[1] = null;
-							mFragmentHistory[0] = GMapFragment.class;
-							toggleImage(mListIcon);
-							setToggleButtonVisible(true);
-						}
-					}
-					else if (mFragmentHistory[0] == EventListFragment.class) {
-						Fragment frag = currentFragments[MAP_FRAGMENT];
-						fm.beginTransaction()
-								.show(frag)
-								.hide(currentFragments[LIST_FRAGMENT])
-								.hide(currentFragments[LIST_FILTER_BUTTONS])
-								.hide(currentFragments[SAVED_LIST_FRAGMENT])
-								.commit();
-						mFragmentHistory[1] = null;
-						mFragmentHistory[0] = GMapFragment.class;
-						toggleImage(mListIcon);
-						setToggleButtonVisible(true);
-					}
-
+			else if (mFragmentHistory[0] == DetailFragment.class) {
+				if (mFragmentHistory[1] == GMapFragment.class) {
+					fm.beginTransaction()
+							.remove(currentFragments[DETAIL_FRAGMENT])
+							.show(currentFragments[MAP_FRAGMENT])
+							.commit();
+					mFragmentHistory[0] = GMapFragment.class;
+					mFragmentHistory[1] = null;
+					toggleImage(mListIcon);
+					setToggleButtonVisible(true);
+				}
+				else if (mFragmentHistory[1] == EventListFragment.class) {
+					fm.beginTransaction()
+							.remove(currentFragments[DETAIL_FRAGMENT])
+							.show(currentFragments[LIST_FILTER_BUTTONS])
+							.show(currentFragments[LIST_FRAGMENT])
+							.commit();
+					mFragmentHistory[0] = mFragmentHistory[1];
+					mFragmentHistory[1] = GMapFragment.class;
+					toggleImage(mMapIcon);
+					setToggleButtonVisible(true);
+				}
+				else if (mFragmentHistory[1] == FavoritesListFragment.class) {
+					fm.beginTransaction()
+							.remove(currentFragments[DETAIL_FRAGMENT])
+							.show(currentFragments[SAVED_LIST_FRAGMENT])
+							.commit();
+					mFragmentHistory[0] = mFragmentHistory[1];
+					mFragmentHistory[1] = GMapFragment.class;
+					setToggleButtonVisible(false);
 				}
 			}
 		}
@@ -251,10 +254,12 @@ public class ViewHelper {
 		//For: click on mListIcon item
 		else if (args.equals("list_item_clicked")) {
 			Fragment frag = DetailFragment.newInstance(mCurrentEvent);
-			fm.beginTransaction().add(R.id.fragment_container, frag)
+			fm.beginTransaction()
+					.add(R.id.fragment_container, frag)
 					.hide(currentFragments[LIST_FRAGMENT])
 					.hide(currentFragments[LIST_FILTER_BUTTONS])
-					.hide(currentFragments[SAVED_LIST_FRAGMENT]).commit();
+					.hide(currentFragments[SAVED_LIST_FRAGMENT])
+					.commit();
 			setToggleButtonVisible(false);
 			/** @author: Sebastian **/
 			/** end edit by Sebastian **/
@@ -267,8 +272,10 @@ public class ViewHelper {
 		//For: click on marker
 		else if (args.equals("marker_clicked")) {
 			Fragment frag = DetailFragment.newInstance(mCurrentEvent);
-			fm.beginTransaction().add(R.id.fragment_container, frag)
-					.hide(currentFragments[MAP_FRAGMENT]).commit();
+			fm.beginTransaction()
+					.add(R.id.fragment_container, frag)
+					.hide(currentFragments[MAP_FRAGMENT])
+					.commit();
 			setToggleButtonVisible(false);
 			/** @author: Sebastian **/
 			/** end edit by Sebastian **/
@@ -309,19 +316,27 @@ public class ViewHelper {
 	}
 
 
-	public void setUpNavigationDrawer(Resources resources) {
-		mDrawerListItems = resources.getStringArray(R.array.drawer_list_items);
+	public void setUpNavigationDrawer() {
 		mDrawer = (DrawerLayout) mActivity.findViewById(R.id.drawer_layout);
-		mDrawerListView = (ListView) mActivity.findViewById(
-				R.id.drawer_listView);
+		mDrawerListView = (ListView) mActivity.findViewById(R.id.drawer_listView);
+		setNavigationListItems();
+	}
 
-		List<String> navItems = new ArrayList<>();
-		for(int i = 0; i < mDrawerListItems.length; i++)
-			navItems.add(mDrawerListItems[i]);
+	public void setNavigationListItems() {
+		List<String> temp = new ArrayList<>();
+		String[] navOptions = mActivity.getBaseContext().getResources().getStringArray(R.array.drawer_list_items);
+		Collections.addAll(temp, navOptions);
+		mNavItems = temp;
+		mDrawerListView.setAdapter(new DrawerListAdapter(mActivity.getBaseContext(), mNavItems));
+		mDrawerListView.setOnItemClickListener(new DrawerItemClickListener());
+	}
 
-        mDrawerListView.setAdapter(new DrawerListAdapter(mActivity.getApplicationContext(),
-                navItems));
-
+	public void setLanguageListItems() {
+		List<String> temp = new ArrayList<>();
+		String[] languages = mActivity.getBaseContext().getResources().getStringArray(R.array.language_options);
+		Collections.addAll(temp, languages);
+		mNavItems = temp;
+		mDrawerListView.setAdapter(new DrawerListAdapter(mActivity.getBaseContext(), mNavItems));
 		mDrawerListView.setOnItemClickListener(new DrawerItemClickListener());
 	}
 
@@ -351,7 +366,15 @@ public class ViewHelper {
 			TextView infoContactInfo = (TextView) customView.findViewById(
 					R.id.info_contactInformation);
 
-			infoTitle.setText(activeEvent.getTitle("sv"));
+
+			if (App.getInstance().needTranslation(activeEvent)) {
+				HashMap<String, String> result = App.getInstance().translateEvent(activeEvent);
+				infoTitle.setText(result.get("title"));
+			}
+			else {
+				infoTitle.setText(activeEvent.getTitle(App.getInstance().getLocale()));
+			}
+
 			infoTime.setText(activeEvent.getDateInformation());
 			infoContactInfo.setText(activeEvent.getContactInformation());
 		}
@@ -362,30 +385,50 @@ public class ViewHelper {
     /** @author Jonathan S */
 	private class DrawerItemClickListener
 			implements ListView.OnItemClickListener {
+
 		@Override
-		public void onItemClick(AdapterView<?> parent, View view, int position,
-								long id) {
-
-            if (mActivity instanceof MainActivity) {
-
-                if (mDrawerListItems[position]
-                        .equals((mActivity.getString(R.string.nav_menu_favorites)))) {
-
-
-					List<Event> savedEvents = ((MainActivity) mActivity)
-						.getSavedEvents();
-
-					mActivity.getSavedEventsHelper().updateSavedEventListeners(savedEvents);
-
-                    if ( savedEvents!= null && savedEvents.size() > 0) {
-                        stateSwitch("favourites_button_pressed");
-                } else {
-                        Toast.makeText(mActivity.getApplicationContext(), R.string.toast_viewhelper_no_events_saved,
-                            Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        }
+		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+			if (mActivity != null) {
+				if (mNavItems.get(position).equals((mActivity.getString(R.string.nav_menu_favorites)))) {
+					if (((MainActivity) mActivity).getSavedEvents() != null && ((MainActivity) mActivity).getSavedEvents().size() > 0) {
+						stateSwitch("favourites_button_pressed");
+					}
+					else {
+						Toast.makeText(mActivity.getApplicationContext(), R.string.toast_viewhelper_no_events_saved, Toast.LENGTH_SHORT).show();
+					}
+					return;
+				}
+			}
+			if (mNavItems.get(position).equals((mActivity.getString(R.string.nav_menu_lang_options)))) {
+				setLanguageListItems();
+				return;
+			}
+			if (mNavItems.get(position)
+					.equals(mActivity.getString(R.string.language_english)) || mNavItems.get(position)
+					.equals(mActivity.getString(R.string.language_arabic)) || mNavItems.get(position)
+					.equals(mActivity.getString(R.string.language_swedish))) {
+				switch (mNavItems.get(position)) {
+					case "Svenska": {
+						mActivity.setLocaleToSwedish();
+						break;
+					}
+					case "English": {
+						mActivity.setLocaleToEnglish();
+						break;
+					}
+					case "العَرَبِيَّة": {
+						mActivity.setLocaleToArabic();
+						break;
+					}
+					default: {
+						mActivity.setLocaleToEnglish();
+						break;
+					}
+				}
+				setNavigationListItems();
+				closeDrawer();
+			}
+		}
 	}
 
 	public void setCurrentEvent(Event event) {

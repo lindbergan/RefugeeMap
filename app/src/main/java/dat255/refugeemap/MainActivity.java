@@ -3,6 +3,7 @@ package dat255.refugeemap;
 import android.Manifest;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Rect;
@@ -42,8 +43,6 @@ import dat255.refugeemap.model.db.Filter;
 import dat255.refugeemap.model.db.impl.FilterImpl;
 import dat255.refugeemap.model.db.sort.EventsSorter;
 
-import lombok.Getter;
-
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
@@ -63,13 +62,11 @@ public class MainActivity extends AppCompatActivity
     private ImageButton searchBtn;
     private Database mDatabase;
 	private Toolbar toolbar;
-	private List<CategoryChangeListener> mActiveCategoryChangeListeners = new
-		ArrayList<>();
+	private List<CategoryChangeListener> mActiveCategoryChangeListeners = new ArrayList<>();
 	private Integer activeCategory = null;
 	private final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 20;
 	Collection<String> activeSearchTerms = null;
 	private GoogleAPIHelper mGoogleAPIHelper;
-	@Getter private String currentLocale;
 
 
 	@Override protected void onCreate(Bundle savedInstanceState)
@@ -103,7 +100,7 @@ public class MainActivity extends AppCompatActivity
 			ex.printStackTrace();
 		}
         mViewHelper.stateSwitch("app_start");
-		mViewHelper.setUpNavigationDrawer(getResources());
+		mViewHelper.setUpNavigationDrawer();
 
 
 		/**
@@ -112,9 +109,9 @@ public class MainActivity extends AppCompatActivity
 		 */
 		Fragment[] currentFragments = mViewHelper.getCurrentFragments();
 		CategoryChangeListener listFilterButtons =
-			(CategoryChangeListener)currentFragments[mViewHelper
-				.LIST_FILTER_BUTTONS];
+			(CategoryChangeListener)currentFragments[mViewHelper.LIST_FILTER_BUTTONS];
 		mActiveCategoryChangeListeners.add(listFilterButtons);
+		App.getInstance().setLocale(getBaseContext().getResources().getConfiguration().locale.getLanguage());
 	}
 
     public void setUpViews(){
@@ -324,22 +321,25 @@ public class MainActivity extends AppCompatActivity
 	 */
 	public void setLocaleToArabic() {
 		Configuration newConfig = new Configuration();
-		newConfig.setLocale(new Locale("ar"));
+		newConfig.setLocale(new Locale(getString(R.string.arabic_locale_id)));
 		getBaseContext().getResources().updateConfiguration(newConfig,
 				getBaseContext().getResources().getDisplayMetrics());
-		currentLocale = getString(R.string.arabic_locale_id);
+		refresh();
 	}
 
 	public void setLocaleToSwedish() {
 		Configuration newConfig = new Configuration();
-		newConfig.setLocale(new Locale("sv"));
+		newConfig.setLocale(new Locale(getString(R.string.swedish_locale_id)));
 		getBaseContext().getResources().updateConfiguration(newConfig,
 				getBaseContext().getResources().getDisplayMetrics());
-        currentLocale = getString(R.string.swedish_locale_id);
+		refresh();
 	}
-
-	public int getActiveCategory() {
-		return activeCategory;
+	public void setLocaleToEnglish() {
+		Configuration newConfig = new Configuration();
+		newConfig.setLocale(new Locale(getString(R.string.english_locale_id)));
+		getBaseContext().getResources().updateConfiguration(newConfig,
+				getBaseContext().getResources().getDisplayMetrics());
+		refresh();
 	}
 
 	public void broadcastActiveCategory() {
@@ -347,6 +347,13 @@ public class MainActivity extends AppCompatActivity
 			mActiveCategoryChangeListeners.get(i)
 				.onCategoryChange(activeCategory);
 		}
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		App.getInstance().setLocale(newConfig.locale.getLanguage());
+
 	}
 
 	@Override
@@ -364,6 +371,15 @@ public class MainActivity extends AppCompatActivity
 
 	public SavedEventsHelper getSavedEventsHelper() {
 		return mSavedEventsHelper;
+	}
+
+	public void refresh() {
+		Intent intent = getIntent();
+		overridePendingTransition(0, 0);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+		finish();
+		overridePendingTransition(0, 0);
+		startActivity(intent);
 	}
 }
 

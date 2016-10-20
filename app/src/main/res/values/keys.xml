@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="save_event_button_clicked_key">SAVE_BUTTON_CLICKED</string>
-    <string name="saved_events_key">SAVED_EVENTS</string>
-    <string name="swedish_locale_id">sv</string>
-    <string name="arabic_locale_id">ar</string>
-</resources>
