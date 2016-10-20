@@ -169,9 +169,9 @@ public class MainActivity extends AppCompatActivity
     }
 
 	public void onCategoryClick(View view) {
-		int ctgPressed = Integer.parseInt(view.getTag().toString());
+		Integer ctgPressed = Integer.parseInt(view.getTag().toString());
 
-		if (ctgPressed == activeCategory) {
+		if (ctgPressed.equals(activeCategory)) {
 			activeCategory = null;
 			toggleCategoryButton(ctgPressed, true);
 		} else {
@@ -343,6 +343,7 @@ public class MainActivity extends AppCompatActivity
 	}
 
 	public void broadcastActiveCategory() {
+		if (activeCategory == null) return;
 		for (int i = 0; i < mActiveCategoryChangeListeners.size(); i++) {
 			mActiveCategoryChangeListeners.get(i)
 				.onCategoryChange(activeCategory);
