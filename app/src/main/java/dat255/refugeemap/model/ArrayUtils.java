@@ -34,17 +34,4 @@ public class ArrayUtils
 				return true;
 		return false;
 	}
-
-	/**
-	 * Returns `true` iff `srcArr` contains every element in `tgtCol`.
-	 *
-	 * Precondition: All arguments are non-null.
-	 */
-	public static <T> boolean containsAny(T[] srcArr, Collection<T> tgtCol)
-	{
-		for (T elem : tgtCol)
-			if (contains(srcArr, elem))
-				return true;
-		return false;
-	}
 }

@@ -13,8 +13,8 @@ import dat255.refugeemap.model.db.JSONTools;
  */
 public class JSONToolsImpl implements JSONTools
 {
-	@Override public Object deserializeFile(Reader fileReader, Type objectType)
-	{ return new Gson().fromJson(fileReader, objectType); }
+	@Override public Object deserializeReader(Reader reader, Type objectType)
+	{ return new Gson().fromJson(reader, objectType); }
 
 	@Override public Object deserializeString(String json, Type objectType)
 	{ return new Gson().fromJson(json, objectType); }

@@ -16,9 +16,9 @@ public interface JSONTools
 	 *
 	 * Preconditions:
 	 * - All arguments are non-null
-	 * - `fileReader` 'contains' a valid JSON file
+	 * - `reader` links to a stream of valid JSON code
 	 */
-	public Object deserializeFile(Reader fileReader, Type objectType);
+	public Object deserializeReader(Reader reader, Type objectType);
 
 	/**
 	 * Deserializes the given JSON string according to the

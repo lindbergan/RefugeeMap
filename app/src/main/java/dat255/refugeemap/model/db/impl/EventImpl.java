@@ -49,4 +49,26 @@ public class EventImpl implements Event
 
 	@Override public boolean equals(Event e)
 	{ return (this == e); }
+
+	public static EventImpl create(Integer id, Integer ownerID,
+		Integer[] categories, String[] tags, Double latitude,
+		Double longitude, String dateInformation, String address,
+		String contactInformation, HashMap<String, String> descriptions,
+		HashMap<String, String> titles, int[][] timeData)
+	{
+		EventImpl e = new EventImpl();
+		e.id = id;
+		e.ownerID = ownerID;
+		e.categories = categories;
+		e.tags = tags;
+		e.latitude = latitude;
+		e.longitude = longitude;
+		e.dateInformation = dateInformation;
+		e.titles = titles;
+		e.address = address;
+		e.contactInformation = contactInformation;
+		e.descriptions = descriptions;
+		e.timeData = timeData;
+		return e;
+	}
 }

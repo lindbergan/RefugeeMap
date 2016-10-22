@@ -30,7 +30,7 @@ public class DatabaseImpl implements Database
 	public DatabaseImpl(Reader eventsReader, JSONTools json)
 		throws FileNotFoundException
 	{
-		events = Arrays.asList((Event[])json.deserializeFile(eventsReader,
+		events = Arrays.asList((Event[])json.deserializeReader(eventsReader,
 			EventImpl[].class));
 	}
 
