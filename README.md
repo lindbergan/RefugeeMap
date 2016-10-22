@@ -1,5 +1,5 @@
 # RefugeeMap
-*RefugeeMap* (tentative name) is an Android application developed as part of the course [**DAT255**](https://github.com/hburden/DAT255 "Course page") at *Chalmers University of Technology*.
+*Momtee* (working name *RefugeeMap*) is an Android application developed as part of the course [**DAT255**](https://github.com/hburden/DAT255 "Course page") at *Chalmers University of Technology*.
 The purpose of the application is to provide help for refugees in Sweden by presenting them with a map or list of events (of a variety of categories such as sports, educational help and various group events).
 The database of events is downloaded by the application and stored locally to allow for offline use.
 Each event contains a description as well as various other types of information such as an address and contact information.
@@ -25,11 +25,11 @@ Any documents unrelated to the code should be uploaded to the `documents` branch
 If you discover something that needs to be changed but is unrelated to a feature branch, such as `.gitignore` or a project configuration file, notify the administrator to have it changed in the active sprint branch.
 
 ## Project roles
-[sebbehebbe](https://github.com/sebbehebbe) is the *Scrum master*, with the responsibility of organizing and tracking the team's actions in regard to the Scrum development process (including, among other tasks, being the administrator of the JIRA project and taking notes during meetings).
+[Sebastian](https://github.com/sebbehebbe) is the *Scrum master*, with the responsibility of organizing and tracking the team's actions in regard to the Scrum development process (including, among other tasks, being the administrator of the JIRA project and taking notes during meetings).
 
-[drualsk](https://github.com/drualsk) is the Git administrator, in charge of maintaining the structure of the Git repository (including tasks such as organizing the general flow of commits, ensuring the completeness of the `master` branch, managing the features added to in the active sprint branch and updating the project's `README` file).
+[Axel](https://github.com/drualsk) is the Git administrator, in charge of maintaining the structure of the Git repository (including tasks such as organizing the general flow of commits, ensuring the completeness of the `master` branch, managing the features added to in the active sprint branch and updating the project's `README` file).
 
 All members actively contribute to the project in various ways - by adding code, collaborating on documentation and assisting other group members when problems occur.
 
 ## Important notes for measuring contributions
-After the first sprint, the whitespace used for each level of indentation in Java files was changed from *two spaces* to *one tab character*. As such, when using Git's `blame` command to find out which user added what to a file, make sure to use the `-w` option to ensure that changes in whitespace are ignored. (It seems like **gitinspector** does this by default.)
+After the first sprint, the whitespace used for each level of indentation in Java files was changed from *two spaces* (two `' '`) to *one tab character* (one `'\t'`). As such, when using Git's `blame` command to find out which user added what to a file, make sure to use the `-w` option to ensure that changes in whitespace are ignored. (It seems like **gitinspector** does this by default.)
