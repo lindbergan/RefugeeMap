@@ -18,8 +18,8 @@ import dat255.refugeemap.R;
 import dat255.refugeemap.model.db.Event;
 
 /**
- * Helper class to handle the local storage of Events saved by the user.
- * Also initiates graphic updates of relevant Fragments when saving/removing an Event.
+ * Helper class to handle the local storage of {@link Event} saved by the user.
+ * Also initiates graphic updates of relevant {@link Fragment} when saving/removing an {@link Event}.
  */
 
 public class SavedEventsHelper {
@@ -62,8 +62,10 @@ public class SavedEventsHelper {
         // successful
     }
 
-
-    public List<Event> getSavedEvents() {
+  /**
+   * @return The {@link Event} objects stored in the database
+   */
+  public List<Event> getSavedEvents() {
         Set<String> savedEventsStr = mActivity.getPreferences(Context.MODE_PRIVATE)
                 .getStringSet(mActivity.getString(R.string.saved_events_key), null);
 
@@ -80,7 +82,11 @@ public class SavedEventsHelper {
         }
     }
 
-
+  /**
+   * Checks if the specified {@link Event} is saved
+   * @param id the identifier for the {@link Event}
+   * @return true, if the {@link Event} was found. False otherwise.
+   */
     public boolean isEventSaved(String id) {
         try {
 
@@ -92,7 +98,10 @@ public class SavedEventsHelper {
         }
     }
 
-    public void updateSavedEventsFrag(){
+  /**
+   * Updates the {@link Fragment} containing the saved {@link Event}s.
+   */
+  public void updateSavedEventsFrag(){
 
         Fragment frag = mActivity.getFragmentManager().findFragmentByTag("saved_events_list_frag");
 
@@ -107,11 +116,18 @@ public class SavedEventsHelper {
         public void onSavedEvent(List<Event> savedEvents);
     }
 
-    public void addSavedEventListener(SavedEventListener listener) {
+  /**
+   * Add listener to list of {@link SavedEventListener}s
+   * @param listener the listener to be added
+   */
+  public void addSavedEventListener(SavedEventListener listener) {
         savedEventListeners.add(listener);
     }
 
-    public void updateSavedEventListeners() {
+  /**
+   * Causes all the saved {@link SavedEventListener}s to update themselves
+   */
+  public void updateSavedEventListeners() {
         for (SavedEventListener l : savedEventListeners)
             l.onSavedEvent(getSavedEvents());
     }

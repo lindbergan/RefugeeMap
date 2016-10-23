@@ -34,6 +34,9 @@ import dat255.refugeemap.model.db.Event;
 /* A helper class that takes care of the different view changes
 and custom view content*/
 
+/**
+ * Helper class for managing {@link View}s
+ */
 public class ViewHelper {
 
 	public static final int MAP_FRAGMENT = 0;
@@ -54,12 +57,20 @@ public class ViewHelper {
 	private Drawable mListIcon;
 	private List<String> mNavItems = new ArrayList<>();
 
+	/**
+	 * Constructor.
+	 * @param activity the {@link MainActivity} to be used with this helper
+   */
 	public ViewHelper(MainActivity activity) {
 		mActivity = activity;
 		activity.getSavedEventsHelper();
 		fm = mActivity.getFragmentManager();
 	}
 
+	/**
+	 * Method which is used to switch between different view modes in the app
+	 * @param args a {@link String} object with an appropriate command
+   */
 	public void stateSwitch(String args) {
 
 
@@ -315,13 +326,16 @@ public class ViewHelper {
 			mToggleImageButton.setVisibility(View.INVISIBLE);
 	}
 
-
+	/**
+	 * Sets up the {@link DrawerLayout} for use
+	 */
 	public void setUpNavigationDrawer() {
 		mDrawer = (DrawerLayout) mActivity.findViewById(R.id.drawer_layout);
 		mDrawerListView = (ListView) mActivity.findViewById(R.id.drawer_listView);
 		setNavigationListItems();
 	}
 
+	//private?
 	public void setNavigationListItems() {
 		List<String> temp = new ArrayList<>();
 		String[] navOptions = mActivity.getBaseContext().getResources().getStringArray(R.array.drawer_list_items);
@@ -331,6 +345,7 @@ public class ViewHelper {
 		mDrawerListView.setOnItemClickListener(new DrawerItemClickListener());
 	}
 
+	//private?
 	public void setLanguageListItems() {
 		List<String> temp = new ArrayList<>();
 		String[] languages = mActivity.getBaseContext().getResources().getStringArray(R.array.language_options);
@@ -340,16 +355,27 @@ public class ViewHelper {
 		mDrawerListView.setOnItemClickListener(new DrawerItemClickListener());
 	}
 
+	/**
+	 * Opens the {@link DrawerLayout} set up in setUpNavigationDrawer
+	 */
 	public void openDrawer() {
 		mDrawer.openDrawer(mDrawerListView);
 		drawerOpen = true;
 	}
 
+	/**
+	 * Closes the {@link DrawerLayout} set up in setUpNavigationDrawer
+	 */
 	private void closeDrawer() {
 		mDrawer.closeDrawer(mDrawerListView);
 		drawerOpen = false;
 	}
 
+	/**
+	 * Used for getting the custom info {@link View} using a tagged {@link Marker}
+	 * @param marker A {@link Marker} for the {@link com.google.android.gms.maps.GoogleMap}
+	 * @return The custom info {@link View}
+   */
 	public View getCustomInfoView(Marker marker) {
 
 		//Fetching the custom infoView

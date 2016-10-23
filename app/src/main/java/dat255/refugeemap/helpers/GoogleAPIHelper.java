@@ -23,6 +23,9 @@ import java.util.List;
 
 import dat255.refugeemap.GoogleAPIObserver;
 
+/**
+ * Contains methods for communication with the Google API through the {@link GoogleApiClient}
+ */
 public class GoogleAPIHelper implements GoogleApiClient.ConnectionCallbacks,
 	GoogleApiClient.OnConnectionFailedListener, LocationListener {
 	private static final String TAG = "GoogleAPIHelper";
@@ -33,12 +36,19 @@ public class GoogleAPIHelper implements GoogleApiClient.ConnectionCallbacks,
 	private LatLng currentLocation = new LatLng(57.70, 11.97);
 	private List<GoogleAPIObserver> mGoogleAPIObserverList = new ArrayList<>();
 
+	/**
+	 * Constructor.
+	 * @param context the current app context
+   */
 	public GoogleAPIHelper(Context context) {
 		this.mContext = context;
 		buildGoogleApiClient(mContext);
 		connect();
 	}
 
+	/**
+	 * @return the current location of the user on the {@link com.google.android.gms.maps.GoogleMap}
+   */
 	public LatLng getCurrentLocation() {
 		return currentLocation;
 	}
@@ -47,6 +57,9 @@ public class GoogleAPIHelper implements GoogleApiClient.ConnectionCallbacks,
 		return this.mGoogleApiClient;
 	}
 
+	/**
+	 * connects the app to the Google API through the {@link GoogleApiClient}
+	 */
 	public void connect() {
 		Log.d(TAG, "connect: connecting!");
 		if (mGoogleApiClient != null) {
@@ -136,6 +149,9 @@ public class GoogleAPIHelper implements GoogleApiClient.ConnectionCallbacks,
 
 	}
 
+	/**
+	 * Enables the usage of fine position, if the app has been granted such permissions.
+	 */
 	public void notifyPositionPermissions(){
 		if(ContextCompat.checkSelfPermission(mContext,
 			Manifest.permission.ACCESS_FINE_LOCATION)

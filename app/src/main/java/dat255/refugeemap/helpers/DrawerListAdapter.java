@@ -15,6 +15,7 @@ import dat255.refugeemap.R;
 
 
 /**
+ * Adapter for the list items in the drawer
  * @author Jonathan S
  */
 
@@ -23,6 +24,11 @@ public class DrawerListAdapter extends BaseAdapter {
     private Context mContext;
     private List<String> mNavItems;
 
+  /**
+   * Constructor.
+   * @param context The current context
+   * @param navItems List of strings
+   */
     public DrawerListAdapter(Context context, List<String> navItems){
         mContext = context;
         mNavItems = navItems;

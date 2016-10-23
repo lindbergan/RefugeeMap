@@ -17,8 +17,9 @@ import java.util.HashMap;
 
 import dat255.refugeemap.model.db.Event;
 
-/**
- * A simple {@link Fragment} subclass.
+/** TODO
+ * A {@link Fragment} subclass used for displaying data from an {@link Event}.
+ * Also allows interaction with the data through buttons.
  * Activities that contain this fragment must implement the
  * {@link DetailFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
@@ -50,10 +51,10 @@ public class DetailFragment extends Fragment {
 
 	/**
 	 * Use this factory method to create a new instance of
-	 * this fragment using the provided parameters.
+	 * this fragment, using the provided {@link Event}.
 	 *
-	 * @param event An Event.
-	 * @return A new instance of fragment DetailFragment.
+	 * @param event An {@link Event}.
+	 * @return A new instance of DetailFragment.
 	 */
 	public static DetailFragment newInstance(Event event) {
 		DetailFragment fragment = new DetailFragment();
@@ -87,7 +88,7 @@ public class DetailFragment extends Fragment {
 		}
 	}
 
-	private void setCategoryIcon() {
+	public void setCategoryIcon() {
 		int category = mActiveEvent.getCategories()[0];
 		switch(category){
 			case 0:
@@ -117,6 +118,9 @@ public class DetailFragment extends Fragment {
 		return mRootView;
 	}
 
+	/**
+	 * Updates the visual aspects, in case one of the displayed values has changed
+	 */
 	public void repaint() {
 		categoryIcon = (ImageView) mRootView.findViewById(R.id.detail_baloon);
 		((TextView) mRootView.findViewById(R.id.detail_title)).setText(title);
@@ -156,7 +160,7 @@ public class DetailFragment extends Fragment {
 			}
 		});
 	}
-	/** @author Jonathan S */
+	/** @author Jonathan S*/
 	public void onButtonPressed(String action) {
 		if (mListener != null &&
 			action.equals(getString(R.string.save_event_button_clicked_key))) {

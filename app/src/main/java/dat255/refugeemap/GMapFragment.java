@@ -39,7 +39,7 @@ import dat255.refugeemap.model.db.sort.EventsSorter;
 import static android.graphics.Bitmap.createBitmap;
 
 /**
- * A {@link Fragment} subclass.
+ * A {@link Fragment} subclass for holding a {@link GoogleMap}.
  * Activities that contain this fragment must implement the
  * {@link GMapFragment.OnMapFragmentInteractionListener} interface
  * to handle interaction events.
@@ -142,7 +142,7 @@ public class GMapFragment extends Fragment
 				}
 			}
 		}
-
+	//private?
     public void newMarker(Event event) {
         LatLng markerPosition = new LatLng(
             event.getLatitude(), event.getLongitude());
@@ -180,6 +180,11 @@ public class GMapFragment extends Fragment
 				return false;
 		}
 
+	/**
+	 * Creates a marker using an array of categories represented as integers
+	 * @param eventCategories the desired categories
+	 * @return A {@link BitmapDescriptor} representing a marker
+   */
     public BitmapDescriptor createMarker(Integer[] eventCategories){
         int category = eventCategories[0];
         Bitmap markerBitmap = createMarkerBitmap(category);
@@ -192,6 +197,12 @@ public class GMapFragment extends Fragment
         return marker;
     }
 
+	/**
+	 * Displays the directions between two {@link LatLng} points on the GoogleMap
+	 * @param origin The {@link LatLng} describing the point of origin
+	 * @param destination The {@link LatLng} describing the destination
+	 * @param transportation The {@link String} containing the mode of transportation
+   */
     public void showDirections(LatLng origin, LatLng destination, String transportation) {
 
 				removePreviousDirections();
@@ -203,10 +214,7 @@ public class GMapFragment extends Fragment
 				mDirectionHelper.showDirection(origin, destination, transportation);
 		}
 
-		public void showCorrectInfoWindow(LatLng destination)
-		{
-			if (mCurrentMarker == null) return;
-			if (mCurrentMarker.getPosition().equals(destination)) return;
+		public void showCorrectInfoWindow(LatLng destination){
 
 			mCurrentMarker.hideInfoWindow();
 
@@ -223,6 +231,10 @@ public class GMapFragment extends Fragment
 				return false;
 		}
 
+	/**
+	 * Checks if the {@link GoogleMap} has enabled the tracking of the location of the user
+	 * @return true, if the {@link GoogleMap} keeps track of the users location. Otherwise false
+   */
 		public boolean isMyLocationEnabled(){
 				return mGoogleMap.isMyLocationEnabled();
 		}

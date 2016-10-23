@@ -21,7 +21,7 @@ import dat255.refugeemap.model.db.sort.EventsSorter;
 import lombok.val;
 
 /**
- *
+ * Fragment used for the filtering of {@link Event}s
  * @author Sebastian
  */
 public class ListFilterButtonsFragment extends Fragment implements
@@ -42,18 +42,21 @@ public class ListFilterButtonsFragment extends Fragment implements
 		mDatabase = AppDatabase.getDatabaseInstance();
 	}
 
+	//private?
 	public void setButtonToActive(Button button) {
 		button.setBackgroundColor(getResources().getColor(R.color
 			.colorPrimary));
 		button.setTextColor(getResources().getColor(R.color.colorAccent));
 	}
 
+	//private?
 	public void setButtonToInactive(Button button) {
 		button.setBackgroundColor(getResources().getColor(R.color
 			.TYPLITEVITTYP));
 		button.setTextColor(getResources().getColor(R.color.common_google_signin_btn_text_light));
 	}
 
+	//private?
 	public void resetFilters() {
 		FilterImpl filter = new FilterImpl(null, null, null, null);
 
@@ -63,6 +66,7 @@ public class ListFilterButtonsFragment extends Fragment implements
 		updateFilteredEvents(newEvents);
 	}
 
+	//private?
 	public void onDistanceButtonClick(View view) {
 
 		LatLng userLocation = App.getGoogleApiHelper().getCurrentLocation();
@@ -77,6 +81,7 @@ public class ListFilterButtonsFragment extends Fragment implements
 		updateFilteredEvents(newEvents);
 	}
 
+	//private?
 	public void onTimeButtonClick(View view) {
 		val timeCriteria = new FilterImpl.TimeCriteria(Calendar.
 			getInstance().get(Calendar.DAY_OF_WEEK));
@@ -144,20 +149,32 @@ public class ListFilterButtonsFragment extends Fragment implements
 		setButtonToInactive(distanceFilterButton);
 		setButtonToInactive(timeFilterButton);
 	}
-
+	//Override?
 	public void onCategoryChange(int activeCategory) {
 		this.activeCategory = activeCategory;
 		disableButtons();
 		this.activeButton = null;
 	}
 
+	/**
+	 * Interface for listening to changes in the filter
+	 */
 	public static interface ListFilterListener {
+		/**
+		 * Called when the currently filtered categories change
+		 * @param newEvents a {@link List<Event>} of new {@link Event} objects
+     */
 		public void onListFilterChanged(List<Event> newEvents);
 	}
 
+	/**
+	 * Adds a {@link ListFilterListener} to this fragment
+	 * @param l The {@link ListFilterListener} to be added
+   */
 	public static void addFilteredEventsListener(ListFilterListener l)
 	{ listeners.add(l); }
 
+	//private?
 	public static void updateFilteredEvents(List<Event> newEvents)
 	{
 		for (ListFilterListener l : listeners)

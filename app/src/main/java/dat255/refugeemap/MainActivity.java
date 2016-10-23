@@ -46,6 +46,9 @@ import dat255.refugeemap.model.db.sort.EventsSorter;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+/**
+ * Main {@link AppCompatActivity} for this application
+ */
 public class MainActivity extends AppCompatActivity
 		implements EventListFragment.OnListFragmentInteractionListener,
 		DetailFragment.OnFragmentInteractionListener,
@@ -104,8 +107,7 @@ public class MainActivity extends AppCompatActivity
 
 
 		/**
-		 * The List Filter Buttons Fragment now listens to when categories
-		 * change
+		 * The {@link ListFilterButtonsFragment} now listens to when categories change
 		 */
 		Fragment[] currentFragments = mViewHelper.getCurrentFragments();
 		CategoryChangeListener listFilterButtons =
@@ -114,12 +116,14 @@ public class MainActivity extends AppCompatActivity
 		App.getInstance().setLocale(getBaseContext().getResources().getConfiguration().locale.getLanguage());
 	}
 
+	//private?
     public void setUpViews(){
         this.logo = (ImageView) findViewById(R.id.logo);
         this.searchEdit = (EditText) findViewById(R.id.et_search);
         this.searchBtn = (ImageButton) findViewById(R.id.action_search);
     }
 
+	//private?
     public void setUpToolbar(){
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
 		setSupportActionBar(toolbar);
@@ -128,6 +132,7 @@ public class MainActivity extends AppCompatActivity
 		}
     }
 
+	//Override?
 	public void onInfoWindowClicked(Marker marker) {
 
 		if(marker.getTag() instanceof Event) {
@@ -142,7 +147,8 @@ public class MainActivity extends AppCompatActivity
 		mViewHelper.setCurrentEvent(item);
         mViewHelper.stateSwitch("list_item_clicked");
 	}
-  
+
+	//private?
     public void toggleSearchFocus(View v) {
         long currentTime = SystemClock.elapsedRealtime();
         if (this.searchBtn.isEnabled() &&
@@ -168,6 +174,10 @@ public class MainActivity extends AppCompatActivity
         lastSearchClickTime = currentTime;
     }
 
+	/**
+	 * Used by xml-files for the category toolbar
+	 * @param view The {@link View} of the clicked button
+   */
 	public void onCategoryClick(View view) {
 		Integer ctgPressed = Integer.parseInt(view.getTag().toString());
 
@@ -191,6 +201,7 @@ public class MainActivity extends AppCompatActivity
 		AppDatabase.updateVisibleEvents(newEvents);
 	}
 
+	//private?
 	public void toggleCategoryButton(int category, boolean activated){
 		int id = getResources().getIdentifier("category"+category, "id", getPackageName());
 		ImageButton button = (ImageButton)findViewById(id);
@@ -204,6 +215,11 @@ public class MainActivity extends AppCompatActivity
 	/*
 	Activates and focuses search EditText
 	 */
+
+	/**
+	 * Used by xml-files for the toolbar
+	 * @param view the {@link View} of the clicked button
+   */
 	public void onSearchClick(View view) {
 		toggleSearchFocus(view);
 		searchEdit.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -244,10 +260,15 @@ public class MainActivity extends AppCompatActivity
 		return super.dispatchTouchEvent(event);
 	}
 
+	/**
+	 * Used by xml-files for the toolbar
+	 * @param view the {@link View} of the clicked button
+	 */
 	public void onMenuClick(View view) {
         mViewHelper.openDrawer();
 	}
 
+	//unused?
     public void centerOnMap(View view) {
         mViewHelper.stateSwitch("center_on_map");
     }
@@ -316,7 +337,7 @@ public class MainActivity extends AppCompatActivity
 				}
 	}
 	/**
-	 * setLocaleToArabic is used for testing purposes.
+	 * Sets the language displayed to the user to be arabic
 	 * Changes reading from R -> L and changes all text to arabic
 	 */
 	public void setLocaleToArabic() {
@@ -327,6 +348,9 @@ public class MainActivity extends AppCompatActivity
 		refresh();
 	}
 
+	/**
+	 * Sets the language displayed to the user to be swedish
+	 */
 	public void setLocaleToSwedish() {
 		Configuration newConfig = new Configuration();
 		newConfig.setLocale(new Locale(getString(R.string.swedish_locale_id)));
@@ -334,6 +358,10 @@ public class MainActivity extends AppCompatActivity
 				getBaseContext().getResources().getDisplayMetrics());
 		refresh();
 	}
+
+	/**
+	 * Sets the language displayed to the user to be english
+	 */
 	public void setLocaleToEnglish() {
 		Configuration newConfig = new Configuration();
 		newConfig.setLocale(new Locale(getString(R.string.english_locale_id)));
@@ -342,6 +370,7 @@ public class MainActivity extends AppCompatActivity
 		refresh();
 	}
 
+	//private?
 	public void broadcastActiveCategory() {
 		if (activeCategory == null) return;
 		for (int i = 0; i < mActiveCategoryChangeListeners.size(); i++) {
@@ -370,10 +399,15 @@ public class MainActivity extends AppCompatActivity
 		AppDatabase.updateVisibleEvents(events);
 	}
 
+	/**
+	 * Accesses the {@link SavedEventsHelper} stored in this class
+	 * @return The stored {@link SavedEventsHelper}
+   */
 	public SavedEventsHelper getSavedEventsHelper() {
 		return mSavedEventsHelper;
 	}
 
+	//private?
 	public void refresh() {
 		Intent intent = getIntent();
 		overridePendingTransition(0, 0);

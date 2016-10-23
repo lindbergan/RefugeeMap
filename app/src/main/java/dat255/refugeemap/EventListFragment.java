@@ -21,7 +21,7 @@ import dat255.refugeemap.model.db.impl.FilterImpl;
 import dat255.refugeemap.model.db.sort.EventsSorter;
 
 /**
- * A fragment representing a list of Items.
+ * A fragment representing a list of {@link Event} items.
  * <p/>
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
@@ -93,6 +93,7 @@ public class EventListFragment extends Fragment implements AppDatabase
 		return view;
 	}
 
+	//private?
 	public EventRecyclerViewAdapter fillListFragment() {
 		return new EventRecyclerViewAdapter(mDatabase.
 			getEventsByFilter(FilterImpl.EMPTY_FILTER,
@@ -100,7 +101,7 @@ public class EventListFragment extends Fragment implements AppDatabase
 	}
 
 	/**
-	 * Will fill the listview with events matching a color (category)
+	 * Will fill the {@link android.widget.ListView} with events matching a color (category)
 	 */
 
 	public EventRecyclerViewAdapter fillListFragment(Filter filter) {

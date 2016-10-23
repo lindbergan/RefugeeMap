@@ -12,17 +12,35 @@ import android.widget.TextView;
  * @author sky
  */
 
+/**
+ * An improved {@link TextView} with better line-wrapping
+ */
 public class TightTextView extends TextView {
     private boolean hasMaxWidth;
 
-    public TightTextView(Context context) {
+  /**
+   * Constructor with default {@link AttributeSet} and default style
+   * @param context the current {@link Context} of the app
+   */
+  public TightTextView(Context context) {
         this(context, null, 0);
     }
 
+  /**
+   * Constructor with default default style
+   * @param context the current {@link Context} of the app
+   * @param attrs the desired {@link AttributeSet}
+   */
     public TightTextView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
+  /**
+   * Constructor.
+   * @param context the current {@link Context} of the app
+   * @param attrs the desired {@link AttributeSet}
+   * @param defStyle the desired default style
+   */
     public TightTextView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }

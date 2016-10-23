@@ -19,6 +19,9 @@ import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.impl.FilterImpl;
 import dat255.refugeemap.model.db.sort.EventsSorter;
 
+/**
+ * Fragment for displaying {@link Event}s marked as favourites
+ */
 public class FavoritesListFragment extends EventListFragment
 	implements SavedEventsHelper.SavedEventListener {
 	private int mColumnCount = 1;

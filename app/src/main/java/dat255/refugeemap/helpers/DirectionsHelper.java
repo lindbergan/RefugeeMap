@@ -26,6 +26,10 @@ import java.util.List;
 import dat255.refugeemap.App;
 import dat255.refugeemap.R;
 
+/**
+ * Contains a mixture methods used for finding the shortest route
+ * between the current position and an event.
+ */
 public class DirectionsHelper {
 
     private static final String API_DEST = "https://maps.googleapis.com/maps/api/directions/json?";
@@ -35,7 +39,11 @@ public class DirectionsHelper {
     private String distance;
     private Polyline mCurrentDirection;
 
-    public DirectionsHelper(GoogleMap googleMap) {
+  /**
+   * Constructor.
+   * @param googleMap the {@link GoogleMap} used in the current running instance
+   */
+  public DirectionsHelper(GoogleMap googleMap) {
         mGoogleMap = googleMap;
     }
 
@@ -44,6 +52,14 @@ public class DirectionsHelper {
     warnings in the returned result which you must display to the user.
     For further documentation on the matter, visit:
     https://developers.google.com/maps/documentation/directions/intro#TravelModes*/
+
+  /**
+   * Main method used for finding and drawing the shortest route between
+   * two points on the {@link GoogleMap}
+   * @param origin the {@link LatLng} describing the point of origin
+   * @param destination the {@link LatLng} describing the destination
+   * @param transportationMode method of transportation. If invalid, defaults to driving
+   */
     public void showDirection(
         LatLng origin, LatLng destination, String transportationMode) {
 
@@ -258,18 +274,25 @@ public class DirectionsHelper {
         }
     }
 
-    public void removePreviousDirection() {
+  /**
+   * Removes the current {@link Polyline} direction so that another may be chosen
+   */
+  public void removePreviousDirection() {
         mCurrentDirection.remove();
     }
 
-    public boolean isPreviousDirectionPresent() {
+  /**
+   * Checks if there is a {@link Polyline} direction in use
+   * @return true if there is currently a {@link Polyline} direction, false otherwise
+   */
+  public boolean isPreviousDirectionPresent() {
         if (mCurrentDirection != null) {
             return true;
         } else {
             return false;
         }
     }
-
+    //Unused?
     public String getDuration() {
         return duration;
     }

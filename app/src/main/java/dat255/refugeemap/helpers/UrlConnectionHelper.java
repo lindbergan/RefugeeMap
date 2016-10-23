@@ -17,8 +17,17 @@ import java.util.concurrent.ExecutionException;
 import dat255.refugeemap.App;
 import dat255.refugeemap.model.db.Event;
 
+/**
+ * Class for connecting to an URL in order to translate an {@link Event}
+ */
 public class UrlConnectionHelper {
 
+	/**
+	 * @param event the {@link Event} to be translated
+	 * @return a HashMap
+	 * @throws ExecutionException
+	 * @throws InterruptedException
+   */
 	public static HashMap<String, String> translateEvent(Event event) throws ExecutionException, InterruptedException {
 		Event[] array = new Event[1];
 		array[0] = event;
@@ -27,6 +36,9 @@ public class UrlConnectionHelper {
 
 }
 
+/**
+ * Class for retrieving a translation from an URL
+ */
 class RetrieveFeedTask extends AsyncTask<Event, Boolean, HashMap<String, String>> {
 
 	public List<String> translate(String text) throws IOException {

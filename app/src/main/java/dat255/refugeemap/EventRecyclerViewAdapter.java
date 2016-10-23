@@ -23,7 +23,6 @@ import dat255.refugeemap.model.db.Event;
 /**
  * {@link RecyclerView.Adapter} that can display a {@link dat255.refugeemap.model.db.Event} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
  */
 public class EventRecyclerViewAdapter
 	extends RecyclerView.Adapter<EventRecyclerViewAdapter.ViewHolder>
@@ -47,6 +46,12 @@ public class EventRecyclerViewAdapter
 		listItemColor.put(3, ContextCompat.getColor(holder.mView.getContext(), R.color.colorCategory4));
 	}
 
+	/**
+	 * Constructor.
+	 *
+	 * @param events List of {@link Event} objects to be used in list
+	 * @param listener {@link OnListFragmentInteractionListener} listening to an {@link EventListFragment}
+   */
 	public EventRecyclerViewAdapter(List<Event> events,
 		OnListFragmentInteractionListener listener)
 	{
@@ -125,6 +130,9 @@ public class EventRecyclerViewAdapter
 		mEvents=newEvents;
 	}
 
+	/**
+	 * Class for holding on to a {@link View}
+	 */
 	public class ViewHolder extends RecyclerView.ViewHolder {
 		public final View mView;
 		public final LinearLayout mLayout;
@@ -134,6 +142,10 @@ public class EventRecyclerViewAdapter
 		public Event mItem;
 
 
+		/**
+		 * Constructor
+		 * @param view {@link View} to be held
+     */
 		public ViewHolder(View view) {
 			super(view);
 			mView = view;
