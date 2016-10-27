@@ -2,7 +2,6 @@ package dat255.refugeemap;
 
 import org.junit.Test;
 
-import java.text.Collator;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +36,6 @@ public class TestEventsSorterTitle
 		List<Event> list = Arrays.asList(e2, e1, e4, e3);
 		List<Event> sortedList = Arrays.asList(e1, e2, e3, e4);
 		new EventsSorterTitle(new Locale("sv", "SE")).sort(list);
-//		assertEquals(list, sortedList);
+		assertEquals (list, sortedList);
 	}
 }

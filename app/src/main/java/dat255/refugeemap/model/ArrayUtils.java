@@ -1,7 +1,5 @@
 package dat255.refugeemap.model;
 
-import java.util.Collection;
-
 /**
  * A purely static class with various array-related utility methods.
  * @author Axel
@@ -9,7 +7,7 @@ import java.util.Collection;
 public class ArrayUtils
 {
 	/**
-	 * Returns `true` iff `arr` contains `elem`.
+	 * Returns {@code true} iff {@code arr} contains {@code elem}.
 	 *
 	 * Precondition: All arguments are non-null.
 	 */
@@ -22,12 +20,12 @@ public class ArrayUtils
 	}
 
 	/**
-	 * Returns `true` iff `arr` contains `elem`.
-	 * (Equality comparisons are performed using `ec` instead of `T.equals`).
+	 * Returns {@code true} iff {@code arr} contains {@code elem}. (All equality
+	 * comparisons are performed using {@code ec} instead of {@code T.equals}.
 	 *
 	 * Precondition: All arguments are non-null.
 	 */
-	public static <T> boolean contains(T[] arr, T elem, EqualityChecker ec)
+	public static <T> boolean contains(T[] arr, T elem, EqualityChecker<T> ec)
 	{
 		for (T arrElem : arr)
 			if (ec.areEqual(elem, arrElem))

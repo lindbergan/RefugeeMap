@@ -2,50 +2,57 @@ package dat255.refugeemap.model.db;
 
 import java.util.Collection;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 /**
  * An interface with accessor methods for all information tied to an event.
- * This includes the latitude and longitude, for use when displaying on the
- * map, as well as title, address, contact information and description, for
- * use in the detail view and the 'popup' view (which contains a few details).
  * @author Axel
  */
 public interface Event
 {
-	public Integer getID();
-	public Integer getOwnerID();
+	@AllArgsConstructor(access = AccessLevel.PUBLIC)
+	public class Translation
+	{
+		@Getter private final String title, description;
+	}
 
-	public Integer[] getCategories();
-	public String[] getTags();
+	Integer getID();
+	Integer getOwnerID();
 
-	public Double getLatitude();
-	public Double getLongitude();
+	Integer[] getCategories();
+	String[] getTags();
 
-	public String getDateInformation();
-	public String getAddress();
-	public String getContactInformation();
+	Double getLatitude();
+	Double getLongitude();
 
-	public int[][] getTimeData();
+	String getDateInformation();
+	String getAddress();
+	String getContactInformation();
+
+	int[][] getTimeData();
 
 	/**
 	 * Returns the event's title in the given language.
 	 *
 	 * Preconditions:
 	 * - All arguments are non-null
-	 * - `lang` is in `getAvailableLanguages`
+	 * - {@code lang} is in {@link #getAvailableLanguages()}
 	 */
-	public String getTitle(String lang);
+	String getTitle(String lang);
 
 	/**
 	 * Returns the event's description in the given language.
 	 *
 	 * Preconditions:
 	 * - All arguments are non-null
-	 * - `lang` is in `getAvailableLanguages`
+	 * - {@code lang} is in {@link #getAvailableLanguages()}
 	 */
-	public String getDescription(String lang);
+	String getDescription(String lang);
 
-	public Collection<String> getAvailableLanguages();
+	Collection<String> getAvailableLanguages();
 
-	@Override public boolean equals(Object o);
-	public boolean equals(Event e);
+	@Override boolean equals(Object o);
+	boolean equals(Event e);
 }

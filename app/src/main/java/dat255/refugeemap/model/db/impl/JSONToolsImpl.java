@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 import dat255.refugeemap.model.db.JSONTools;
 
 /**
- * An implementation of `JSONTools` using the *Gson* library.
+ * An implementation of {@link JSONTools} using the <b>Gson</b> library.
  * @author Axel
  */
 public class JSONToolsImpl implements JSONTools

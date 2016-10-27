@@ -1,27 +1,32 @@
 package dat255.refugeemap;
 
-import org.apache.commons.io.Charsets;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import dat255.refugeemap.model.db.impl.JSONToolsImpl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /** @author Axel */
 public class TestJSONToolsImpl
 {
 	private static class DummyClass
 	{
-		Integer i;
-		Double d;
-		String s;
+		private Integer i;
+		private Double d;
+		private String s;
+
+		public DummyClass() {}
 	}
 
-	private final String JSON = "{\"i\":42,\"d\":7.1024,\"s\":\"Hello!\"}";
+	private static final String JSON =
+		"{\"i\":42,\"d\":7.1024,\"s\":\"Hello!\"}";
 
 	@Test public void testDeserializeString()
 	{
@@ -33,19 +38,24 @@ public class TestJSONToolsImpl
 
 	@Test public void testDeserializeReader()
 	{
-		Reader reader = new InputStreamReader(new ByteArrayInputStream(JSON.
-			getBytes(Charsets.UTF_8)));
+		byte[] bytes = JSON.getBytes(StandardCharsets.UTF_8);
 
-		DummyClass dummy = (DummyClass)(new JSONToolsImpl().
-			deserializeReader(reader, DummyClass.class));
+		try
+		{
+			Reader reader = new InputStreamReader(new
+				ByteArrayInputStream(bytes), "UTF-8");
 
-		performAssertions(dummy);
+			DummyClass dummy = (DummyClass)(new JSONToolsImpl().
+				deserializeReader(reader, DummyClass.class));
+
+			performAssertions(dummy);
+		} catch (UnsupportedEncodingException e) { fail(); }
 	}
 
 	private void performAssertions(DummyClass dummy)
 	{
-		assertEquals(dummy.i, new Integer(42));
-		assertEquals(dummy.d, new Double(7.1024));
+		assertEquals(dummy.i, Integer.valueOf(42));
+		assertEquals(dummy.d, Double.valueOf(7.1024));
 		assertEquals(dummy.s, "Hello!");
 	}
 }

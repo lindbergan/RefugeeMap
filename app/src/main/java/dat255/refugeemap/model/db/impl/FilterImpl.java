@@ -39,8 +39,8 @@ public class FilterImpl implements Filter
 		public boolean doesEventFit(Event e)
 		{
 			final int[][] timeData = e.getTimeData();
-			for (int i = 0; i < timeData.length; i++)
-				if (iWeekDay == timeData[i][0])
+			for (int[] aTimeData : timeData)
+				if (iWeekDay == aTimeData[0])
 					return true;
 			return false;
 		}
@@ -55,9 +55,8 @@ public class FilterImpl implements Filter
 	private final TimeCriteria timeCriteria;
 
 	/**
-	 * Creates a `Filter` instance with the given criteria.
-	 * To ignore `category`, set it to `NULL_CATEGORY`.
-	 * To ignore any other criteria, set it to `null`.
+	 * Creates a {@link Filter} instance with the given criteria.
+	 * To ignore any criteria, set it to {@code null}.
 	 */
 	public FilterImpl(Integer category, Collection<String> searchTerms,
 		DistanceCriteria distCriteria, TimeCriteria timeCriteria)

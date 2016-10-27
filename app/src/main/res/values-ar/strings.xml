@@ -2,10 +2,10 @@
 <resources>
     <string name="button_gmap_directions">الاتجاهات</string>
 
-    <string name="nav_menu_profile">الملف الشخصي</string>
-    <string name="nav_menu_favorites">مفضلة</string>
-    <string name="nav_menu_lang_options">إعدادات اللغة</string>
-    <string name="nav_menu_lang_size_search">البحث الشعاع</string>
+    <string name="navitem_profile">الملف الشخصي</string>
+    <string name="navitem_favorites">مفضلة</string>
+    <string name="navitem_language">إعدادات اللغة</string>
+    <string name="navitem_size_search">البحث الشعاع</string>
 
     <string name="toast_directions">التطبيق يجب أن يكون قادرا على استخدام منصبك</string>
 
@@ -21,6 +21,6 @@
     <string name="toast_detail_event_saved">حفظ الحدث</string>
     <string name="toast_detail_event_removed">إزالة الحدث</string>
     <string name="toast_detail_action_failed">فشل</string>
-    <string name="toasts_directions_error">تحتاج إلى اتصال بالإنترنت لتكون قادرة على الحصول على الاتجاهات.</string>
+    <string name="toast_directions_error">تحتاج إلى اتصال بالإنترنت لتكون قادرة على الحصول على الاتجاهات.</string>
     <string name="toast_viewhelper_no_events_saved">لا حفظها الأحداث.</string>
 </resources>

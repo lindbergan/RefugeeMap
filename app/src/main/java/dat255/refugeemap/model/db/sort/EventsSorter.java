@@ -5,7 +5,8 @@ import java.util.List;
 import dat255.refugeemap.model.db.Event;
 
 /**
- * An interface containing a method with sorts a `List<Event>`.
+ * An interface containing a method which
+ * sorts a {@link List} of {@link Event}s.
  * @author Axel
  */
 public interface EventsSorter
@@ -15,9 +16,9 @@ public interface EventsSorter
 	 *
 	 * Precondition: All arguments are non-null.
 	 */
-	public void sort(List<Event> list);
+	void sort(List<Event> list);
 
-	public static EventsSorter NULL_SORTER = new EventsSorter() {
+	EventsSorter NULL_SORTER = new EventsSorter() {
 		@Override public void sort(List<Event> list) {}
 	};
 }

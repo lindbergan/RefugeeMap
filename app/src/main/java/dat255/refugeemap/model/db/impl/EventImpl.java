@@ -21,7 +21,7 @@ public class EventImpl implements Event
 	private int[][] timeData;
 
 	// Gson requires zero-argument constructor
-	public EventImpl() {}
+	private EventImpl() {}
 
 	public Integer getID()
 	{ return id; }

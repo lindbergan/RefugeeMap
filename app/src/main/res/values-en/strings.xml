@@ -2,10 +2,10 @@
 <resources>
     <string name="button_gmap_directions">Directions</string>
 
-    <string name="nav_menu_profile">Profile</string>
-    <string name="nav_menu_favorites">Favorites</string>
-    <string name="nav_menu_lang_options">Language options</string>
-    <string name="nav_menu_lang_size_search">Search radius</string>
+    <string name="navitem_profile">Profile</string>
+    <string name="navitem_favorites">Favorites</string>
+    <string name="navitem_language">Language options</string>
+    <string name="navitem_size_search">Search radius</string>
 
     <string name="toast_directions">The app must be allowed to use your location</string>
 
@@ -22,5 +22,5 @@
     <string name="toast_detail_event_removed">Event removed</string>
     <string name="toast_detail_action_failed">Action failed</string>
     <string name="toast_viewhelper_no_events_saved">No saved events</string>
-    <string name="toasts_directions_error">You must have an internet connection to use the directions helper.</string>
+    <string name="toast_directions_error">You must have an internet connection to use the directions helper.</string>
 </resources>

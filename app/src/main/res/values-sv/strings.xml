@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="toasts_directions_error">Du måste vara ansluten till internet för att använda vägbeskrivningen!</string>
+    <string name="toast_directions_error">Du måste vara ansluten till internet för att använda vägbeskrivningen!</string>
     <string name="button_gmap_directions">Vägbeskrivning</string>
 
-    <string name="nav_menu_profile">Profil</string>
-    <string name="nav_menu_favorites">Favoriter</string>
-    <string name="nav_menu_lang_options">Språkinställningar</string>
-    <string name="nav_menu_lang_size_search">Sökradie</string>
+    <string name="navitem_profile">Profil</string>
+    <string name="navitem_favorites">Favoriter</string>
+    <string name="navitem_language">Språkinställningar</string>
+    <string name="navitem_size_search">Sökradie</string>
 
     <string name="toast_directions">Appen behöver använda sig av din position</string>
 

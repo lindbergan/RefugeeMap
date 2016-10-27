@@ -13,8 +13,8 @@
     android:label="@string/app_name"
     android:theme="@style/Theme.AppCompat.Light.NoActionBar"
     android:supportsRtl="true"
-      android:name=".App">
-    <activity android:name=".MainActivity"
+      android:name=".app.gui.App">
+    <activity android:name=".app.gui.MainActivity"
               android:configChanges="locale"
         android:screenOrientation="portrait">
       <intent-filter>

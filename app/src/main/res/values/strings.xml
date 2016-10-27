@@ -3,13 +3,13 @@
     <string name="app_name" translatable="false">Momtee</string>
     <string name="button_gmap_directions">Directions</string>
 
-    <string name="nav_menu_profile">Profile</string>
-    <string name="nav_menu_favorites">Favoirites</string>
-    <string name="nav_menu_lang_size_search">Search radius</string>
-    <string name="nav_menu_lang_options">Language options</string>
+    <string name="navitem_profile">Profile</string>
+    <string name="navitem_favorites">Favorites</string>
+    <string name="navitem_size_search">Search radius</string>
+    <string name="navitem_language">Language options</string>
 
-    <string name="toasts_directions_error">You must have an internet connection to use the directions helper.</string>
-    <string name="toast_directions">The app must be allowed to use your location</string>
+    <string name="toast_directions_error">You must have an internet connection to use the directions helper.</string>
+    <string name="toast_directions">The app must be allowed to use your location.</string>
 
     <string name="textview_detail_where">Where</string>
     <string name="textview_detail_when">When</string>

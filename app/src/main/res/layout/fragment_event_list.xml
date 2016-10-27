@@ -8,7 +8,7 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="match_parent"
                                         app:layoutManager="LinearLayoutManager"
-                                        tools:context="dat255.refugeemap.EventListFragment"
+                                        tools:context="dat255.refugeemap.app.gui.EventListFragment"
                                         tools:listitem="@layout/fragment_event_item"
                                         android:layout_marginTop="65dp"
                                         android:background="@drawable/textlines"/>

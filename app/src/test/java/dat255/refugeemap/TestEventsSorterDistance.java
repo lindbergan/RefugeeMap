@@ -2,15 +2,12 @@ package dat255.refugeemap;
 
 import org.junit.Test;
 
-import java.text.Collator;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 import dat255.refugeemap.model.db.Event;
 import dat255.refugeemap.model.db.impl.EventImpl;
 import dat255.refugeemap.model.db.sort.EventsSorterDistance;
-import dat255.refugeemap.model.db.sort.EventsSorterTitle;
 
 import static org.junit.Assert.assertEquals;
 

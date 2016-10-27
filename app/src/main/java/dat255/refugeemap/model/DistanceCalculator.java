@@ -9,21 +9,23 @@ public class DistanceCalculator
 {
 	private static final double EARTH_RADIUS_KM = 6372.8;
 
-	// versin(a) = 1 - cos(a) = 2sin^2(a/2)
-	// haversin(a) = versin(a)/2 = sin(a/2)^2
+	// versine(a) = 1 - cos(a) = 2sin^2(a/2)
+	// haversine(a) = versine(a)/2 = sin(a/2)^2
 	private static double haversine(double radians)
 	{ return Math.pow(Math.sin(radians/2), 2); }
 
 	/**
-	 * Returns the great-circle distance (in kilometers) between the
-	 * location with latitude `lat1`° and longitude `lon1`° and the
-	 * location with latitude `lat2`° and longitude `lon2`°.
+	 * Returns the great-circle distance (in km) between the location with
+	 * latitude {@code lat1} and longitude {@code lon1} and the location
+	 * with latitude {@code lat2} and longitude {@code lon2}.
+	 * (All angles measured in degrees.)
 	 *
-	 * (This method is based on the *haversine formula*,
+	 * (This method is based on the <b>haversine formula</b>,
 	 * which is meant for relatively small distances.)
 	 *
-	 * Precondition: The two points are located relatively close on Earth
-	 *               (preferably in the same country)
+	 * Precondition:
+	 *  The two points are located relatively close on Earth
+	 *  (preferably in the same country)
 	 *
 	 * @throws IllegalArgumentException if the formula fails as a result of the
 	 *  points being at nearly opposite ends of the Earth.
