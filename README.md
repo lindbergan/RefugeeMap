@@ -1,3 +1,5 @@
+![Screenshots](https://raw.githubusercontent.com/drualsk/RefugeeMap/documents/Screenshots.png)
+
 # RefugeeMap
 *Momtee* (working name *RefugeeMap*) is an Android application developed as part of the course [**DAT255**](https://github.com/hburden/DAT255 "Course page") at *Chalmers University of Technology*.
 The purpose of the application is to provide help for refugees in Sweden by presenting them with a map or list of events (of a variety of categories such as sports, educational help and various group events).
